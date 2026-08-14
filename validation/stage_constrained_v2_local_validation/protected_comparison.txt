@@ -1,0 +1,1 @@
+MATCH: all protected files are byte-identical

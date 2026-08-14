@@ -1,0 +1,178 @@
+[INFO] [launch]: All log files can be found below /home/openarm/.ros/log/2026-08-14-14-12-26-288774-openarm-OMEN-Transcend-Gaming-Laptop-14-fb1xxx-23
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_publisher-1]: process started with pid [26]
+[INFO] [move_group-2]: process started with pid [28]
+[robot_state_publisher-1] getifaddrs: Operation not permitted
+[robot_state_publisher-1] getifaddrs: Operation not permitted
+[robot_state_publisher-1] getifaddrs: Operation not permitted
+[robot_state_publisher-1] getifaddrs: Operation not permitted
+[robot_state_publisher-1] [37;1m2026-08-14 14:12:26.493 [31;1m[[37;1mTRANSPORT[31;1m Error] [37mAll whitelist interfaces were filtered out[34;1m -> Function [36mUDPv4Transport[m
+[robot_state_publisher-1] [37;1m2026-08-14 14:12:26.493 [31;1m[[37;1mTRANSPORT_UDP[31;1m Error] [37mError creating socket: Operation not permitted[34;1m -> Function [36minit[m
+[robot_state_publisher-1] [37;1m2026-08-14 14:12:26.493 [31;1m[[37;1mRTPS_PARTICIPANT[31;1m Error] [37mUser transport failed to register.[34;1m -> Function [36mRTPSParticipantImpl[m
+[move_group-2] getifaddrs: Operation not permitted
+[move_group-2] getifaddrs: Operation not permitted
+[move_group-2] getifaddrs: Operation not permitted
+[move_group-2] getifaddrs: Operation not permitted
+[move_group-2] [37;1m2026-08-14 14:12:26.503 [31;1m[[37;1mTRANSPORT[31;1m Error] [37mAll whitelist interfaces were filtered out[34;1m -> Function [36mUDPv4Transport[m
+[move_group-2] [37;1m2026-08-14 14:12:26.503 [31;1m[[37;1mTRANSPORT_UDP[31;1m Error] [37mError creating socket: Operation not permitted[34;1m -> Function [36minit[m
+[move_group-2] [37;1m2026-08-14 14:12:26.503 [31;1m[[37;1mRTPS_PARTICIPANT[31;1m Error] [37mUser transport failed to register.[34;1m -> Function [36mRTPSParticipantImpl[m
+[robot_state_publisher-1] [INFO] [1786684346.514836466] [robot_state_publisher]: got segment base_link
+[robot_state_publisher-1] [INFO] [1786684346.514932109] [robot_state_publisher]: got segment left_arm_mount_link
+[robot_state_publisher-1] [INFO] [1786684346.514937761] [robot_state_publisher]: got segment lift_fixed_link
+[robot_state_publisher-1] [INFO] [1786684346.514940230] [robot_state_publisher]: got segment lift_moving_link
+[robot_state_publisher-1] [INFO] [1786684346.514942239] [robot_state_publisher]: got segment openarm_left_hand_tcp
+[robot_state_publisher-1] [INFO] [1786684346.514944540] [robot_state_publisher]: got segment openarm_left_left_finger
+[robot_state_publisher-1] [INFO] [1786684346.514946315] [robot_state_publisher]: got segment openarm_left_link0
+[robot_state_publisher-1] [INFO] [1786684346.514948071] [robot_state_publisher]: got segment openarm_left_link1
+[robot_state_publisher-1] [INFO] [1786684346.514949869] [robot_state_publisher]: got segment openarm_left_link2
+[robot_state_publisher-1] [INFO] [1786684346.514951376] [robot_state_publisher]: got segment openarm_left_link3
+[robot_state_publisher-1] [INFO] [1786684346.514953009] [robot_state_publisher]: got segment openarm_left_link4
+[robot_state_publisher-1] [INFO] [1786684346.514954603] [robot_state_publisher]: got segment openarm_left_link5
+[robot_state_publisher-1] [INFO] [1786684346.514956119] [robot_state_publisher]: got segment openarm_left_link6
+[robot_state_publisher-1] [INFO] [1786684346.514957607] [robot_state_publisher]: got segment openarm_left_link7
+[robot_state_publisher-1] [INFO] [1786684346.514959145] [robot_state_publisher]: got segment openarm_left_right_finger
+[robot_state_publisher-1] [INFO] [1786684346.514960831] [robot_state_publisher]: got segment openarm_right_hand_tcp
+[robot_state_publisher-1] [INFO] [1786684346.514962506] [robot_state_publisher]: got segment openarm_right_left_finger
+[robot_state_publisher-1] [INFO] [1786684346.514964175] [robot_state_publisher]: got segment openarm_right_link0
+[robot_state_publisher-1] [INFO] [1786684346.514966132] [robot_state_publisher]: got segment openarm_right_link1
+[robot_state_publisher-1] [INFO] [1786684346.514967729] [robot_state_publisher]: got segment openarm_right_link2
+[robot_state_publisher-1] [INFO] [1786684346.514969244] [robot_state_publisher]: got segment openarm_right_link3
+[robot_state_publisher-1] [INFO] [1786684346.514970793] [robot_state_publisher]: got segment openarm_right_link4
+[robot_state_publisher-1] [INFO] [1786684346.514972352] [robot_state_publisher]: got segment openarm_right_link5
+[robot_state_publisher-1] [INFO] [1786684346.514973916] [robot_state_publisher]: got segment openarm_right_link6
+[robot_state_publisher-1] [INFO] [1786684346.514975452] [robot_state_publisher]: got segment openarm_right_link7
+[robot_state_publisher-1] [INFO] [1786684346.514977005] [robot_state_publisher]: got segment openarm_right_right_finger
+[robot_state_publisher-1] [INFO] [1786684346.514978680] [robot_state_publisher]: got segment right_arm_mount_link
+[robot_state_publisher-1] [INFO] [1786684346.514980426] [robot_state_publisher]: got segment waist_pitch_link
+[robot_state_publisher-1] [INFO] [1786684346.514982095] [robot_state_publisher]: got segment waist_yaw_link
+[robot_state_publisher-1] [INFO] [1786684346.514983728] [robot_state_publisher]: got segment world
+[move_group-2] [INFO] [1786684346.523174452] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0131263 seconds
+[move_group-2] [INFO] [1786684346.523223053] [moveit_robot_model.robot_model]: Loading robot model 'humanoid_sim_provisional_v10'...
+[move_group-2] [INFO] [1786684346.523239452] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[move_group-2] [INFO] [1786684349.086104750] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Publishing maintained planning scene on 'monitored_planning_scene'
+[move_group-2] [INFO] [1786684349.086209076] [moveit.ros_planning_interface.moveit_cpp]: Listening to 'joint_states' for joint states
+[move_group-2] [INFO] [1786684349.086482922] [moveit_ros.current_state_monitor]: Listening to joint states on topic 'joint_states'
+[move_group-2] [INFO] [1786684349.086555156] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to '/attached_collision_object' for attached collision objects
+[move_group-2] [INFO] [1786684349.086561287] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Starting planning scene monitor
+[move_group-2] [INFO] [1786684349.086596383] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to '/planning_scene'
+[move_group-2] [INFO] [1786684349.086600730] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Starting world geometry update monitor for collision objects, attached objects, octomap updates.
+[move_group-2] [INFO] [1786684349.086640897] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to 'collision_object'
+[move_group-2] [INFO] [1786684349.086675403] [moveit_ros.planning_scene_monitor.planning_scene_monitor]: Listening to 'planning_scene_world' for planning scene world geometry
+[move_group-2] [WARN] [1786684349.086760038] [moveit.ros.occupancy_map_monitor.middleware_handle]: Resolution not specified for Octomap. Assuming resolution = 0.1 instead
+[move_group-2] [ERROR] [1786684349.086765866] [moveit.ros.occupancy_map_monitor.middleware_handle]: No 3D sensor plugin(s) defined for octomap updates
+[INFO] [stage_constrained_reference_generator_v2-3]: process started with pid [53]
+[stage_constrained_reference_generator_v2-3] getifaddrs: Operation not permitted
+[stage_constrained_reference_generator_v2-3] getifaddrs: Operation not permitted
+[stage_constrained_reference_generator_v2-3] getifaddrs: Operation not permitted
+[stage_constrained_reference_generator_v2-3] getifaddrs: Operation not permitted
+[stage_constrained_reference_generator_v2-3] [37;1m2026-08-14 14:12:29.532 [31;1m[[37;1mTRANSPORT[31;1m Error] [37mAll whitelist interfaces were filtered out[34;1m -> Function [36mUDPv4Transport[m
+[stage_constrained_reference_generator_v2-3] [37;1m2026-08-14 14:12:29.532 [31;1m[[37;1mTRANSPORT_UDP[31;1m Error] [37mError creating socket: Operation not permitted[34;1m -> Function [36minit[m
+[stage_constrained_reference_generator_v2-3] [37;1m2026-08-14 14:12:29.532 [31;1m[[37;1mRTPS_PARTICIPANT[31;1m Error] [37mUser transport failed to register.[34;1m -> Function [36mRTPSParticipantImpl[m
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684349.555778130] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.0145362 seconds
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684349.555841380] [moveit_robot_model.robot_model]: Loading robot model 'humanoid_sim_provisional_v10'...
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684349.555846453] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684352.201991399] [moveit_rdf_loader.rdf_loader]: Loaded robot model in 0.00122167 seconds
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684352.202014986] [moveit_robot_model.robot_model]: Loading robot model 'humanoid_sim_provisional_v10'...
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684352.202018049] [moveit_robot_model.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[move_group-2] [INFO] [1786684362.580546067] [moveit.ros_planning_interface.moveit_cpp]: Loading planning pipeline 'ompl'
+[move_group-2] [INFO] [1786684362.590329556] [moveit.ros_planning.planning_pipeline]: Using planning interface 'OMPL'
+[move_group-2] [INFO] [1786684362.591098758] [moveit_ros.add_time_optimal_parameterization]: Param 'ompl.path_tolerance' was not set. Using default value: 0.100000
+[move_group-2] [INFO] [1786684362.591104688] [moveit_ros.add_time_optimal_parameterization]: Param 'ompl.resample_dt' was not set. Using default value: 0.100000
+[move_group-2] [INFO] [1786684362.591106601] [moveit_ros.add_time_optimal_parameterization]: Param 'ompl.min_angle_change' was not set. Using default value: 0.001000
+[move_group-2] [INFO] [1786684362.591117507] [moveit_ros.fix_workspace_bounds]: Param 'ompl.default_workspace_bounds' was not set. Using default value: 10.000000
+[move_group-2] [INFO] [1786684362.591122542] [moveit_ros.fix_start_state_bounds]: Param 'ompl.start_state_max_bounds_error' was set to 0.100000
+[move_group-2] [INFO] [1786684362.591124805] [moveit_ros.fix_start_state_bounds]: Param 'ompl.start_state_max_dt' was not set. Using default value: 0.500000
+[move_group-2] [INFO] [1786684362.591128930] [moveit_ros.fix_start_state_collision]: Param 'ompl.start_state_max_dt' was not set. Using default value: 0.500000
+[move_group-2] [INFO] [1786684362.591131027] [moveit_ros.fix_start_state_collision]: Param 'ompl.jiggle_fraction' was not set. Using default value: 0.020000
+[move_group-2] [INFO] [1786684362.591133022] [moveit_ros.fix_start_state_collision]: Param 'ompl.max_sampling_attempts' was not set. Using default value: 100
+[move_group-2] [INFO] [1786684362.591137160] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Add Time Optimal Parameterization'
+[move_group-2] [INFO] [1786684362.591138721] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Resolve constraint frames to robot links'
+[move_group-2] [INFO] [1786684362.591139769] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Fix Workspace Bounds'
+[move_group-2] [INFO] [1786684362.591140897] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Fix Start State Bounds'
+[move_group-2] [INFO] [1786684362.591141882] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Fix Start State In Collision'
+[move_group-2] [INFO] [1786684362.591142900] [moveit.ros_planning.planning_pipeline]: Using planning request adapter 'Fix Start State Path Constraints'
+[move_group-2] [WARN] [1786684362.592525764] [moveit_ros.trajectory_execution_manager]: Parameter '~moveit_controller_manager' is not specified but only one matching plugin was found: 'moveit_simple_controller_manager/MoveItSimpleControllerManager'. Using that one.
+[move_group-2] [ERROR] [1786684362.597733674] [moveit.plugins.moveit_simple_controller_manager]: No controller_names specified.
+[move_group-2] [INFO] [1786684362.597829874] [moveit.plugins.moveit_simple_controller_manager]: Returned 0 controllers in list
+[move_group-2] [INFO] [1786684362.597834282] [moveit.plugins.moveit_simple_controller_manager]: Returned 0 controllers in list
+[move_group-2] [INFO] [1786684362.598015858] [moveit_ros.trajectory_execution_manager]: Trajectory execution is not managing controllers
+[move_group-2] [INFO] [1786684362.598023081] [move_group.move_group]: MoveGroup debug mode is ON
+[move_group-2] [INFO] [1786684362.603359891] [move_group.move_group]: 
+[move_group-2] 
+[move_group-2] ********************************************************
+[move_group-2] * MoveGroup using: 
+[move_group-2] *     - ApplyPlanningSceneService
+[move_group-2] *     - ClearOctomapService
+[move_group-2] *     - CartesianPathService
+[move_group-2] *     - GetPlanningSceneService
+[move_group-2] *     - KinematicsService
+[move_group-2] *     - MoveAction
+[move_group-2] *     - MotionPlanService
+[move_group-2] *     - QueryPlannersService
+[move_group-2] *     - StateValidationService
+[move_group-2] ********************************************************
+[move_group-2] 
+[move_group-2] [INFO] [1786684362.603378100] [moveit_move_group_capabilities_base.move_group_context]: MoveGroup context using planning plugin ompl_interface/OMPLPlanner
+[move_group-2] [INFO] [1786684362.603382244] [moveit_move_group_capabilities_base.move_group_context]: MoveGroup context initialization complete
+[move_group-2] [96mLoading 'move_group/ApplyPlanningSceneService'...
+[move_group-2] [0m[96mLoading 'move_group/ClearOctomapService'...
+[move_group-2] [0m[96mLoading 'move_group/MoveGroupCartesianPathService'...
+[move_group-2] [0m[96mLoading 'move_group/MoveGroupGetPlanningSceneService'...
+[move_group-2] [0m[96mLoading 'move_group/MoveGroupKinematicsService'...
+[move_group-2] [0m[96mLoading 'move_group/MoveGroupMoveAction'...
+[move_group-2] [0m[96mLoading 'move_group/MoveGroupPlanService'...
+[move_group-2] [0m[96mLoading 'move_group/MoveGroupQueryPlannersService'...
+[move_group-2] [0m[96mLoading 'move_group/MoveGroupStateValidationService'...
+[move_group-2] [0m[92m
+[move_group-2] You can start planning now!
+[move_group-2] 
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684382.605161084] [move_group_interface]: Ready to take commands for planning group left_arm_with_torso.
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684382.607618011] [stage_v2_reference_generator]: Offline reference generator ready: group=left_arm_with_torso eef=openarm_left_hand_tcp pipeline=ompl planner=RRTConnectkConfigDefault top_open=true pre_grasp_clearance=0.020 extraction_clearance=0.020
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684397.742514723] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=1 lift=0.35 branch=0 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684412.864653965] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=2 lift=0.35 branch=1 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684427.933160882] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=3 lift=0.35 branch=2 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684442.880009934] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=4 lift=0.35 branch=3 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684457.763348895] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=5 lift=0.35 branch=4 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684472.639255070] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=6 lift=0.35 branch=5 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684487.523289092] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=7 lift=0.35 branch=6 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684502.366628191] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=8 lift=0.35 branch=7 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684517.205424370] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=9 lift=0.35 branch=8 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684532.027267774] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=10 lift=0.35 branch=9 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684546.831379633] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=11 lift=0.35 branch=10 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684561.644507679] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=12 lift=0.35 branch=11 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684576.420766842] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=13 lift=0.35 branch=12 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684591.209578833] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=14 lift=0.35 branch=13 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684605.975917342] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=15 lift=0.35 branch=14 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684620.734391890] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=16 lift=0.35 branch=15 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684635.508161054] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=17 lift=0.35 branch=16 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684650.293454516] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=18 lift=0.35 branch=17 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684665.058920259] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=19 lift=0.35 branch=18 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684679.787961991] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=20 lift=0.35 branch=19 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684694.539611518] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=21 lift=0.35 branch=20 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684709.296135905] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=22 lift=0.35 branch=21 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684724.121382927] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=23 lift=0.35 branch=22 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684738.862365434] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=24 lift=0.35 branch=23 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=155 fraction=0.916667 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684754.107850459] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=25 lift=0.40 branch=0 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684767.587100168] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=26 lift=0.40 branch=1 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684781.122140503] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=27 lift=0.40 branch=2 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684794.570179149] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=28 lift=0.40 branch=3 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684808.135496372] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=29 lift=0.40 branch=4 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684821.612450987] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=30 lift=0.40 branch=5 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684835.038123973] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=31 lift=0.40 branch=6 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684848.467197852] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=32 lift=0.40 branch=7 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684861.958970230] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=33 lift=0.40 branch=8 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684875.460919412] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=34 lift=0.40 branch=9 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684888.940186755] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=35 lift=0.40 branch=10 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684902.430761038] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=36 lift=0.40 branch=11 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684915.884317129] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=37 lift=0.40 branch=12 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684930.977047649] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=38 lift=0.40 branch=13 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684944.468581879] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=39 lift=0.40 branch=14 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684957.993798043] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=40 lift=0.40 branch=15 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684973.484813111] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=41 lift=0.40 branch=16 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786684988.944267643] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=42 lift=0.40 branch=17 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786685002.529936169] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=43 lift=0.40 branch=18 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786685003.681663253] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=44 lift=0.40 branch=19 success=false stage=GRASP_BRANCH_DISCOVERY waypoint=-1 fraction=0.000000 spacing=0.0000
+[stage_constrained_reference_generator_v2-3] [INFO] [1786685004.735324940] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=45 lift=0.40 branch=20 success=false stage=GRASP_BRANCH_DISCOVERY waypoint=-1 fraction=0.000000 spacing=0.0000
+[stage_constrained_reference_generator_v2-3] [INFO] [1786685018.313637684] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=46 lift=0.40 branch=21 success=false stage=REVERSE_GRASP_TO_TOP_IK waypoint=105 fraction=0.619048 spacing=0.0010
+[stage_constrained_reference_generator_v2-3] [INFO] [1786685019.409872966] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=47 lift=0.40 branch=22 success=false stage=GRASP_BRANCH_DISCOVERY waypoint=-1 fraction=0.000000 spacing=0.0000
+[stage_constrained_reference_generator_v2-3] [INFO] [1786685020.475194291] [stage_v2_reference_generator]: STAGE_V2_PROGRESS trial=48 lift=0.40 branch=23 success=false stage=GRASP_BRANCH_DISCOVERY waypoint=-1 fraction=0.000000 spacing=0.0000

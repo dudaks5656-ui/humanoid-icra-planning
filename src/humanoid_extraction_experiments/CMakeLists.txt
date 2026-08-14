@@ -29,6 +29,7 @@ add_executable(differential_repeat_trials src/differential_repeat_trials.cpp)
 add_executable(reference_trajectory_generator src/reference_trajectory_generator.cpp)
 add_executable(stage_constrained_reference_generator src/stage_constrained_reference_generator.cpp)
 add_executable(grasp_seeded_reference_generator src/grasp_seeded_reference_generator.cpp)
+add_executable(stage_constrained_reference_generator_v2 src/stage_constrained_reference_generator_v2.cpp)
 add_executable(top_open_box_geometry_publisher src/top_open_box_geometry_publisher.cpp)
 add_executable(top_open_center_reachability src/top_open_center_reachability.cpp)
 add_executable(grasp_height_geometry_audit src/grasp_height_geometry_audit.cpp)
@@ -120,6 +121,21 @@ ament_target_dependencies(
 target_link_libraries(grasp_seeded_reference_generator yaml-cpp)
 
 ament_target_dependencies(
+  stage_constrained_reference_generator_v2
+  rclcpp
+  geometry_msgs
+  sensor_msgs
+  shape_msgs
+  visualization_msgs
+  moveit_msgs
+  moveit_core
+  moveit_ros_planning
+  moveit_ros_planning_interface
+  tf2
+)
+target_link_libraries(stage_constrained_reference_generator_v2 yaml-cpp)
+
+ament_target_dependencies(
   top_open_box_geometry_publisher
   rclcpp
   geometry_msgs
@@ -157,8 +173,8 @@ ament_target_dependencies(
 )
 target_link_libraries(grasp_height_geometry_audit yaml-cpp)
 
-install(TARGETS single_case_extraction target_boundary_search differential_repeat_trials reference_trajectory_generator stage_constrained_reference_generator grasp_seeded_reference_generator top_open_box_geometry_publisher top_open_center_reachability grasp_height_geometry_audit DESTINATION lib/${PROJECT_NAME})
-install(PROGRAMS scripts/workspace_boundary_visualizer DESTINATION lib/${PROJECT_NAME})
+install(TARGETS single_case_extraction target_boundary_search differential_repeat_trials reference_trajectory_generator stage_constrained_reference_generator grasp_seeded_reference_generator stage_constrained_reference_generator_v2 top_open_box_geometry_publisher top_open_center_reachability grasp_height_geometry_audit DESTINATION lib/${PROJECT_NAME})
+install(PROGRAMS scripts/workspace_boundary_visualizer scripts/check_reference_v1_regression.py DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY config launch rviz DESTINATION share/${PROJECT_NAME})
 install(FILES README.md DESTINATION share/${PROJECT_NAME})
 

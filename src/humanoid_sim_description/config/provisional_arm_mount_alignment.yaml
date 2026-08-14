@@ -1,0 +1,26 @@
+# PROVISIONAL_RVIZ_ALIGNMENT_ONLY
+# Do not use these values for hardware, control, collision conclusions, or paper data.
+# The delivered arm-mount positions did not match the user-confirmed mechanical layout.
+# These temporary mounts use the confirmed Yaw-frame horizontal offsets: no fore/aft
+# offset, left/right 30 mm about the Yaw origin, and 61 mm down from the unchanged
+# profile top reference. The adapter joint is parented by waist_pitch_link, so the
+# stored mount xyz values below are the equivalent Pitch-relative coordinates at q=0.
+
+status: PROVISIONAL_RVIZ_ALIGNMENT_ONLY
+derivation:
+  waist_pitch_y_min_m: -0.0764688054576
+  waist_pitch_y_max_m: 0.0016909235463
+  waist_pitch_z_max_m: 0.2630497164153
+  yaw_to_pitch_x_m: -0.0435192366720
+  yaw_to_pitch_y_m: 0.0349688054576
+  arm_mount_down_from_profile_top_m: 0.061
+  arm_mount_lateral_from_yaw_m: 0.030
+  arm_mount_fore_aft_from_yaw_m: 0.0
+  rule_x: "pitch_relative_x = yaw_target_x - yaw_to_pitch_x"
+  rule_y: "pitch_relative_y = yaw_target_y - yaw_to_pitch_y"
+  rule_z: "both_z = waist_pitch_z_max - 0.061"
+
+delivered_cad_left_mount_xyz: [0.0152640649629, 0.0025012666813, 0.1693164092888]
+delivered_cad_right_mount_xyz: [0.0063073195654, -0.1968363630487, 0.2211265056554]
+provisional_left_mount_xyz: [0.0435192366720, -0.0049688054576, 0.2020497164153]
+provisional_right_mount_xyz: [0.0435192366720, -0.0649688054576, 0.2020497164153]

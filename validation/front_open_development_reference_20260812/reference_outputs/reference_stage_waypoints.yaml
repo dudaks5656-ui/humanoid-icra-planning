@@ -1,0 +1,235 @@
+status: OFFLINE_REFERENCE_TRAJECTORY
+scene_status: PROVISIONAL_METHOD_DEVELOPMENT_ONLY
+target_pose:
+  xyz: [0.5, 0.3, 1.25]
+  quaternion_xyzw: [0, 0, 0, 1]
+approved_end_effector_orientation_rpy: [0, 1.5707963267949, 0]
+selected_torso:
+  lift: 0.1
+  yaw: 0
+  pitch: 0
+tcp_to_target_attached_transform:
+  xyz: [0.00199423761260453, -0.00432927780523606, 0.13421818961288]
+  quaternion_xyzw: [0.00162195478684727, -0.704911530221018, -0.00774927080732947, 0.709251050493467]
+stage_goal_poses:
+  APPROACH:
+    xyz: [0.304540123535156, 0.3, 1.25]
+    quaternion_xyzw: [0, 0.707106781186547, 0, 0.707106781186548]
+  INSERTION:
+    xyz: [0.344540123535156, 0.3, 1.25]
+    quaternion_xyzw: [0, 0.707106781186547, 0, 0.707106781186548]
+  GRASP:
+    xyz: [0.364540123535156, 0.3, 1.25]
+    quaternion_xyzw: [0, 0.707106781186547, 0, 0.707106781186548]
+  LIFT:
+    xyz: [0.364540123535156, 0.3, 1.33]
+    quaternion_xyzw: [0, 0.707106781186547, 0, 0.707106781186548]
+  EXTRACTION:
+    xyz: [0.310726512637126, 0.302536224625553, 1.33120008707609]
+    quaternion_xyzw: [-0.00162195478684727, 0.704911530221018, 0.00774927080732947, 0.709251050493467]
+stage_joint_states:
+  APPROACH:
+    start:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: 0
+      openarm_left_joint2: 0
+      openarm_left_joint3: 0
+      openarm_left_joint4: 0
+      openarm_left_joint5: 0
+      openarm_left_joint6: 0
+      openarm_left_joint7: 0
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+    end:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.0439385374425669
+      openarm_left_joint2: -1.56041422584228
+      openarm_left_joint3: 1.37989110432896
+      openarm_left_joint4: 1.90955137117886
+      openarm_left_joint5: 1.570796
+      openarm_left_joint6: -0.376833290778665
+      openarm_left_joint7: 1.31057182543791
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+  INSERTION:
+    start:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.0439385374425669
+      openarm_left_joint2: -1.56041422584228
+      openarm_left_joint3: 1.37989110432896
+      openarm_left_joint4: 1.90955137117886
+      openarm_left_joint5: 1.570796
+      openarm_left_joint6: -0.376833290778665
+      openarm_left_joint7: 1.31057182543791
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+    end:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.314789842869528
+      openarm_left_joint2: -1.47736920119447
+      openarm_left_joint3: 1.47780180816583
+      openarm_left_joint4: 1.82453010005961
+      openarm_left_joint5: 1.570796
+      openarm_left_joint6: -0.339811985593974
+      openarm_left_joint7: 1.158676107403
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+  GRASP:
+    start:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.314789842869528
+      openarm_left_joint2: -1.47736920119447
+      openarm_left_joint3: 1.47780180816583
+      openarm_left_joint4: 1.82453010005961
+      openarm_left_joint5: 1.570796
+      openarm_left_joint6: -0.339811985593974
+      openarm_left_joint7: 1.158676107403
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+    end:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.442804282089151
+      openarm_left_joint2: -1.45142947384131
+      openarm_left_joint3: 1.50820857438586
+      openarm_left_joint4: 1.77498861109303
+      openarm_left_joint5: 1.570796
+      openarm_left_joint6: -0.337303214531768
+      openarm_left_joint7: 1.07203789200749
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+  LIFT:
+    start:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.442804282089151
+      openarm_left_joint2: -1.45142947384131
+      openarm_left_joint3: 1.50820857438586
+      openarm_left_joint4: 1.77498861109303
+      openarm_left_joint5: 1.570796
+      openarm_left_joint6: -0.337303214531768
+      openarm_left_joint7: 1.07203789200749
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+    end:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.470082738240068
+      openarm_left_joint2: -1.77253858018762
+      openarm_left_joint3: 1.36025052437861
+      openarm_left_joint4: 2.06980165581856
+      openarm_left_joint5: 1.52500462871901
+      openarm_left_joint6: -0.275868753987192
+      openarm_left_joint7: 0.922060196114533
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+  EXTRACTION:
+    start:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.470082738240068
+      openarm_left_joint2: -1.77253858018762
+      openarm_left_joint3: 1.36025052437861
+      openarm_left_joint4: 2.06980165581856
+      openarm_left_joint5: 1.52500462871901
+      openarm_left_joint6: -0.275868753987192
+      openarm_left_joint7: 0.922060196114533
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044
+    end:
+      lift_joint: 0.1
+      waist_yaw_joint: 0
+      waist_pitch_joint: 0
+      openarm_left_joint1: -0.199525847591634
+      openarm_left_joint2: -1.92367817812613
+      openarm_left_joint3: 1.38639192609438
+      openarm_left_joint4: 2.19172471913889
+      openarm_left_joint5: 1.47160265945663
+      openarm_left_joint6: -0.265984144031657
+      openarm_left_joint7: 1.23491027696205
+      openarm_left_finger_joint1: 0.044
+      openarm_right_joint1: 0
+      openarm_right_joint2: 0
+      openarm_right_joint3: 0
+      openarm_right_joint4: 0
+      openarm_right_joint5: 0
+      openarm_right_joint6: 0
+      openarm_right_joint7: 0
+      openarm_right_finger_joint1: 0.044

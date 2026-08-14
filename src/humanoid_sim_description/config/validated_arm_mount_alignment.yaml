@@ -1,0 +1,33 @@
+# VALIDATED_USER_DEFINED_PHYSICAL_ALIGNMENT
+# user-defined physical shoulder alignment
+# visually verified against the assembled platform
+# do not replace with Inventor UCS comparison coordinates
+#
+# These values define each arm mount in the waist_pitch_link frame at q=0.
+# They preserve the user-verified placement: no fore/aft offset from the Yaw
+# reference, +/-30 mm lateral placement about the Yaw origin, and 61 mm below
+# the unchanged profile-top reference.
+
+status: VALIDATED_USER_DEFINED_PHYSICAL_ALIGNMENT
+validation_basis:
+  authority: USER_CONFIRMED_ASSEMBLED_PLATFORM
+  coordinate_frame: waist_pitch_link
+  user_defined_physical_shoulder_alignment: true
+  visually_verified_against_assembled_platform: true
+  replace_with_inventor_ucs_comparison_coordinates: false
+
+derivation_record:
+  waist_pitch_y_min_m: -0.0764688054576
+  waist_pitch_y_max_m: 0.0016909235463
+  waist_pitch_z_max_m: 0.2630497164153
+  yaw_to_pitch_x_m: -0.0435192366720
+  yaw_to_pitch_y_m: 0.0349688054576
+  arm_mount_down_from_profile_top_m: 0.061
+  arm_mount_lateral_from_yaw_m: 0.030
+  arm_mount_fore_aft_from_yaw_m: 0.0
+  rule_x: "pitch_relative_x = yaw_target_x - yaw_to_pitch_x"
+  rule_y: "pitch_relative_y = yaw_target_y - yaw_to_pitch_y"
+  rule_z: "both_z = waist_pitch_z_max - 0.061"
+
+validated_left_mount_xyz: [0.0435192366720, -0.0049688054576, 0.2020497164153]
+validated_right_mount_xyz: [0.0435192366720, -0.0649688054576, 0.2020497164153]

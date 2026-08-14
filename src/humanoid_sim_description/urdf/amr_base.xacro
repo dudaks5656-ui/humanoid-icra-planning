@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="humanoid_sim_amr_base" params="">
+    <link name="world"/>
+
+    <joint name="world_to_base_joint" type="fixed">
+      <parent link="world"/>
+      <child link="base_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- amr_base.stl is exported in CS_AMR_BASE, so no mesh-origin correction is applied. -->
+    <link name="base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/amr_base.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="humanoid_sim_amr_aluminum">
+          <color rgba="0.78 0.80 0.84 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/amr_base.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+</robot>

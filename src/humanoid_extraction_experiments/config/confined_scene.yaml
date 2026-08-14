@@ -1,0 +1,66 @@
+# Every numeric geometry and task value in this file is a PROVISIONAL_DEVELOPMENT_VALUE.
+# These values are for one planning demonstration only and are not paper/final experiment data.
+frame_id: world
+
+box:
+  # PROVISIONAL_DEVELOPMENT_VALUE [m]
+  center_xyz: [0.70, 0.20, 1.12]
+  # PROVISIONAL_DEVELOPMENT_VALUE [m], interior dimensions
+  interior_width: 0.40
+  interior_depth: 0.45
+  interior_height: 0.36
+  wall_thickness: 0.025
+  floor_thickness: 0.025
+
+target:
+  # PROVISIONAL_DEVELOPMENT_VALUE [m], expressed in frame_id
+  position_xyz: [0.50, 0.30, 1.25]
+  # PROVISIONAL_DEVELOPMENT_VALUE [m]
+  size_xyz: [0.050, 0.050, 0.080]
+
+task:
+  # PROVISIONAL_DEVELOPMENT_VALUE [m]
+  # Computed from the midpoint of the two finger collision-geometry AABB centers at q_open.
+  tcp_to_grasp_center: 0.13545987646484376
+  # FCL scan parameters [m]. Select the first collision-free value, then add safety_margin.
+  pre_grasp_clearance_scan_min: 0.05
+  pre_grasp_clearance_scan_max: 0.30
+  pre_grasp_clearance_scan_step: 0.01
+  pre_grasp_clearance_safety_margin: 0.01
+  # PROVISIONAL_DEVELOPMENT_VALUE [m], intermediate distance behind GRASP_POSE.
+  insertion_offset: 0.02
+  lift_distance: 0.08
+  # DEPRECATED_NOT_USED: the previous fixed TCP subtraction is retained only for audit traceability.
+  legacy_extraction_distance: 0.24
+  # PROVISIONAL_DEVELOPMENT_VALUE [m]. Smallest physically clear and reachable candidate is selected.
+  extraction_clearance_candidates: [0.005, 0.010, 0.020, 0.030]
+  # Used only if every correctly computed endpoint is unreachable because of whole-scene placement.
+  scene_translation_x_candidates: [0.00, 0.05, 0.10, 0.15, 0.20]
+  # PROVISIONAL_DEVELOPMENT_VALUE [rad]. Geometry-selected roll 0 deg:
+  # TCP local +Z -> world +X insertion, TCP local +Y -> world +Y grasp closing direction.
+  # Equivalent quaternion xyzw: [0, 0.7071067811865475, 0, 0.7071067811865476].
+  end_effector_rpy: [0.0, 1.5707963267948966, 0.0]
+  # Planning-only development settings, not performance-optimized final values.
+  planning_time_s: 2.0
+  planning_attempts: 2
+  ik_timeout_s: 0.10
+  position_tolerance_m: 0.005
+  orientation_tolerance_rad: 0.03
+
+robot_start:
+  # PROVISIONAL_DEVELOPMENT_VALUE. Lift remains fixed in both modes for this case.
+  lift: 0.0
+  # Simulation planning aperture only; not a hardware-validated fully-open position.
+  left_finger_joint: 0.044
+  right_finger_joint: 0.044
+
+boundary_search:
+  # PROVISIONAL_DEVELOPMENT_VALUE. Search X/Z/orientation are fixed unless the Y boundary has no recovery case.
+  target_x_candidates: [0.50, 0.525, 0.55, 0.575, 0.60]
+  target_y_candidates: [0.300, 0.305, 0.310, 0.315, 0.320, 0.325, 0.330, 0.335, 0.340, 0.345, 0.350]
+  target_z: 1.25
+  # The exact URDF limit is read at runtime. Candidates are clipped by exclusion, never clamped.
+  lift_step: 0.05
+  lift_local_radius: 0.15
+  ik_multistart_count: 30
+  ik_rng_seed: 20260812

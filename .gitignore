@@ -1,0 +1,84 @@
+# ROS 2 / colcon generated trees (must remain local and untouched)
+/build/
+/install/
+/log/
+
+# Python and tool caches
+**/__pycache__/
+**/pycache/
+**/*.py[cod]
+/.cache/
+**/.cache/
+.pytest_cache/
+.mypy_cache/
+
+# Validation backups and runtime logs
+/validation/backups/
+*.log
+**/*rviz*.log
+**/launch_logs/
+**/core
+**/core.*
+*.core
+
+# ROS bags and databases
+*.bag
+*.bag.active
+*.db
+*.db3
+*.sqlite
+*.sqlite3
+*.mcap
+
+# Large raw/repeat experiment artifacts; keep summaries and audits instead
+/validation/top_open_center_reachability.csv
+/validation/top_open_center_reachability_grasp_corrected.csv
+/validation/differential_internal_ik.csv
+/validation/ik_multistart_audit.csv
+/validation/pilot_experiment_20260812/ik_multistart_audit.csv
+/validation/*repeat_trials*.csv
+/validation/**/*repeat_trials*.csv
+/validation/*internal_ik.csv
+/validation/**/*internal_ik.csv
+
+# Validation screenshots can contain local UI or host information
+**/validation/**/*.png
+
+# Host-specific provenance/log snapshots and superseded reports stay local
+/src/humanoid_sim_description/validation/README_KO.md
+/src/humanoid_sim_description/validation/export_selection_manifest.txt
+/validation/top_open_box_geometry_launch_log_snapshot.txt
+/validation/class_loader_exit_audit.md
+/validation/differential_repeat_exit_audit.md
+/validation/pilot_experiment_20260812/differential_repeat_exit_audit.md
+/validation/*.before_session_status_correction.md
+
+# CAD sources and all mesh assets are excluded until redistribution is verified
+*.iam
+*.ipt
+*.step
+*.stp
+*.stl
+*.dae
+*.obj
+
+# Credentials, private keys, and environment-specific secrets
+.env
+.env.*
+!.env.example
+.netrc
+.git-credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*
+*secret*
+*token*
+
+# Editor and temporary files
+*.swp
+*.swo
+*~
+*.tmp
+*.temp

@@ -1,0 +1,3 @@
+# Diagnostic-only torso candidate set for grasp orientation audit.
+yaw_degrees: [0.0]
+pitch_degrees: [0.0]

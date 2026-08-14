@@ -1,0 +1,49 @@
+schema_version: 1
+source_units: mm
+urdf_mesh_scale: [0.001, 0.001, 0.001]
+orientation_convention:
+  ros_x: "CAD +Y"
+  ros_y: "CAD -X"
+  ros_z: "CAD +Z"
+
+joint_origins_m:
+  base_to_lift_top_zero:
+    xyz: [0.2549756914527, 0.0002288135233, 1.1980000000000]
+    rpy: [0.0, 0.0, 0.0]
+  lift_top_zero_to_yaw:
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [0.0, 0.0, 0.0]
+  yaw_to_pitch:
+    xyz: [-0.0435192366720, 0.0349688054576, 0.1538233064808]
+    rpy: [0.0, 0.0, 0.0]
+  pitch_to_left_arm_mount:
+    xyz: [0.0152640649629, 0.0025012666813, 0.1693164092888]
+    rpy: [0.0, 0.0, 0.0]
+  pitch_to_right_arm_mount:
+    xyz: [0.0063073195654, -0.1968363630487, 0.2211265056554]
+    rpy: [0.0, 0.0, 0.0]
+
+joint_limits:
+  lift_joint:
+    type: prismatic
+    axis: [0.0, 0.0, -1.0]
+    lower_m: 0.0
+    upper_m: 0.700
+  waist_yaw_joint:
+    type: revolute
+    axis: [0.0, 0.0, 1.0]
+    lower_rad: -0.174533
+    upper_rad: 0.174533
+  waist_pitch_joint:
+    type: revolute
+    axis: [0.0, 1.0, 0.0]
+    lower_rad: -0.174533
+    upper_rad: 0.785398
+
+mesh_frames:
+  amr_base.stl: CS_AMR_BASE
+  lift_fixed_structure.stl: CS_AMR_BASE
+  lift_moving_structure.stl: CS_LIFT_TOP_ZERO
+  waist_yaw.stl: CS_YAW_AXIS
+  waist_pitch.stl: CS_PITCH_AXIS
+

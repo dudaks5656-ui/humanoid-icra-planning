@@ -1,0 +1,29 @@
+# Fine comparison profile for thin-obstacle validation.
+# PROVISIONAL_VALIDATION_SETTING: compare against baseline before choosing any final value.
+planning_plugin: ompl_interface/OMPLPlanner
+request_adapters: >-
+  default_planner_request_adapters/AddTimeOptimalParameterization
+  default_planner_request_adapters/ResolveConstraintFrames
+  default_planner_request_adapters/FixWorkspaceBounds
+  default_planner_request_adapters/FixStartStateBounds
+  default_planner_request_adapters/FixStartStateCollision
+  default_planner_request_adapters/FixStartStatePathConstraints
+start_state_max_bounds_error: 0.1
+
+planner_configs:
+  RRTConnectkConfigDefault:
+    type: geometric::RRTConnect
+    range: 0.0
+
+torso: &fine_group
+  planner_configs: [RRTConnectkConfigDefault]
+  longest_valid_segment_fraction: 0.0025
+left_arm: *fine_group
+right_arm: *fine_group
+left_gripper: *fine_group
+right_gripper: *fine_group
+left_arm_with_torso: *fine_group
+right_arm_with_torso: *fine_group
+dual_arm: *fine_group
+dual_arm_with_torso: *fine_group
+whole_body: *fine_group

@@ -1,0 +1,52 @@
+reference_grasp:
+  name: KINEMATIC_REFERENCE_GRASP_50MM
+  status: SELECTED_FOR_KINEMATIC_PATH_PLANNING
+  selection_scope: CENTRAL_OBJECT_ONLY
+  reuse_policy: FIXED_FOR_ALL_TARGETS_AND_ABLATIONS
+  grasp_height_m: 0.050
+  q_open_m: 0.044
+  q_contact_m: 0.0327611885070801
+  approach_axis: WORLD_MINUS_Z
+  closing_axis: OBJECT_Y
+  finger_floor_clearance_m: 0.002539612
+  inner_face_overlap_m: 0.0124168090820314
+  object_penetration_m: 0.0
+  symmetric_opposing_contact: true
+  force_closure_validated: false
+  hardware_stability_validated: false
+
+  object_pose:
+    frame_id: world
+    xyz_m: [0.675, 0.200, 0.965]
+    quaternion_xyzw: [0.0, 0.0, 0.0, 1.0]
+    size_xyz_m: [0.050, 0.050, 0.050]
+
+  grasp_tcp_pose:
+    frame_id: world
+    xyz_m: [0.675, 0.200, 1.12545987646484]
+    rpy_rad: [0.0, 3.141592653589793, 0.0]
+    quaternion_xyzw: [0.0, 1.0, 0.0, 0.0]
+
+  tcp_to_target_object_transform:
+    parent_frame: openarm_left_hand_tcp
+    child_object: target_object
+    xyz_m: [0.0, 0.0, 0.160459876464844]
+    quaternion_xyzw: [0.0, 1.0, 0.0, 0.0]
+
+  qualification:
+    - KINEMATIC_PATH_PLANNING_GRASP_ONLY
+    - NOT_FORCE_CLOSURE_VALIDATED
+    - NOT_HARDWARE_GRASP_STABILITY_VALIDATED
+
+  fixed_reuse_prohibitions:
+    reselect_by_target_position: false
+    reselect_by_ablation_mode: false
+    reselect_by_planning_success: false
+    reselect_by_corner_direction: false
+    reselect_by_ompl_result: false
+
+  claims_not_made:
+    friction_force_validated: false
+    contact_pressure_validated: false
+    grasp_force_validated: false
+    physical_success_rate_validated: false

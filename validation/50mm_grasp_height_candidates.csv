@@ -1,0 +1,9 @@
+grasp_center_height_above_object_bottom_m,tcp_world_z_m,finger_floor_clearance_m,vertical_grasp_face_overlap_m,minimum_overlap_requirement_m,geometry_valid,q_open_ik_count,q_open_collision_free_count,q_contact_ik_count,q_contact_collision_free_count,best_joint_margin,best_collision_clearance_m,failure_link_pairs,selected
+0.025,1.10045987646484,-0.0224603881835937,0.05,0.015,false,30,0,30,0,-inf,-inf,"box_floor<->openarm_left_left_finger;box_floor<->openarm_left_right_finger",false
+0.03,1.10545987646484,-0.0174603881835939,0.05,0.015,false,30,0,30,0,-inf,-inf,"box_floor<->openarm_left_left_finger;box_floor<->openarm_left_right_finger",false
+0.035,1.11045987646484,-0.0124603881835937,0.05,0.015,false,30,0,30,0,-inf,-inf,"box_floor<->openarm_left_left_finger;box_floor<->openarm_left_right_finger",false
+0.04,1.11545987646484,-0.00746038818359362,0.05,0.015,false,30,0,30,0,-inf,-inf,"box_floor<->openarm_left_left_finger;box_floor<->openarm_left_right_finger",false
+0.045,1.12045987646484,-0.00246038818359373,0.05,0.015,false,30,0,30,0,-inf,-inf,"box_floor<->openarm_left_left_finger;box_floor<->openarm_left_right_finger",false
+0.0474603881835938,1.12292026464844,1.11022302462516e-16,0.0499999999999999,0.015,true,29,20,30,30,1.4949634408179e-06,1.1449273427111e-06,"box_floor<->openarm_left_left_finger",true
+0.0484603881835938,1.12392026464844,0.001,0.049,0.015,true,30,30,30,30,1.49297063023468e-06,0.000659260018009241,"",false
+0.0494603881835938,1.12492026464844,0.00199999999999989,0.0480000000000002,0.015,true,30,30,29,29,1.55265455159537e-06,0.000659260018009241,"",false

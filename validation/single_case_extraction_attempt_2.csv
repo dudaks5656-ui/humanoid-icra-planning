@@ -1,0 +1,7 @@
+timestamp,planning_attempt_id,planning_time_limit,number_of_attempts,mode,candidate_id,lift,yaw,pitch,stage,joint_limit_valid,ik_success,collision_free,planning_success,failure_reason,planning_time_ms,trajectory_points,joint_path_length,end_effector_position_error,end_effector_orientation_error
+"2026-08-12T06:27:22+0900","attempt_2",2,2,"TORSO_LOCKED","locked_yaw_0_pitch_0",0,0,0,"APPROACH",1,1,1,0,"MOTION_PLANNING_FAILURE:CODE_-2",1118.808343,0,0,nan,nan
+"2026-08-12T06:27:23+0900","attempt_2",2,2,"TORSO_CANDIDATE_SEARCH","yaw_+0_pitch_+0",0,0,0,"APPROACH",1,1,1,1,"",1047.526095,56,5.47633013654154,0.0041430519472673,0.0329473911384787
+"2026-08-12T06:27:24+0900","attempt_2",2,2,"TORSO_CANDIDATE_SEARCH","yaw_+0_pitch_+0",0,0,0,"INSERTION",1,1,1,1,"",1075.7129,11,0.325826384660241,0.00473959516911193,0.0203000691726277
+"2026-08-12T06:27:25+0900","attempt_2",2,2,"TORSO_CANDIDATE_SEARCH","yaw_+0_pitch_+0",0,0,0,"GRASP_POSE",1,1,1,1,"",1072.309576,7,0.11401760502824,0.00165155367257127,0.0163632648594337
+"2026-08-12T06:27:27+0900","attempt_2",2,2,"TORSO_CANDIDATE_SEARCH","yaw_+0_pitch_+0",0,0,0,"LIFT",1,1,1,1,"",1559.498581,65,4.44521200636993,0.00286203001033554,0.0231482677103188
+"2026-08-12T06:27:28+0900","attempt_2",2,2,"TORSO_CANDIDATE_SEARCH","yaw_+0_pitch_+0",0,0,0,"EXTRACTION",1,1,1,1,"",1018.64438,11,0.345795225709878,0.0044978992745326,0.0297536732697278

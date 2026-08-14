@@ -1,0 +1,108 @@
+# CAD_INPUT_TEMPLATE_ONLY
+# CAD/UCS data has not been received. Do not apply this file to Xacro, URDF,
+# collision geometry, visualization geometry, or final experiments yet.
+
+document_status: NOT_RECEIVED
+model_status: NOT_FINAL_EXPERIMENT_MODEL
+
+frames:
+  CS_AMR_BASE:
+    status: NOT_RECEIVED
+    parent_frame: null
+    xyz_m: null
+    rpy_rad: null
+    axis_xyz: null
+    source_cad_file: null
+
+  CS_LIFT_TOP_ZERO:
+    status: NOT_RECEIVED
+    parent_frame: null
+    xyz_m: null
+    rpy_rad: null
+    axis_xyz: null
+    source_cad_file: null
+
+  CS_YAW_AXIS:
+    status: NOT_RECEIVED
+    parent_frame: null
+    xyz_m: null
+    rpy_rad: null
+    axis_xyz: null
+    source_cad_file: null
+
+  CS_PITCH_AXIS:
+    status: NOT_RECEIVED
+    parent_frame: null
+    xyz_m: null
+    rpy_rad: null
+    axis_xyz: null
+    source_cad_file: null
+
+  CS_LEFT_ARM_MOUNT:
+    status: NOT_RECEIVED
+    parent_frame: null
+    xyz_m: null
+    rpy_rad: null
+    axis_xyz: null
+    source_cad_file: null
+
+  CS_RIGHT_ARM_MOUNT:
+    status: NOT_RECEIVED
+    parent_frame: null
+    xyz_m: null
+    rpy_rad: null
+    axis_xyz: null
+    source_cad_file: null
+
+mesh_receipt_checklist:
+  amr_base.stl:
+    status: NOT_RECEIVED
+    received_path: null
+    exported_unit: null
+    ros_mesh_scale: null
+    sha256: null
+
+  lift_fixed_structure.stl:
+    status: NOT_RECEIVED
+    received_path: null
+    exported_unit: null
+    ros_mesh_scale: null
+    sha256: null
+
+  lift_moving_structure.stl:
+    status: NOT_RECEIVED
+    received_path: null
+    exported_unit: null
+    ros_mesh_scale: null
+    sha256: null
+
+  waist_yaw.stl:
+    status: NOT_RECEIVED
+    received_path: null
+    exported_unit: null
+    ros_mesh_scale: null
+    sha256: null
+
+  waist_pitch.stl:
+    status: NOT_RECEIVED
+    received_path: null
+    exported_unit: null
+    ros_mesh_scale: null
+    sha256: null
+
+integration_rules:
+  lift_link_ownership:
+    - Fixed Lift rails and columns belong on the AMR-side link.
+    - Only the moving carriage and moving top plate belong on lift_link.
+
+  units:
+    - ROS geometry and transforms use metres.
+    - If STL files are exported in millimetres, the URDF/Xacro mesh element
+      must explicitly use the appropriate scale to convert millimetres to metres.
+    - The scale must be verified from the received CAD export; do not assume it.
+
+  freeze_until_received:
+    - Do not change current joint limits, axes, origins, arm mounts, or primitives.
+    - Do not compensate for the AMR-Lift intersection with guessed coordinates or sizes.
+    - Do not apply CAD frames or mesh paths to Xacro, URDF, or existing config
+      until all required CAD/UCS data is received and reviewed.

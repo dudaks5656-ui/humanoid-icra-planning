@@ -1,0 +1,83 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Grid
+      Plane: XY
+      Reference Frame: world
+    - Class: moveit_rviz_plugin/MotionPlanning
+      Enabled: true
+      Move Group Namespace: ""
+      Name: MotionPlanning
+      Planned Path:
+        Loop Animation: true
+        Robot Alpha: 0.62
+        Robot Color: 199; 204; 214
+        Show Robot Collision: false
+        Show Robot Visual: true
+        Show Trail: false
+        State Display Time: 0.05 s
+        Trail Step Size: 1
+        Trajectory Topic: display_planned_path
+      Planning Scene Topic: /monitored_planning_scene
+      Robot Description: robot_description
+      Planning Request:
+        Colliding Link Color: 255; 0; 0
+        Goal State Color: 30; 110; 255
+        Joint Violation Color: 255; 0; 255
+        Planning Group: whole_body
+        Start State Color: 0; 255; 0
+      Scene Robot:
+        Attached Body Color: 150; 50; 150
+        Robot Alpha: 1
+      Scene Geometry:
+        Scene Alpha: 1
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Permanent Contact Points and Normals
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /permanent_contact_markers
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Sampled Workspace Boundary
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /workspace_boundary_markers
+    - Class: rviz_default_plugins/RobotModel
+      Collision Enabled: true
+      Enabled: false
+      Name: Collision Geometry (toggle)
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Visual Enabled: false
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Marker Scale: 0.15
+      Name: Link Frames and TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+Window Geometry:
+  Height: 900
+  Width: 1400

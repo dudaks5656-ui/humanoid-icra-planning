@@ -1,0 +1,1 @@
+trajectory_id,resolution,source_waypoint_index,interpolation_index,all_joint_values,joint_limit_valid,self_collision,environment_collision,colliding_link_pairs,minimum_distance,collision_check_time_ms,trajectory_valid

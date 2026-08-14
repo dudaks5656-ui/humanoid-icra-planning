@@ -1,0 +1,3 @@
+timestamp,mode,candidate_id,lift,yaw,pitch,stage,joint_limit_valid,ik_success,collision_free,planning_success,failure_reason,planning_time_ms,trajectory_points,joint_path_length,end_effector_position_error,end_effector_orientation_error
+"2026-08-12T05:25:26+0900","TORSO_LOCKED","locked_yaw_0_pitch_0",0,0,0,"APPROACH",1,1,0,0,"IK_ENVIRONMENT_COLLISION:openarm_left_left_finger|target_object;openarm_left_right_finger|target_object",0,0,0,nan,nan
+"2026-08-12T05:25:26+0900","TORSO_CANDIDATE_SEARCH","yaw_+0_pitch_+0",0,0,0,"APPROACH",1,1,0,0,"IK_ENVIRONMENT_COLLISION:openarm_left_left_finger|target_object;openarm_left_right_finger|target_object",0,0,0,nan,nan

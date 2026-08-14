@@ -1,0 +1,10 @@
+# BEFORE_50MM_OBJECT_UPDATE
+13eb1da0657a14692387dab8340eff322a3d4338d1ac374cce56ea9a02d26a2a  /home/openarm/humanoid_sim_ws/validation/backups/top_open_box_600x400x150_before_50mm_20260812.yaml
+
+# AFTER_50MM_OBJECT_UPDATE
+067d96cd7a868ce7359629d299b6c211e4038e00b1cccf1d5d1eb496f9e5be8d  /home/openarm/humanoid_sim_ws/src/humanoid_extraction_experiments/config/top_open_box_600x400x150.yaml
+
+# STRUCTURAL_COMPARISON
+# box block: IDENTICAL
+# display block: IDENTICAL
+# target changed from [0.05, 0.05, 0.08] (derived center) to [0.05, 0.05, 0.05] at [0.675, 0.200, 0.965]

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="humanoid_sim_lift" params="cad dynamics">
+    <!-- The fixed rail/column stays on the AMR side and uses CS_AMR_BASE. -->
+    <joint name="base_to_lift_fixed_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="lift_fixed_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="lift_fixed_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/lift_fixed_structure.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="humanoid_sim_lift_fixed_aluminum">
+          <color rgba="0.78 0.80 0.84 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/lift_fixed_structure.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- CS_LIFT_TOP_ZERO: q=0 is topmost; increasing q moves along ROS -Z. -->
+    <joint name="lift_joint" type="prismatic">
+      <parent link="lift_fixed_link"/>
+      <child link="lift_moving_link"/>
+      <origin
+        xyz="${cad['joint_origins_m']['base_to_lift_top_zero']['xyz'][0]} ${cad['joint_origins_m']['base_to_lift_top_zero']['xyz'][1]} ${cad['joint_origins_m']['base_to_lift_top_zero']['xyz'][2]}"
+        rpy="${cad['joint_origins_m']['base_to_lift_top_zero']['rpy'][0]} ${cad['joint_origins_m']['base_to_lift_top_zero']['rpy'][1]} ${cad['joint_origins_m']['base_to_lift_top_zero']['rpy'][2]}"/>
+      <axis xyz="${cad['joint_limits']['lift_joint']['axis'][0]} ${cad['joint_limits']['lift_joint']['axis'][1]} ${cad['joint_limits']['lift_joint']['axis'][2]}"/>
+      <limit
+        lower="${cad['joint_limits']['lift_joint']['lower_m']}"
+        upper="${cad['joint_limits']['lift_joint']['upper_m']}"
+        effort="${dynamics['lift_joint']['effort']}"
+        velocity="${dynamics['lift_joint']['velocity']}"/>
+    </joint>
+
+    <!-- Only the moving carriage/top plate belongs to lift_moving_link. -->
+    <link name="lift_moving_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/lift_moving_structure.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="humanoid_sim_lift_moving_aluminum">
+          <color rgba="0.78 0.80 0.84 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/lift_moving_structure.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+</robot>

@@ -1,0 +1,62 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 0.25
+      Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: World grid
+      Plane: XY
+      Reference Frame: world
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Name: Full humanoid robot
+      Visual Enabled: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /top_open_box_geometry_markers
+      Name: Top-open box geometry
+    - Class: rviz_default_plugins/TF
+      Enabled: false
+      Frame Timeout: 15
+      Marker Scale: 0.08
+      Name: TF frames
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+  Enabled: true
+  Global Options:
+    Background Color: 38; 38; 42
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+Views:
+  Current:
+    Class: rviz_default_plugins/Orbit
+    Distance: 2.2
+    Focal Point:
+      X: 0.675
+      Y: 0.200
+      Z: 1.015
+    Pitch: 0.55
+    Yaw: 0.85
+Window Geometry:
+  Height: 900
+  Width: 1400

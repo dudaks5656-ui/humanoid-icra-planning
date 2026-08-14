@@ -1,0 +1,11 @@
+timestamp,trial_id,lift,yaw,pitch,planning_time_limit_s,planning_attempts,full_task_planning_success,first_failure_stage,dense_validation_performed,dense_valid,dense_failure,original_points,interpolated_states,min_all_joint_margin,min_active_joint_margin,min_environment_clearance,min_self_clearance,joint_path_length,total_planning_time_ms,attached_object_box_collision,violating_joint,lower_limit,upper_limit,trajectory_value,excess,violation_state_index,violation_classification
+"2026-08-12T07:51:20+0900",1,0,0,0,30,10,0,"APPROACH",0,0,"",0,0,inf,inf,inf,inf,0,106.267498,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:51:23+0900",2,0.05,0,0,30,10,0,"GRASP",0,0,"",67,0,inf,inf,inf,inf,0,590.108234,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:51:23+0900",3,0.1,0,0,30,10,0,"APPROACH",0,0,"",0,0,inf,inf,inf,inf,0,99.053183,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:51:32+0900",4,0.15,0,0,30,10,1,"",1,1,"",111,501,0,0,9.69545610634004e-05,0.000659260018009227,6.67032141837569,511.014172,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:51:47+0900",5,0,0,0,30,10,1,"",1,1,"",200,1030,0,0,0.000677464259609399,0.000659260018009228,13.3845898279442,951.59746,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:51:49+0900",6,0.05,0,0,30,10,0,"INSERTION",0,0,"",57,0,inf,inf,inf,inf,0,486.056237,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:51:58+0900",7,0.1,0,0,30,10,1,"",1,1,"",103,395,0,0,0.00767702544786255,0.000659260018009228,5.37929954285955,947.781857,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:52:09+0900",8,0.15,0,0,30,10,1,"",1,1,"",131,646,0,0,0.00102883556554488,0.000659260018009227,8.25880515874258,518.944643,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:52:09+0900",9,0,0,0,30,10,0,"APPROACH",0,0,"",0,0,inf,inf,inf,inf,0,167.26683,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"
+"2026-08-12T07:52:25+0900",10,0.05,0,0,30,10,1,"",1,1,"",173,987,0,0,2.54773641456139e-05,0.000659260018009227,12.5826792516339,894.365377,0,"",nan,nan,nan,nan,0,"NOT_APPLICABLE"

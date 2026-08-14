@@ -1,0 +1,6 @@
+# PROVISIONAL comparison resolutions. They are subdivision counts per source trajectory segment,
+# not certified physical safety distances. Results must be compared before selecting a final policy.
+trajectory_validation:
+  coarse_subdivisions: 1
+  medium_subdivisions: 5
+  fine_subdivisions: 20

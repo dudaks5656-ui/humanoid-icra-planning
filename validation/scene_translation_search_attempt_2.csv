@@ -1,0 +1,2 @@
+timestamp,planning_attempt_id,translation_x,status,reason
+"2026-08-12T06:27:21+0900","attempt_2",0,NOT_REQUIRED,EXTRACTION_ENDPOINT_REACHABLE_AT_ORIGINAL_SCENE

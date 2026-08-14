@@ -1,0 +1,16 @@
+# SHA-256 manifest for the frozen PROVISIONAL_VISUALIZATION_ONLY state
+# Generated: 2026-08-11 (Asia/Seoul), after graceful RViz launch shutdown
+# Scope: every regular file under /home/openarm/humanoid_sim_ws/src/humanoid_description
+# Exclusion: this manifest file cannot contain its own stable SHA-256 hash
+ab1dd32e1abaca46d4c8ad2937338b51e916a803be5d2f10a43981562aec7815  /home/openarm/humanoid_sim_ws/src/humanoid_description/CMakeLists.txt
+82f18a8f37f91381515c7f41d04cc8feb054f7890516126edab86dab00e056aa  /home/openarm/humanoid_sim_ws/src/humanoid_description/config/provisional_geometry.yaml
+b54a87fab0baa12d69fbe126f93d413381d5f74157555fdb3dd54d02e5e88067  /home/openarm/humanoid_sim_ws/src/humanoid_description/config/provisional_limits.yaml
+26fb363b0adf40222ccf71e9d25445d9f05f24edb9d8221d4654efdd1c7e29a8  /home/openarm/humanoid_sim_ws/src/humanoid_description/launch/display_humanoid.launch.py
+21b10a30d3dd0963ca4fd163e9a8e5e2a1a08e5b468bf5068de790f87ff6b538  /home/openarm/humanoid_sim_ws/src/humanoid_description/package.xml
+ef6e02cee0e2ec200f4dcfbeb50fcbce716eff016bd62b728f6ced9eb10f6d11  /home/openarm/humanoid_sim_ws/src/humanoid_description/rviz/humanoid.rviz
+cd5ef48b8334bc8ba44113961121fa7f0c6b2c4bef17f0fecb30163a2aa4ae63  /home/openarm/humanoid_sim_ws/src/humanoid_description/urdf/humanoid.urdf.xacro
+458d0142e0a72b690663e9586bc0ca2f38c1cec9f82e1ac7a2db41944643a7bb  /home/openarm/humanoid_sim_ws/src/humanoid_description/urdf/openarm_v10_arms_adapter.xacro
+011de1ae449ef07892c7ab1cf2f4a9edbef5915d9367f5b3f8cc2950d56340d1  /home/openarm/humanoid_sim_ws/src/humanoid_description/validation/humanoid_expanded.urdf
+277bcf8c754b695d37532e62f0c68917136e42d4cfd59af1f865a1b1f808882e  /home/openarm/humanoid_sim_ws/src/humanoid_description/validation/provisional_rviz_validation.md
+fb023bcb039115098cdb6016f63e3ef09eb795d0d71fcda5ef3438bf3265fb85  /home/openarm/humanoid_sim_ws/src/humanoid_description/validation/rviz_humanoid_display.log
+cc7d67bda34c44cd766ac2c725c8a0398f0067c2c2c522dbafcbd15e00cfe17a  /home/openarm/humanoid_sim_ws/src/humanoid_description/validation/rviz_humanoid_display.png

@@ -1,0 +1,4 @@
+# Discrete development candidates. Values are converted from degrees to radians.
+# Candidates outside the exact URDF limits are excluded; they are never clamped.
+yaw_degrees: [-10.0, -5.0, 0.0, 5.0, 10.0]
+pitch_degrees: [-10.0, 0.0, 10.0, 20.0, 30.0, 45.0]

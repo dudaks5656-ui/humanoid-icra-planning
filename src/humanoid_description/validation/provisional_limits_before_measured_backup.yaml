@@ -1,0 +1,21 @@
+# PROVISIONAL_VISUALIZATION_ONLY
+# Every value in this file is for RViz/joint-slider connection checks only.
+# DO NOT use these values for papers, final simulation, control, or hardware.
+
+lift_joint:
+  lower: 0.0       # PROVISIONAL_VISUALIZATION_ONLY — confirmed top-zero convention, not a measured stroke.
+  upper: 0.10      # PROVISIONAL_VISUALIZATION_ONLY — temporary 0.10 m display range; replace with measured maximum descent.
+  effort: 1.0      # PROVISIONAL_VISUALIZATION_ONLY — placeholder required by URDF; not an actuator specification.
+  velocity: 0.10   # PROVISIONAL_VISUALIZATION_ONLY — placeholder m/s; not a measured or permitted hardware speed.
+
+waist_yaw_joint:
+  lower: -0.785398  # PROVISIONAL_VISUALIZATION_ONLY — temporary -45 degree display range; not a final limit.
+  upper: 0.785398   # PROVISIONAL_VISUALIZATION_ONLY — temporary +45 degree display range; not a final limit.
+  effort: 1.0       # PROVISIONAL_VISUALIZATION_ONLY — placeholder required by URDF; not an actuator specification.
+  velocity: 0.50    # PROVISIONAL_VISUALIZATION_ONLY — placeholder rad/s; not a measured or permitted hardware speed.
+
+waist_pitch_joint:
+  lower: -0.523599  # PROVISIONAL_VISUALIZATION_ONLY — temporary -30 degree display range; not a final limit.
+  upper: 0.523599   # PROVISIONAL_VISUALIZATION_ONLY — temporary +30 degree display range; not a final limit.
+  effort: 1.0       # PROVISIONAL_VISUALIZATION_ONLY — placeholder required by URDF; not an actuator specification.
+  velocity: 0.50    # PROVISIONAL_VISUALIZATION_ONLY — placeholder rad/s; not a measured or permitted hardware speed.

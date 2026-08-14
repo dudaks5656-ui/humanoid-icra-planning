@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>humanoid_extraction_experiments</name>
+  <version>0.1.0</version>
+  <description>Planning-only single-case confined-space extraction experiment for the humanoid simulation.</description>
+  <maintainer email="openarm@example.com">openarm</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>shape_msgs</depend>
+  <depend>moveit_msgs</depend>
+  <depend>moveit_core</depend>
+  <depend>moveit_ros_planning</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>tf2</depend>
+  <depend>visualization_msgs</depend>
+  <depend>yaml_cpp_vendor</depend>
+
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>humanoid_sim_description</exec_depend>
+  <exec_depend>humanoid_sim_moveit_config</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_ros_visualization</exec_depend>
+  <exec_depend>moveit_planners_ompl</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

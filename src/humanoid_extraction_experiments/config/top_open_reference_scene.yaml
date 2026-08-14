@@ -1,0 +1,64 @@
+# Dedicated offline reference-generation scene. This does not replace confined_scene.yaml.
+top_open_reference: true
+frame_id: world
+
+box:
+  # User-confirmed internal dimensions and derived center [m].
+  center_xyz: [0.675, 0.200, 1.015]
+  interior_width: 0.600
+  interior_depth: 0.400
+  interior_height: 0.150
+  # PROVISIONAL_WALL_THICKNESS retained from the geometry-validation scene.
+  wall_thickness: 0.025
+  floor_thickness: 0.025
+
+target:
+  position_xyz: [0.675, 0.200, 0.965]
+  size_xyz: [0.050, 0.050, 0.050]
+
+task:
+  reference_grasp_name: KINEMATIC_REFERENCE_GRASP_50MM
+  grasp_qualification: KINEMATIC_PATH_PLANNING_GRASP_ONLY
+  force_closure_validated: false
+  hardware_grasp_stability_validated: false
+  grasp_height_above_object_bottom: 0.050
+  q_contact_50mm: 0.0327611885070801
+  tcp_to_grasp_center: 0.13545987646484376
+  finger_bottom_tcp_offset: 0.182920264648437
+  rim_clearance: 0.020
+  transfer_outside_clearance: 0.020
+
+  # Legacy loader fields, not used in top-open mode.
+  pre_grasp_clearance_scan_min: 0.05
+  pre_grasp_clearance_scan_max: 0.30
+  pre_grasp_clearance_scan_step: 0.01
+  pre_grasp_clearance_safety_margin: 0.01
+  insertion_offset: 0.0
+  lift_distance: 0.170
+  legacy_extraction_distance: 0.0
+  extraction_clearance_candidates: [0.020]
+  scene_translation_x_candidates: [0.00]
+
+  # Fixed top-entry orientation: TCP local +Z -> world -Z.
+  end_effector_rpy: [0.0, 3.141592653589793, 0.0]
+  planning_time_s: 30.0
+  planning_attempts: 10
+  ik_timeout_s: 0.10
+  position_tolerance_m: 0.005
+  orientation_tolerance_rad: 0.03
+
+robot_start:
+  # Candidate center; LIFT_ONLY trials use the local 0.05 m grid below.
+  lift: 0.35
+  left_finger_joint: 0.044
+  right_finger_joint: 0.044
+
+boundary_search:
+  # Legacy loader fields; target search is disabled for reference generation.
+  target_x_candidates: [0.675]
+  target_y_candidates: [0.200]
+  target_z: 0.965
+  lift_step: 0.05
+  lift_local_radius: 0.15
+  ik_multistart_count: 30
+  ik_rng_seed: 20260812

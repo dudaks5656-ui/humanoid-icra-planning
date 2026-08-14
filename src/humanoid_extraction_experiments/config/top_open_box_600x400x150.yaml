@@ -1,0 +1,54 @@
+# Geometry-only configuration. No IK, OMPL, trajectory generation, or execution may consume this file in this stage.
+scene_id: TOP_OPEN_BOX_600X400X150_GEOMETRY_VALIDATION
+frame_id: world
+
+box:
+  # Internal usable dimensions [m]. User-defined as 600 x 400 x 150 mm.
+  internal_width_y: 0.600
+  internal_depth_x: 0.400
+  internal_height_z: 0.150
+
+  # Retained from confined_scene.yaml; no new center or floor height was invented.
+  box_center_y: 0.200
+  box_floor_z: 0.940
+  front_inner_plane_x: 0.475
+
+  # PROVISIONAL_WALL_THICKNESS: retained from confined_scene.yaml, not a measured final value.
+  wall_thickness: 0.025
+  # PROVISIONAL_WALL_THICKNESS: retained from confined_scene.yaml, not a measured final value.
+  floor_thickness: 0.025
+
+  # Construction rules: walls extend outward from the listed inner planes; top remains open.
+  front_wall_enabled: true
+  top_open: true
+
+target:
+  # User-confirmed Pick target dimensions [m]: 50 x 50 x 50 mm cube.
+  size_xyz: [0.050, 0.050, 0.050]
+  # User-confirmed center [m]. Bottom Z=0.940 and top Z=0.990 exactly.
+  center_xyz: [0.675, 0.200, 0.965]
+  # Display-only in the geometry launch. The reachability audit does not attach this object.
+  placement: INTERNAL_CENTER_ON_FLOOR
+
+reachability_audit:
+  # Previously measured from TCP to the midpoint of both finger collision AABBs at q_open [m].
+  tcp_to_grasp_center: 0.13545987646484376
+  # PROVISIONAL_AUDIT_CLEARANCE, not a final experiment parameter.
+  # APPROACH grasp center is 10 mm above the top rim; PRE_GRASP is 10 mm above the target top.
+  approach_clearance_above_rim: 0.010
+  pre_grasp_clearance_above_object: 0.010
+  ik_seed_count: 30
+  ik_seed_base: 20260812
+  # Per explicit seed; audit robustness comes from 30 distinct seeds, not a long internal search.
+  ik_timeout_s: 0.010
+
+display:
+  marker_topic: /top_open_box_geometry_markers
+  planning_scene_topic: /top_open_box_geometry_scene
+  static_collision_csv: /home/openarm/humanoid_sim_ws/validation/top_open_box_static_collision_check.csv
+  initial_lift: 0.0
+  initial_yaw: 0.0
+  initial_pitch: 0.0
+  # Simulation display aperture only; no controller or hardware command is generated.
+  initial_left_finger: 0.044
+  initial_right_finger: 0.044

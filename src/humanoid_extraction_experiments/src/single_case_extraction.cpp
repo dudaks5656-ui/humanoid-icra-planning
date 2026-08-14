@@ -1,0 +1,1255 @@
+#include <algorithm>
+#include <array>
+#include <chrono>
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <limits>
+#include <map>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
+
+#include <Eigen/Geometry>
+#include <geometry_msgs/msg/pose.hpp>
+#include <moveit/collision_detection/collision_common.h>
+#include <moveit/move_group_interface/move_group_interface.h>
+#include <moveit/planning_scene/planning_scene.h>
+#include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit/robot_model_loader/robot_model_loader.h>
+#include <moveit/robot_state/conversions.h>
+#include <moveit_msgs/msg/collision_object.hpp>
+#include <moveit_msgs/msg/attached_collision_object.hpp>
+#include <moveit_msgs/msg/display_trajectory.hpp>
+#include <moveit_msgs/msg/planning_scene.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
+#include <shape_msgs/msg/solid_primitive.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+#include <yaml-cpp/yaml.h>
+
+namespace
+{
+constexpr double kPi = 3.14159265358979323846;
+
+std::string csvEscape(const std::string& value)
+{
+  std::string result = "\"";
+  for (const char c : value)
+    result += (c == '"') ? "\"\"" : std::string(1, c);
+  return result + "\"";
+}
+
+std::string timestampNow()
+{
+  const auto now = std::chrono::system_clock::now();
+  const std::time_t time = std::chrono::system_clock::to_time_t(now);
+  std::tm local{};
+  localtime_r(&time, &local);
+  std::ostringstream out;
+  out << std::put_time(&local, "%Y-%m-%dT%H:%M:%S%z");
+  return out.str();
+}
+
+std::vector<double> vector3(const YAML::Node& node, const std::string& key)
+{
+  const YAML::Node value = node[key];
+  if (!value || !value.IsSequence() || value.size() != 3)
+    throw std::runtime_error("Expected three values at YAML key: " + key);
+  return { value[0].as<double>(), value[1].as<double>(), value[2].as<double>() };
+}
+
+std::vector<double> vectorN(const YAML::Node& node, const std::string& key)
+{
+  const YAML::Node value = node[key];
+  if (!value || !value.IsSequence() || value.size() == 0)
+    throw std::runtime_error("Expected a non-empty sequence at YAML key: " + key);
+  std::vector<double> result;
+  result.reserve(value.size());
+  for (const auto& entry : value)
+    result.push_back(entry.as<double>());
+  return result;
+}
+
+struct SceneConfig
+{
+  std::string frame_id;
+  std::vector<double> box_center;
+  double box_width{};
+  double box_depth{};
+  double box_height{};
+  double wall_thickness{};
+  double floor_thickness{};
+  std::vector<double> target_position;
+  std::vector<double> target_size;
+  double tcp_to_grasp_center{};
+  double pre_grasp_scan_min{};
+  double pre_grasp_scan_max{};
+  double pre_grasp_scan_step{};
+  double pre_grasp_safety_margin{};
+  double insertion_offset{};
+  double lift_distance{};
+  double legacy_extraction_distance{};
+  std::vector<double> extraction_clearances;
+  std::vector<double> scene_translation_candidates;
+  std::vector<double> eef_rpy;
+  double planning_time{};
+  int planning_attempts{};
+  double ik_timeout{};
+  double position_tolerance{};
+  double orientation_tolerance{};
+  double lift_start{};
+  double left_finger{};
+  double right_finger{};
+};
+
+SceneConfig loadSceneConfig(const std::string& path)
+{
+  const YAML::Node root = YAML::LoadFile(path);
+  SceneConfig config;
+  config.frame_id = root["frame_id"].as<std::string>();
+  config.box_center = vector3(root["box"], "center_xyz");
+  config.box_width = root["box"]["interior_width"].as<double>();
+  config.box_depth = root["box"]["interior_depth"].as<double>();
+  config.box_height = root["box"]["interior_height"].as<double>();
+  config.wall_thickness = root["box"]["wall_thickness"].as<double>();
+  config.floor_thickness = root["box"]["floor_thickness"].as<double>();
+  config.target_position = vector3(root["target"], "position_xyz");
+  config.target_size = vector3(root["target"], "size_xyz");
+  config.tcp_to_grasp_center = root["task"]["tcp_to_grasp_center"].as<double>();
+  config.pre_grasp_scan_min = root["task"]["pre_grasp_clearance_scan_min"].as<double>();
+  config.pre_grasp_scan_max = root["task"]["pre_grasp_clearance_scan_max"].as<double>();
+  config.pre_grasp_scan_step = root["task"]["pre_grasp_clearance_scan_step"].as<double>();
+  config.pre_grasp_safety_margin = root["task"]["pre_grasp_clearance_safety_margin"].as<double>();
+  config.insertion_offset = root["task"]["insertion_offset"].as<double>();
+  config.lift_distance = root["task"]["lift_distance"].as<double>();
+  config.legacy_extraction_distance = root["task"]["legacy_extraction_distance"].as<double>();
+  config.extraction_clearances = vectorN(root["task"], "extraction_clearance_candidates");
+  config.scene_translation_candidates = vectorN(root["task"], "scene_translation_x_candidates");
+  config.eef_rpy = vector3(root["task"], "end_effector_rpy");
+  config.planning_time = root["task"]["planning_time_s"].as<double>();
+  config.planning_attempts = root["task"]["planning_attempts"].as<int>();
+  config.ik_timeout = root["task"]["ik_timeout_s"].as<double>();
+  config.position_tolerance = root["task"]["position_tolerance_m"].as<double>();
+  config.orientation_tolerance = root["task"]["orientation_tolerance_rad"].as<double>();
+  config.lift_start = root["robot_start"]["lift"].as<double>();
+  config.left_finger = root["robot_start"]["left_finger_joint"].as<double>();
+  config.right_finger = root["robot_start"]["right_finger_joint"].as<double>();
+  return config;
+}
+
+struct Candidate
+{
+  std::string id;
+  double yaw_deg{};
+  double pitch_deg{};
+  double yaw{};
+  double pitch{};
+  double cost{};
+};
+
+struct CollisionStatus
+{
+  bool joint_limit_valid{ false };
+  bool self_collision{ false };
+  bool environment_collision{ false };
+  std::set<std::pair<std::string, std::string>> pairs;
+  std::set<std::pair<std::string, std::string>> self_pairs;
+  std::set<std::pair<std::string, std::string>> environment_pairs;
+};
+
+enum class ObjectPhase
+{
+  WORLD_STRICT,
+  WORLD_GRASP_CONTACT,
+  ATTACHED
+};
+
+struct StageResult
+{
+  std::string stage;
+  bool joint_limit_valid{ false };
+  bool ik_success{ false };
+  bool collision_free{ false };
+  bool planning_success{ false };
+  std::string failure_reason;
+  double planning_time_ms{ 0.0 };
+  std::size_t trajectory_points{ 0 };
+  double joint_path_length{ 0.0 };
+  double position_error{ std::numeric_limits<double>::quiet_NaN() };
+  double orientation_error{ std::numeric_limits<double>::quiet_NaN() };
+};
+
+struct CandidateResult
+{
+  Candidate candidate;
+  std::string mode;
+  bool success{ false };
+  std::string first_failure_stage;
+  double total_planning_time_ms{ 0.0 };
+  moveit_msgs::msg::RobotState start_state;
+  moveit::core::RobotState final_state;
+  std::vector<moveit_msgs::msg::RobotTrajectory> trajectories;
+  std::vector<StageResult> stages;
+
+  explicit CandidateResult(const moveit::core::RobotModelConstPtr& model) : final_state(model)
+  {
+  }
+};
+
+std::string pairString(const std::set<std::pair<std::string, std::string>>& pairs)
+{
+  std::ostringstream out;
+  bool first = true;
+  for (const auto& pair : pairs)
+  {
+    if (!first)
+      out << ';';
+    out << pair.first << '|' << pair.second;
+    first = false;
+  }
+  return out.str();
+}
+}  // namespace
+
+class SingleCaseExtraction
+{
+public:
+  explicit SingleCaseExtraction(const rclcpp::Node::SharedPtr& node)
+    : node_(node), scene_config_(loadSceneConfig(parameter<std::string>("scene_config"))),
+      candidate_config_path_(parameter<std::string>("candidate_config")),
+      output_csv_(parameter<std::string>("output_csv")), summary_path_(parameter<std::string>("summary_path")),
+      target_history_csv_(parameter<std::string>("target_history_csv")),
+      extraction_clearance_csv_(parameter<std::string>("extraction_clearance_csv")),
+      scene_translation_csv_(parameter<std::string>("scene_translation_csv")),
+      planning_attempt_id_(parameter<std::string>("planning_attempt_id")),
+      hold_for_rviz_(parameter<bool>("hold_for_rviz"))
+  {
+    robot_model_loader_ = std::make_shared<robot_model_loader::RobotModelLoader>(node_, "robot_description", true);
+    robot_model_ = robot_model_loader_->getModel();
+    if (!robot_model_)
+      throw std::runtime_error("Robot model or SRDF could not be loaded");
+
+    whole_body_group_ = requiredGroup("whole_body");
+    left_arm_group_ = requiredGroup("left_arm");
+    if (whole_body_group_->getVariableNames().size() != 19)
+      throw std::runtime_error("whole_body does not contain exactly 19 independent variables");
+    if (!left_arm_group_->getSolverInstance())
+      throw std::runtime_error("left_arm KDL kinematics solver is not available");
+
+    local_scene_ = std::make_shared<planning_scene::PlanningScene>(robot_model_);
+    display_publisher_ = node_->create_publisher<moveit_msgs::msg::DisplayTrajectory>(
+        "/display_planned_path", rclcpp::QoS(1).transient_local().reliable());
+    joint_state_publisher_ = node_->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 10);
+
+    move_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(
+        node_, moveit::planning_interface::MoveGroupInterface::Options("left_arm", "robot_description", ""),
+        nullptr, rclcpp::Duration::from_seconds(20.0));
+    move_group_->setPlanningPipelineId("ompl");
+    move_group_->setPlannerId("RRTConnectkConfigDefault");
+    move_group_->setEndEffectorLink(left_tcp_link_);
+    move_group_->setPoseReferenceFrame(scene_config_.frame_id);
+    move_group_->setPlanningTime(scene_config_.planning_time);
+    move_group_->setNumPlanningAttempts(scene_config_.planning_attempts);
+    move_group_->setGoalPositionTolerance(scene_config_.position_tolerance);
+    move_group_->setGoalOrientationTolerance(scene_config_.orientation_tolerance);
+
+    scene_objects_ = makeSceneObjects();
+    for (const auto& object : scene_objects_)
+      if (!local_scene_->processCollisionObjectMsg(object))
+        throw std::runtime_error("Local PlanningScene rejected object " + object.id);
+
+    resolved_extraction_clearance_ = selectExtractionClearance();
+
+    scene_interface_ = std::make_unique<moveit::planning_interface::PlanningSceneInterface>();
+    if (!scene_interface_->applyCollisionObjects(scene_objects_))
+      throw std::runtime_error("move_group PlanningScene rejected confined-space objects");
+
+    resolved_pregrasp_clearance_ = selectPreGraspClearance();
+    initializeCsv();
+    RCLCPP_INFO(node_->get_logger(),
+                "Planning-only experiment ready: group=left_arm eef=%s pipeline=ompl "
+                "planner=RRTConnectkConfigDefault pre_grasp_clearance=%.3f extraction_clearance=%.3f",
+                left_tcp_link_.c_str(), resolved_pregrasp_clearance_, resolved_extraction_clearance_);
+  }
+
+  bool run()
+  {
+    const Candidate locked{ "locked_yaw_0_pitch_0", 0.0, 0.0, 0.0, 0.0, 0.0 };
+    CandidateResult locked_result = runCandidate("TORSO_LOCKED", locked);
+
+    const std::vector<Candidate> candidates = loadCandidates();
+    CandidateResult best_result(robot_model_);
+    bool candidate_success = false;
+    std::size_t executed_candidates = 0;
+    std::size_t excluded_candidates = 0;
+
+    std::size_t index = 0;
+    while (index < candidates.size() && !candidate_success)
+    {
+      const double tier_cost = candidates[index].cost;
+      std::vector<CandidateResult> tier_successes;
+      while (index < candidates.size() && std::abs(candidates[index].cost - tier_cost) < 1e-12)
+      {
+        const Candidate candidate = candidates[index++];
+        if (!candidateWithinLimits(candidate))
+        {
+          ++excluded_candidates;
+          appendExcludedCandidate(candidate);
+          continue;
+        }
+        ++executed_candidates;
+        CandidateResult result = runCandidate("TORSO_CANDIDATE_SEARCH", candidate);
+        if (result.success)
+          tier_successes.push_back(std::move(result));
+      }
+      if (!tier_successes.empty())
+      {
+        auto best = std::min_element(tier_successes.begin(), tier_successes.end(), [](const auto& a, const auto& b) {
+          return a.total_planning_time_ms < b.total_planning_time_ms;
+        });
+        best_result = std::move(*best);
+        candidate_success = true;
+      }
+    }
+
+    const bool desired_case = !locked_result.success && candidate_success;
+    writeSummary(locked_result, best_result, candidate_success, executed_candidates, excluded_candidates, desired_case);
+    appendTargetHistory(locked_result.success, candidate_success, best_result, executed_candidates, desired_case);
+
+    if (candidate_success)
+      publishResult(best_result);
+    else
+      publishState(locked_result.final_state);
+
+    RCLCPP_INFO(node_->get_logger(), "RESULT locked=%s candidate_search=%s desired_failure_recovery_case=%s",
+                locked_result.success ? "SUCCESS" : "FAILURE", candidate_success ? "SUCCESS" : "FAILURE",
+                desired_case ? "YES" : "NO");
+    if (candidate_success)
+      RCLCPP_INFO(node_->get_logger(), "Selected candidate: %s yaw=%.3fdeg pitch=%.3fdeg",
+                  best_result.candidate.id.c_str(), best_result.candidate.yaw_deg, best_result.candidate.pitch_deg);
+    return desired_case;
+  }
+
+  bool holdForRviz() const
+  {
+    return hold_for_rviz_;
+  }
+
+private:
+  template <typename T>
+  T parameter(const std::string& name)
+  {
+    if (!node_->has_parameter(name))
+      throw std::runtime_error("Required parameter is missing: " + name);
+    return node_->get_parameter(name).get_value<T>();
+  }
+
+  const moveit::core::JointModelGroup* requiredGroup(const std::string& name) const
+  {
+    const auto* group = robot_model_->getJointModelGroup(name);
+    if (!group)
+      throw std::runtime_error("Required SRDF group missing: " + name);
+    return group;
+  }
+
+  moveit_msgs::msg::CollisionObject boxObject(const std::string& id, const std::vector<double>& dimensions,
+                                               const std::vector<double>& position) const
+  {
+    moveit_msgs::msg::CollisionObject object;
+    object.header.frame_id = scene_config_.frame_id;
+    object.id = id;
+    shape_msgs::msg::SolidPrimitive box;
+    box.type = shape_msgs::msg::SolidPrimitive::BOX;
+    box.dimensions.assign(dimensions.begin(), dimensions.end());
+    geometry_msgs::msg::Pose pose;
+    pose.orientation.w = 1.0;
+    pose.position.x = position[0];
+    pose.position.y = position[1];
+    pose.position.z = position[2];
+    object.primitives.push_back(box);
+    object.primitive_poses.push_back(pose);
+    object.operation = moveit_msgs::msg::CollisionObject::ADD;
+    return object;
+  }
+
+  std::vector<moveit_msgs::msg::CollisionObject> makeSceneObjects() const
+  {
+    const auto& c = scene_config_.box_center;
+    const double w = scene_config_.box_width;
+    const double d = scene_config_.box_depth;
+    const double h = scene_config_.box_height;
+    const double t = scene_config_.wall_thickness;
+    const double f = scene_config_.floor_thickness;
+    std::vector<moveit_msgs::msg::CollisionObject> objects;
+    objects.push_back(boxObject("box_bottom", { d + t, w + 2.0 * t, f }, { c[0], c[1], c[2] - h / 2.0 - f / 2.0 }));
+    objects.push_back(boxObject("box_left_wall", { d, t, h }, { c[0], c[1] + w / 2.0 + t / 2.0, c[2] }));
+    objects.push_back(boxObject("box_right_wall", { d, t, h }, { c[0], c[1] - w / 2.0 - t / 2.0, c[2] }));
+    objects.push_back(boxObject("box_back_wall", { t, w + 2.0 * t, h }, { c[0] + d / 2.0 + t / 2.0, c[1], c[2] }));
+    objects.push_back(boxObject("target_object", scene_config_.target_size, scene_config_.target_position));
+    return objects;
+  }
+
+  moveit_msgs::msg::AttachedCollisionObject makeAttachedTargetFromTransform(
+      const Eigen::Isometry3d& target_in_tcp) const
+  {
+    moveit_msgs::msg::AttachedCollisionObject attached;
+    attached.link_name = left_tcp_link_;
+    attached.touch_links = { left_finger_links_[0], left_finger_links_[1] };
+    attached.object.header.frame_id = left_tcp_link_;
+    attached.object.id = target_object_id_;
+    shape_msgs::msg::SolidPrimitive box;
+    box.type = shape_msgs::msg::SolidPrimitive::BOX;
+    box.dimensions.assign(scene_config_.target_size.begin(), scene_config_.target_size.end());
+    attached.object.primitives.push_back(box);
+
+    geometry_msgs::msg::Pose pose;
+    pose.position.x = target_in_tcp.translation().x();
+    pose.position.y = target_in_tcp.translation().y();
+    pose.position.z = target_in_tcp.translation().z();
+    const Eigen::Quaterniond q(target_in_tcp.rotation());
+    pose.orientation.x = q.x();
+    pose.orientation.y = q.y();
+    pose.orientation.z = q.z();
+    pose.orientation.w = q.w();
+    attached.object.primitive_poses.push_back(pose);
+    attached.object.operation = moveit_msgs::msg::CollisionObject::ADD;
+    return attached;
+  }
+
+  Eigen::Isometry3d nominalTargetInTcp() const
+  {
+    const geometry_msgs::msg::Pose grasp = graspPose();
+    Eigen::Isometry3d tcp_world = Eigen::Isometry3d::Identity();
+    tcp_world.translation() = Eigen::Vector3d(grasp.position.x, grasp.position.y, grasp.position.z);
+    tcp_world.linear() = Eigen::Quaterniond(grasp.orientation.w, grasp.orientation.x, grasp.orientation.y,
+                                            grasp.orientation.z).toRotationMatrix();
+    Eigen::Isometry3d target_world = Eigen::Isometry3d::Identity();
+    target_world.translation() = Eigen::Vector3d(scene_config_.target_position[0], scene_config_.target_position[1],
+                                                 scene_config_.target_position[2]);
+    return tcp_world.inverse() * target_world;
+  }
+
+  void applyAcmToMoveGroup()
+  {
+    moveit_msgs::msg::PlanningScene diff;
+    diff.is_diff = true;
+    local_scene_->getAllowedCollisionMatrix().getMessage(diff.allowed_collision_matrix);
+    if (!scene_interface_->applyPlanningScene(diff))
+      throw std::runtime_error("move_group rejected task-scoped ACM update");
+  }
+
+  void setFingerTargetContactAllowed(bool allowed)
+  {
+    auto& acm = local_scene_->getAllowedCollisionMatrixNonConst();
+    for (const auto& finger : left_finger_links_)
+      acm.setEntry(finger, target_object_id_, allowed);
+    applyAcmToMoveGroup();
+    object_phase_ = allowed ? ObjectPhase::WORLD_GRASP_CONTACT : ObjectPhase::WORLD_STRICT;
+  }
+
+  void resetSceneForCandidate()
+  {
+    const bool was_attached = object_phase_ == ObjectPhase::ATTACHED;
+    local_scene_ = std::make_shared<planning_scene::PlanningScene>(robot_model_);
+    for (const auto& object : scene_objects_)
+      if (!local_scene_->processCollisionObjectMsg(object))
+        throw std::runtime_error("Local PlanningScene reset rejected object " + object.id);
+    object_phase_ = ObjectPhase::WORLD_STRICT;
+
+    moveit_msgs::msg::PlanningScene diff;
+    diff.is_diff = true;
+    diff.world.collision_objects = scene_objects_;
+    diff.robot_state.is_diff = true;
+    if (was_attached)
+    {
+      moveit_msgs::msg::AttachedCollisionObject remove_attached;
+      remove_attached.link_name = left_tcp_link_;
+      remove_attached.object.id = target_object_id_;
+      remove_attached.object.operation = moveit_msgs::msg::CollisionObject::REMOVE;
+      diff.robot_state.attached_collision_objects.push_back(remove_attached);
+    }
+    local_scene_->getAllowedCollisionMatrix().getMessage(diff.allowed_collision_matrix);
+    if (!scene_interface_->applyPlanningScene(diff))
+      throw std::runtime_error("move_group rejected candidate scene reset");
+  }
+
+  void attachTargetAtomically(const moveit::core::RobotState& state)
+  {
+    local_scene_->setCurrentState(state);
+    auto& acm = local_scene_->getAllowedCollisionMatrixNonConst();
+    for (const auto& finger : left_finger_links_)
+      acm.setEntry(finger, target_object_id_, false);
+
+    Eigen::Isometry3d target_world = Eigen::Isometry3d::Identity();
+    target_world.translation() = Eigen::Vector3d(scene_config_.target_position[0], scene_config_.target_position[1],
+                                                 scene_config_.target_position[2]);
+    attached_target_in_tcp_ = state.getGlobalLinkTransform(left_tcp_link_).inverse() * target_world;
+    const auto attached = makeAttachedTargetFromTransform(attached_target_in_tcp_);
+    // ADD of an attached object with the same ID atomically removes it from the world.
+    if (!local_scene_->processAttachedCollisionObjectMsg(attached))
+      throw std::runtime_error("Local PlanningScene failed atomic target attachment transition");
+
+    moveit_msgs::msg::PlanningScene diff;
+    diff.is_diff = true;
+    diff.robot_state.is_diff = true;
+    moveit::core::robotStateToRobotStateMsg(state, diff.robot_state);
+    diff.robot_state.is_diff = true;
+    diff.robot_state.attached_collision_objects.push_back(attached);
+    local_scene_->getAllowedCollisionMatrix().getMessage(diff.allowed_collision_matrix);
+    if (!scene_interface_->applyPlanningScene(diff))
+      throw std::runtime_error("move_group rejected atomic world-to-attached target transition");
+    object_phase_ = ObjectPhase::ATTACHED;
+  }
+
+  std::vector<Candidate> loadCandidates() const
+  {
+    const YAML::Node root = YAML::LoadFile(candidate_config_path_);
+    std::vector<Candidate> candidates;
+    for (const auto& yaw_node : root["yaw_degrees"])
+    {
+      for (const auto& pitch_node : root["pitch_degrees"])
+      {
+        Candidate candidate;
+        candidate.yaw_deg = yaw_node.as<double>();
+        candidate.pitch_deg = pitch_node.as<double>();
+        candidate.yaw = candidate.yaw_deg * kPi / 180.0;
+        candidate.pitch = candidate.pitch_deg * kPi / 180.0;
+        candidate.cost = std::abs(candidate.yaw_deg) + std::abs(candidate.pitch_deg);
+        std::ostringstream id;
+        id << "yaw_" << std::showpos << candidate.yaw_deg << "_pitch_" << candidate.pitch_deg;
+        candidate.id = id.str();
+        candidates.push_back(candidate);
+      }
+    }
+    std::stable_sort(candidates.begin(), candidates.end(), [](const Candidate& a, const Candidate& b) {
+      if (std::abs(a.cost - b.cost) > 1e-12)
+        return a.cost < b.cost;
+      if (std::abs(std::abs(a.yaw_deg) - std::abs(b.yaw_deg)) > 1e-12)
+        return std::abs(a.yaw_deg) < std::abs(b.yaw_deg);
+      if (a.yaw_deg != b.yaw_deg)
+        return a.yaw_deg < b.yaw_deg;
+      return a.pitch_deg < b.pitch_deg;
+    });
+    return candidates;
+  }
+
+  bool variableWithinBounds(const std::string& name, double value) const
+  {
+    const auto& bounds = robot_model_->getVariableBounds(name);
+    return !bounds.position_bounded_ || (value >= bounds.min_position_ && value <= bounds.max_position_);
+  }
+
+  bool candidateWithinLimits(const Candidate& candidate) const
+  {
+    return variableWithinBounds("waist_yaw_joint", candidate.yaw) &&
+           variableWithinBounds("waist_pitch_joint", candidate.pitch);
+  }
+
+  moveit::core::RobotState initialState(const Candidate& candidate) const
+  {
+    moveit::core::RobotState state(robot_model_);
+    state.setToDefaultValues();
+    state.setVariablePosition("lift_joint", scene_config_.lift_start);
+    state.setVariablePosition("waist_yaw_joint", candidate.yaw);
+    state.setVariablePosition("waist_pitch_joint", candidate.pitch);
+    state.setVariablePosition("openarm_left_finger_joint1", scene_config_.left_finger);
+    state.setVariablePosition("openarm_right_finger_joint1", scene_config_.right_finger);
+    state.update();
+    return state;
+  }
+
+  geometry_msgs::msg::Pose makePose(double x, double y, double z) const
+  {
+    geometry_msgs::msg::Pose pose;
+    pose.position.x = x;
+    pose.position.y = y;
+    pose.position.z = z;
+    tf2::Quaternion orientation;
+    orientation.setRPY(scene_config_.eef_rpy[0], scene_config_.eef_rpy[1], scene_config_.eef_rpy[2]);
+    orientation.normalize();
+    pose.orientation.x = orientation.x();
+    pose.orientation.y = orientation.y();
+    pose.orientation.z = orientation.z();
+    pose.orientation.w = orientation.w();
+    return pose;
+  }
+
+  geometry_msgs::msg::Pose graspPose() const
+  {
+    // The verified approach direction is world +X and the measured grasp-center vector is TCP local +Z.
+    return makePose(scene_config_.target_position[0] - scene_config_.tcp_to_grasp_center,
+                    scene_config_.target_position[1], scene_config_.target_position[2]);
+  }
+
+  geometry_msgs::msg::Pose approachPose(double clearance) const
+  {
+    geometry_msgs::msg::Pose pose = graspPose();
+    pose.position.x -= clearance;
+    return pose;
+  }
+
+  double selectPreGraspClearance()
+  {
+    const Candidate locked{ "clearance_scan", 0.0, 0.0, 0.0, 0.0, 0.0 };
+    const moveit::core::RobotState seed = initialState(locked);
+    for (double clearance = scene_config_.pre_grasp_scan_min;
+         clearance <= scene_config_.pre_grasp_scan_max + 1e-9;
+         clearance += scene_config_.pre_grasp_scan_step)
+    {
+      moveit::core::RobotState ik_state = seed;
+      const bool ik = ik_state.setFromIK(left_arm_group_, approachPose(clearance), left_tcp_link_,
+                                        scene_config_.ik_timeout);
+      CollisionStatus status;
+      if (ik)
+        status = checkState(ik_state);
+      RCLCPP_INFO(node_->get_logger(), "PREGRASP_SCAN clearance=%.3f ik=%s collision_free=%s pairs=%s",
+                  clearance, ik ? "true" : "false",
+                  (ik && status.joint_limit_valid && !status.self_collision && !status.environment_collision) ?
+                      "true" : "false",
+                  ik ? pairString(status.pairs).c_str() : "IK_FAILURE");
+      if (!ik || !status.joint_limit_valid || status.self_collision || status.environment_collision)
+        continue;
+
+      const double selected = clearance + scene_config_.pre_grasp_safety_margin;
+      if (selected > scene_config_.pre_grasp_scan_max + 1e-9)
+        break;
+      moveit::core::RobotState safety_state = seed;
+      const bool safety_ik = safety_state.setFromIK(left_arm_group_, approachPose(selected), left_tcp_link_,
+                                                    scene_config_.ik_timeout);
+      if (!safety_ik)
+        continue;
+      const CollisionStatus safety_status = checkState(safety_state);
+      if (safety_status.joint_limit_valid && !safety_status.self_collision && !safety_status.environment_collision)
+      {
+        RCLCPP_INFO(node_->get_logger(),
+                    "PREGRASP_SELECTED first_collision_free=%.3f safety_margin=%.3f selected=%.3f",
+                    clearance, scene_config_.pre_grasp_safety_margin, selected);
+        return selected;
+      }
+    }
+    throw std::runtime_error("No collision-free pre-grasp clearance in configured FCL scan range");
+  }
+
+  double boxFrontX() const
+  {
+    return scene_config_.box_center[0] - scene_config_.box_depth / 2.0;
+  }
+
+  Eigen::Vector3d extractedObjectCenter(double clearance) const
+  {
+    // The open front is the minimum-X interior plane. Inside is +X and outside is -X.
+    // Therefore the object's box-side (+X) face is clearance metres outside that plane.
+    return Eigen::Vector3d(boxFrontX() - scene_config_.target_size[0] / 2.0 - clearance,
+                           scene_config_.target_position[1],
+                           scene_config_.target_position[2] + scene_config_.lift_distance);
+  }
+
+  geometry_msgs::msg::Pose extractionPose(double clearance, const Eigen::Isometry3d& target_in_tcp) const
+  {
+    Eigen::Isometry3d target_goal = Eigen::Isometry3d::Identity();
+    target_goal.translation() = extractedObjectCenter(clearance);
+    const Eigen::Isometry3d tcp_goal = target_goal * target_in_tcp.inverse();
+    geometry_msgs::msg::Pose pose;
+    pose.position.x = tcp_goal.translation().x();
+    pose.position.y = tcp_goal.translation().y();
+    pose.position.z = tcp_goal.translation().z();
+    Eigen::Quaterniond q(tcp_goal.rotation());
+    q.normalize();
+    if (q.w() < 0.0)
+      q.coeffs() *= -1.0;
+    pose.orientation.x = q.x();
+    pose.orientation.y = q.y();
+    pose.orientation.z = q.z();
+    pose.orientation.w = q.w();
+    return pose;
+  }
+
+  bool fullyOutsideFront(double clearance) const
+  {
+    const double box_side_face_x = extractedObjectCenter(clearance).x() + scene_config_.target_size[0] / 2.0;
+    return box_side_face_x <= boxFrontX() - clearance + 1e-12;
+  }
+
+  double selectExtractionClearance()
+  {
+    std::ofstream output(extraction_clearance_csv_, std::ios::trunc);
+    if (!output)
+      throw std::runtime_error("Cannot create extraction clearance CSV: " + extraction_clearance_csv_);
+    output << "timestamp,planning_attempt_id,clearance,box_front_x,object_center_x,object_center_y,object_center_z,"
+              "tcp_x,tcp_y,tcp_z,fully_outside,mode,candidate_id,yaw,pitch,ik_success,joint_limit_valid,"
+              "self_collision,robot_box_collision,attached_object_box_collision,colliding_pairs\n";
+
+    const Eigen::Isometry3d target_in_tcp = nominalTargetInTcp();
+    std::vector<std::pair<std::string, Candidate>> cases;
+    cases.push_back({ "TORSO_LOCKED", Candidate{ "locked_yaw_0_pitch_0", 0.0, 0.0, 0.0, 0.0, 0.0 } });
+    for (const auto& candidate : loadCandidates())
+      if (candidateWithinLimits(candidate))
+        cases.push_back({ "TORSO_CANDIDATE_SEARCH", candidate });
+
+    double selected = std::numeric_limits<double>::quiet_NaN();
+    for (const double clearance : scene_config_.extraction_clearances)
+    {
+      const Eigen::Vector3d center = extractedObjectCenter(clearance);
+      const geometry_msgs::msg::Pose tcp = extractionPose(clearance, target_in_tcp);
+      bool candidate_ik_exists = false;
+      for (const auto& mode_candidate : cases)
+      {
+        auto audit_scene = std::make_shared<planning_scene::PlanningScene>(robot_model_);
+        for (const auto& object : scene_objects_)
+          if (object.id != target_object_id_ && !audit_scene->processCollisionObjectMsg(object))
+            throw std::runtime_error("Extraction audit rejected object " + object.id);
+        audit_scene->setCurrentState(initialState(mode_candidate.second));
+        if (!audit_scene->processAttachedCollisionObjectMsg(makeAttachedTargetFromTransform(target_in_tcp)))
+          throw std::runtime_error("Extraction audit failed to attach target");
+        moveit::core::RobotState& state = audit_scene->getCurrentStateNonConst();
+        const bool ik = state.setFromIK(left_arm_group_, tcp, left_tcp_link_, scene_config_.ik_timeout);
+        CollisionStatus status;
+        if (ik)
+          status = checkStateInScene(audit_scene, state);
+        bool robot_box = false;
+        bool attached_box = false;
+        for (const auto& pair : status.environment_pairs)
+        {
+          if (pairContains(pair, target_object_id_) && pairContainsBox(pair))
+            attached_box = true;
+          else if (pairContainsBox(pair))
+            robot_box = true;
+        }
+        if (mode_candidate.first == "TORSO_CANDIDATE_SEARCH" && ik)
+          candidate_ik_exists = true;
+        output << csvEscape(timestampNow()) << ',' << csvEscape(planning_attempt_id_) << ','
+               << std::setprecision(15) << clearance << ',' << boxFrontX() << ',' << center.x() << ',' << center.y()
+               << ',' << center.z() << ',' << tcp.position.x << ',' << tcp.position.y << ',' << tcp.position.z << ','
+               << (fullyOutsideFront(clearance) ? 1 : 0) << ',' << csvEscape(mode_candidate.first) << ','
+               << csvEscape(mode_candidate.second.id) << ',' << mode_candidate.second.yaw << ','
+               << mode_candidate.second.pitch << ',' << (ik ? 1 : 0) << ','
+               << (ik && status.joint_limit_valid ? 1 : 0) << ',' << (ik && status.self_collision ? 1 : 0) << ','
+               << (robot_box ? 1 : 0) << ',' << (attached_box ? 1 : 0) << ','
+               << csvEscape(ik ? pairString(status.pairs) : "IK_FAILURE") << '\n';
+      }
+      if (std::isnan(selected) && fullyOutsideFront(clearance) && candidate_ik_exists)
+        selected = clearance;
+    }
+
+    std::ofstream scene_output(scene_translation_csv_, std::ios::trunc);
+    scene_output << "timestamp,planning_attempt_id,translation_x,status,reason\n";
+    if (!std::isnan(selected))
+    {
+      scene_output << csvEscape(timestampNow()) << ',' << csvEscape(planning_attempt_id_)
+                   << ",0,NOT_REQUIRED,EXTRACTION_ENDPOINT_REACHABLE_AT_ORIGINAL_SCENE\n";
+      return selected;
+    }
+    scene_output << csvEscape(timestampNow()) << ',' << csvEscape(planning_attempt_id_)
+                 << ",0,REQUIRED,EXTRACTION_ENDPOINT_UNREACHABLE_DUE_TO_BOX_PLACEMENT\n";
+    throw std::runtime_error("EXTRACTION_ENDPOINT_UNREACHABLE_DUE_TO_BOX_PLACEMENT");
+  }
+
+  std::vector<std::pair<std::string, geometry_msgs::msg::Pose>> preExtractionStagePoses() const
+  {
+    const geometry_msgs::msg::Pose grasp = graspPose();
+    geometry_msgs::msg::Pose insertion = grasp;
+    insertion.position.x -= scene_config_.insertion_offset;
+    geometry_msgs::msg::Pose lift = grasp;
+    lift.position.z += scene_config_.lift_distance;
+    return {
+      { "APPROACH", approachPose(resolved_pregrasp_clearance_) },
+      { "INSERTION", insertion },
+      { "GRASP_POSE", grasp },
+      { "LIFT", lift },
+    };
+  }
+
+  CollisionStatus checkStateInScene(const planning_scene::PlanningSceneConstPtr& scene,
+                                    moveit::core::RobotState& state) const
+  {
+    state.update();
+    CollisionStatus status;
+    status.joint_limit_valid = state.satisfiesBounds(whole_body_group_);
+    collision_detection::CollisionRequest request;
+    request.contacts = true;
+    request.max_contacts = 1000;
+    request.max_contacts_per_pair = 50;
+
+    collision_detection::CollisionResult self_result;
+    scene->checkSelfCollision(request, self_result, state);
+    status.self_collision = self_result.collision;
+
+    collision_detection::CollisionResult full_result;
+    scene->checkCollision(request, full_result, state);
+    for (const auto& entry : full_result.contacts)
+    {
+      for (const auto& contact : entry.second)
+      {
+        if (contact.body_type_1 == collision_detection::BodyTypes::WORLD_OBJECT ||
+            contact.body_type_2 == collision_detection::BodyTypes::WORLD_OBJECT)
+          status.environment_collision = true;
+      }
+    }
+    for (const auto& entry : self_result.contacts)
+    {
+      status.pairs.insert(entry.first);
+      status.self_pairs.insert(entry.first);
+    }
+    for (const auto& entry : full_result.contacts)
+    {
+      bool world_contact = false;
+      for (const auto& contact : entry.second)
+        if (contact.body_type_1 == collision_detection::BodyTypes::WORLD_OBJECT ||
+            contact.body_type_2 == collision_detection::BodyTypes::WORLD_OBJECT)
+          world_contact = true;
+      if (world_contact)
+      {
+        status.pairs.insert(entry.first);
+        status.environment_pairs.insert(entry.first);
+      }
+    }
+    return status;
+  }
+
+  CollisionStatus checkState(moveit::core::RobotState& state) const
+  {
+    return checkStateInScene(local_scene_, state);
+  }
+
+  bool pairContains(const std::pair<std::string, std::string>& pair, const std::string& name) const
+  {
+    return pair.first == name || pair.second == name;
+  }
+
+  bool pairContainsFinger(const std::pair<std::string, std::string>& pair) const
+  {
+    return pairContains(pair, left_finger_links_[0]) || pairContains(pair, left_finger_links_[1]);
+  }
+
+  bool pairContainsBox(const std::pair<std::string, std::string>& pair) const
+  {
+    return pair.first.rfind("box_", 0) == 0 || pair.second.rfind("box_", 0) == 0;
+  }
+
+  std::string collisionFailure(const CollisionStatus& status) const
+  {
+    for (const auto& pair : status.environment_pairs)
+    {
+      if (pairContains(pair, target_object_id_) && pairContainsBox(pair) && object_phase_ == ObjectPhase::ATTACHED)
+        return "ATTACHED_OBJECT_BOX_COLLISION:" + pairString(status.environment_pairs);
+      if (pairContains(pair, target_object_id_) && pairContainsFinger(pair))
+        return "FINGER_TARGET_PREMATURE_COLLISION:" + pairString(status.environment_pairs);
+      if (pairContains(pair, target_object_id_))
+        return "NON_FINGER_TARGET_COLLISION:" + pairString(status.environment_pairs);
+      if (pairContainsBox(pair))
+        return "ROBOT_BOX_COLLISION:" + pairString(status.environment_pairs);
+    }
+    for (const auto& pair : status.self_pairs)
+    {
+      if (pairContains(pair, target_object_id_))
+        return "NON_FINGER_TARGET_COLLISION:" + pairString(status.self_pairs);
+    }
+    if (status.self_collision)
+      return "ROBOT_SELF_COLLISION:" + pairString(status.self_pairs);
+    if (status.environment_collision)
+      return "ROBOT_BOX_COLLISION:" + pairString(status.environment_pairs);
+    return "";
+  }
+
+  bool trajectoryCollisionFree(const moveit::core::RobotState& start,
+                               const moveit_msgs::msg::RobotTrajectory& trajectory,
+                               moveit::core::RobotState& final_state, std::string& failure) const
+  {
+    final_state = start;
+    for (const auto& point : trajectory.joint_trajectory.points)
+    {
+      if (point.positions.size() != trajectory.joint_trajectory.joint_names.size())
+      {
+        failure = "TRAJECTORY_DIMENSION_MISMATCH";
+        return false;
+      }
+      final_state.setVariablePositions(trajectory.joint_trajectory.joint_names, point.positions);
+      const CollisionStatus status = checkState(final_state);
+      if (!status.joint_limit_valid)
+      {
+        failure = "TRAJECTORY_JOINT_LIMIT";
+        return false;
+      }
+      if (status.self_collision)
+      {
+        failure = collisionFailure(status);
+        return false;
+      }
+      if (status.environment_collision)
+      {
+        failure = collisionFailure(status);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  double pathLength(const moveit_msgs::msg::RobotTrajectory& trajectory) const
+  {
+    const auto& points = trajectory.joint_trajectory.points;
+    double length = 0.0;
+    for (std::size_t i = 1; i < points.size(); ++i)
+    {
+      double squared = 0.0;
+      for (std::size_t j = 0; j < points[i].positions.size(); ++j)
+      {
+        const double delta = points[i].positions[j] - points[i - 1].positions[j];
+        squared += delta * delta;
+      }
+      length += std::sqrt(squared);
+    }
+    return length;
+  }
+
+  void poseError(const moveit::core::RobotState& state, const geometry_msgs::msg::Pose& desired,
+                 double& position_error, double& orientation_error) const
+  {
+    const Eigen::Isometry3d& actual = state.getGlobalLinkTransform(left_tcp_link_);
+    const Eigen::Vector3d desired_position(desired.position.x, desired.position.y, desired.position.z);
+    position_error = (actual.translation() - desired_position).norm();
+    const Eigen::Quaterniond actual_q(actual.rotation());
+    const Eigen::Quaterniond desired_q(desired.orientation.w, desired.orientation.x, desired.orientation.y,
+                                       desired.orientation.z);
+    orientation_error = actual_q.angularDistance(desired_q);
+  }
+
+  StageResult planStage(const std::string& stage, const geometry_msgs::msg::Pose& pose,
+                        moveit::core::RobotState& current,
+                        moveit_msgs::msg::RobotTrajectory& output_trajectory) const
+  {
+    StageResult result;
+    result.stage = stage;
+    CollisionStatus start_status = checkState(current);
+    result.joint_limit_valid = start_status.joint_limit_valid;
+    if (!start_status.joint_limit_valid)
+    {
+      result.failure_reason = "START_JOINT_LIMIT";
+      return result;
+    }
+    if (start_status.self_collision)
+    {
+      result.failure_reason = collisionFailure(start_status);
+      return result;
+    }
+    if (start_status.environment_collision)
+    {
+      result.failure_reason = collisionFailure(start_status);
+      return result;
+    }
+
+    moveit::core::RobotState ik_state = current;
+    result.ik_success = ik_state.setFromIK(left_arm_group_, pose, left_tcp_link_, scene_config_.ik_timeout);
+    if (!result.ik_success)
+    {
+      result.failure_reason = "IK_FAILURE";
+      return result;
+    }
+    CollisionStatus ik_status = checkState(ik_state);
+    result.joint_limit_valid = ik_status.joint_limit_valid;
+    result.collision_free = ik_status.joint_limit_valid && !ik_status.self_collision && !ik_status.environment_collision;
+    if (!ik_status.joint_limit_valid)
+    {
+      result.failure_reason = "IK_JOINT_LIMIT";
+      return result;
+    }
+    if (ik_status.self_collision)
+    {
+      result.failure_reason = collisionFailure(ik_status);
+      return result;
+    }
+    if (ik_status.environment_collision)
+    {
+      result.failure_reason = collisionFailure(ik_status);
+      return result;
+    }
+
+    move_group_->clearPoseTargets();
+    move_group_->setStartState(current);
+    move_group_->setPoseTarget(pose, left_tcp_link_);
+    moveit::planning_interface::MoveGroupInterface::Plan plan;
+    const auto begin = std::chrono::steady_clock::now();
+    const moveit::core::MoveItErrorCode error = move_group_->plan(plan);
+    const auto end = std::chrono::steady_clock::now();
+    result.planning_time_ms = std::chrono::duration<double, std::milli>(end - begin).count();
+    result.planning_success = error == moveit::core::MoveItErrorCode::SUCCESS;
+    if (!result.planning_success)
+    {
+      result.failure_reason = "MOTION_PLANNING_FAILURE:CODE_" + std::to_string(error.val);
+      return result;
+    }
+    if (plan.trajectory_.joint_trajectory.points.empty())
+    {
+      result.planning_success = false;
+      result.failure_reason = "EMPTY_TRAJECTORY";
+      return result;
+    }
+
+    moveit::core::RobotState final_state(robot_model_);
+    std::string trajectory_failure;
+    if (!trajectoryCollisionFree(current, plan.trajectory_, final_state, trajectory_failure))
+    {
+      result.planning_success = false;
+      result.collision_free = false;
+      result.failure_reason = trajectory_failure;
+      return result;
+    }
+
+    result.trajectory_points = plan.trajectory_.joint_trajectory.points.size();
+    result.joint_path_length = pathLength(plan.trajectory_);
+    poseError(final_state, pose, result.position_error, result.orientation_error);
+    result.collision_free = true;
+    result.failure_reason.clear();
+    current = final_state;
+    output_trajectory = plan.trajectory_;
+    return result;
+  }
+
+  CandidateResult runCandidate(const std::string& mode, const Candidate& candidate)
+  {
+    resetSceneForCandidate();
+    CandidateResult result(robot_model_);
+    result.mode = mode;
+    result.candidate = candidate;
+    moveit::core::RobotState current = initialState(candidate);
+    moveit::core::robotStateToRobotStateMsg(current, result.start_state);
+
+    const Eigen::Isometry3d& initial_tcp = current.getGlobalLinkTransform(left_tcp_link_);
+    RCLCPP_INFO(node_->get_logger(), "candidate=%s mode=%s yaw=%.3f pitch=%.3f initial_tcp=[%.3f %.3f %.3f]",
+                candidate.id.c_str(), mode.c_str(), candidate.yaw_deg, candidate.pitch_deg,
+                initial_tcp.translation().x(), initial_tcp.translation().y(), initial_tcp.translation().z());
+
+    for (const auto& target : preExtractionStagePoses())
+    {
+      if (target.first == "GRASP_POSE")
+        setFingerTargetContactAllowed(true);
+      moveit_msgs::msg::RobotTrajectory trajectory;
+      StageResult stage = planStage(target.first, target.second, current, trajectory);
+      result.total_planning_time_ms += stage.planning_time_ms;
+      appendStageCsv(mode, candidate, stage);
+      result.stages.push_back(stage);
+      if (!stage.planning_success)
+      {
+        result.first_failure_stage = stage.stage;
+        result.final_state = current;
+        return result;
+      }
+      result.trajectories.push_back(std::move(trajectory));
+      if (target.first == "GRASP_POSE")
+        attachTargetAtomically(current);
+    }
+
+    // The endpoint is derived from the required final object pose and the actual transform captured at attachment.
+    // It is intentionally not a fixed subtraction from the GRASP or LIFT TCP position.
+    moveit_msgs::msg::RobotTrajectory extraction_trajectory;
+    const geometry_msgs::msg::Pose extraction =
+        extractionPose(resolved_extraction_clearance_, attached_target_in_tcp_);
+    StageResult extraction_stage = planStage("EXTRACTION", extraction, current, extraction_trajectory);
+    result.total_planning_time_ms += extraction_stage.planning_time_ms;
+    appendStageCsv(mode, candidate, extraction_stage);
+    result.stages.push_back(extraction_stage);
+    if (!extraction_stage.planning_success)
+    {
+      result.first_failure_stage = extraction_stage.stage;
+      result.final_state = current;
+      return result;
+    }
+    result.trajectories.push_back(std::move(extraction_trajectory));
+    result.success = true;
+    result.final_state = current;
+    return result;
+  }
+
+  void initializeCsv() const
+  {
+    std::ofstream output(output_csv_, std::ios::trunc);
+    if (!output)
+      throw std::runtime_error("Cannot create output CSV: " + output_csv_);
+    output << "timestamp,planning_attempt_id,planning_time_limit,number_of_attempts,mode,candidate_id,lift,yaw,pitch,stage,joint_limit_valid,ik_success,collision_free,"
+              "planning_success,failure_reason,planning_time_ms,trajectory_points,joint_path_length,"
+              "end_effector_position_error,end_effector_orientation_error\n";
+  }
+
+  void appendStageCsv(const std::string& mode, const Candidate& candidate, const StageResult& result) const
+  {
+    std::ofstream output(output_csv_, std::ios::app);
+    output << csvEscape(timestampNow()) << ',' << csvEscape(planning_attempt_id_) << ',' << scene_config_.planning_time
+           << ',' << scene_config_.planning_attempts << ',' << csvEscape(mode) << ',' << csvEscape(candidate.id) << ','
+           << std::setprecision(15) << scene_config_.lift_start << ',' << candidate.yaw << ',' << candidate.pitch << ','
+           << csvEscape(result.stage) << ',' << (result.joint_limit_valid ? 1 : 0) << ','
+           << (result.ik_success ? 1 : 0) << ',' << (result.collision_free ? 1 : 0) << ','
+           << (result.planning_success ? 1 : 0) << ',' << csvEscape(result.failure_reason) << ','
+           << result.planning_time_ms << ',' << result.trajectory_points << ',' << result.joint_path_length << ','
+           << result.position_error << ',' << result.orientation_error << '\n';
+  }
+
+  void appendExcludedCandidate(const Candidate& candidate) const
+  {
+    StageResult result;
+    result.stage = "CANDIDATE_FILTER";
+    result.failure_reason = "OUTSIDE_EXACT_URDF_LIMIT_NO_CLAMP";
+    appendStageCsv("TORSO_CANDIDATE_SEARCH", candidate, result);
+  }
+
+  void appendTargetHistory(bool locked_success, bool candidate_success, const CandidateResult& best,
+                           std::size_t executed, bool desired_case) const
+  {
+    const bool exists = std::filesystem::exists(target_history_csv_);
+    std::ofstream output(target_history_csv_, std::ios::app);
+    if (!exists || std::filesystem::file_size(target_history_csv_) == 0)
+      output << "timestamp,target_x,target_y,target_z,locked_success,candidate_success,selected_candidate,"
+                "executed_candidates,desired_case\n";
+    output << csvEscape(timestampNow()) << ',' << scene_config_.target_position[0] << ','
+           << scene_config_.target_position[1] << ',' << scene_config_.target_position[2] << ','
+           << (locked_success ? 1 : 0) << ',' << (candidate_success ? 1 : 0) << ','
+           << csvEscape(candidate_success ? best.candidate.id : "") << ',' << executed << ','
+           << (desired_case ? 1 : 0) << '\n';
+  }
+
+  void writeSummary(const CandidateResult& locked, const CandidateResult& best, bool candidate_success,
+                    std::size_t executed, std::size_t excluded, bool desired_case) const
+  {
+    std::ofstream out(summary_path_, std::ios::trunc);
+    out << "# Single-case extraction summary\n\n";
+    out << "Generated: " << timestampNow() << "\n\n";
+    out << "All scene, object, pose, and task-distance values are **PROVISIONAL_DEVELOPMENT_VALUE** and are not "
+           "final paper data.\n\n";
+    out << "## Scene\n\n";
+    out << "- Frame: `" << scene_config_.frame_id << "`\n";
+    out << "- Box center [m]: `" << scene_config_.box_center[0] << ' ' << scene_config_.box_center[1] << ' '
+        << scene_config_.box_center[2] << "`\n";
+    out << "- Interior width/depth/height [m]: `" << scene_config_.box_width << ' ' << scene_config_.box_depth
+        << ' ' << scene_config_.box_height << "`\n";
+    out << "- Wall/floor thickness [m]: `" << scene_config_.wall_thickness << ' '
+        << scene_config_.floor_thickness << "`\n";
+    out << "- Target position [m]: `" << scene_config_.target_position[0] << ' '
+        << scene_config_.target_position[1] << ' ' << scene_config_.target_position[2] << "`\n";
+    out << "- Target size [m]: `" << scene_config_.target_size[0] << ' ' << scene_config_.target_size[1] << ' '
+        << scene_config_.target_size[2] << "`\n";
+    out << "- TCP to grasp center [m]: `" << scene_config_.tcp_to_grasp_center << "`\n";
+    out << "- Selected pre-grasp clearance [m]: `" << resolved_pregrasp_clearance_ << "`\n";
+    out << "- Insertion/lift [m]: `" << scene_config_.insertion_offset << ' '
+        << scene_config_.lift_distance << "`\n";
+    out << "- Selected extraction clearance [m]: `" << resolved_extraction_clearance_ << "`\n";
+    out << "- Box front plane X [m]: `" << boxFrontX() << "`\n";
+    const Eigen::Vector3d extracted_center = extractedObjectCenter(resolved_extraction_clearance_);
+    out << "- Final extracted object center [m]: `" << extracted_center.x() << ' ' << extracted_center.y() << ' '
+        << extracted_center.z() << "`\n";
+    out << "- Legacy fixed extraction_distance [m]: `" << scene_config_.legacy_extraction_distance
+        << "` (**DEPRECATED_NOT_USED**)\n";
+    out << "- Planning attempt ID/time limit/number of attempts: `" << planning_attempt_id_ << " / "
+        << scene_config_.planning_time << " s / " << scene_config_.planning_attempts << "`\n";
+    out << "- Simulation planning aperture q [m]: `" << scene_config_.left_finger << "`\n\n";
+    out << "## Result\n\n";
+    out << "- TORSO_LOCKED: **" << (locked.success ? "SUCCESS" : "FAILURE") << "**\n";
+    out << "- TORSO_LOCKED first failure stage: `"
+        << (locked.first_failure_stage.empty() ? "none" : locked.first_failure_stage) << "`\n";
+    out << "- TORSO_CANDIDATE_SEARCH: **" << (candidate_success ? "SUCCESS" : "FAILURE") << "**\n";
+    out << "- Successful candidate: `" << (candidate_success ? best.candidate.id : "none") << "`\n";
+    if (candidate_success)
+      out << "- Successful Yaw/Pitch: `" << best.candidate.yaw_deg << " deg / " << best.candidate.pitch_deg
+          << " deg`\n";
+    out << "- Executed candidates: " << executed << "\n";
+    out << "- Excluded out-of-limit candidates: " << excluded << " (no clamping)\n";
+    out << "- Desired locked-failure / torso-recovery case: **" << (desired_case ? "YES" : "NO") << "**\n\n";
+    out << "## Safety and limitations\n\n";
+    out << "No trajectory was executed. No ros2_control, controller, hardware interface, or real robot node was used. "
+           "The target was attached only as a PlanningScene collision object; object dynamics, physical contact, grasp "
+           "closure, and real grasp success were not validated. Both gripper independent joints remained at the "
+           "simulation planning aperture 0.044 m; this is "
+           "not asserted to be a hardware-validated fully-open position. The target remained a world collision object "
+           "through GRASP_POSE and was attached atomically for LIFT and EXTRACTION.\n";
+  }
+
+  void publishResult(const CandidateResult& result)
+  {
+    moveit_msgs::msg::DisplayTrajectory display;
+    display.model_id = robot_model_->getName();
+    display.trajectory_start = result.start_state;
+    display.trajectory = result.trajectories;
+    display_publisher_->publish(display);
+    publishState(result.final_state);
+  }
+
+  void publishState(const moveit::core::RobotState& state)
+  {
+    sensor_msgs::msg::JointState message;
+    message.header.stamp = node_->now();
+    message.name = whole_body_group_->getVariableNames();
+    message.position.reserve(message.name.size());
+    for (const auto& name : message.name)
+      message.position.push_back(state.getVariablePosition(name));
+    for (int i = 0; i < 3; ++i)
+    {
+      joint_state_publisher_->publish(message);
+      rclcpp::sleep_for(std::chrono::milliseconds(100));
+    }
+  }
+
+  rclcpp::Node::SharedPtr node_;
+  SceneConfig scene_config_;
+  std::string candidate_config_path_;
+  std::string output_csv_;
+  std::string summary_path_;
+  std::string target_history_csv_;
+  std::string extraction_clearance_csv_;
+  std::string scene_translation_csv_;
+  std::string planning_attempt_id_;
+  bool hold_for_rviz_{ false };
+  const std::string left_tcp_link_{ "openarm_left_hand_tcp" };
+  robot_model_loader::RobotModelLoaderPtr robot_model_loader_;
+  moveit::core::RobotModelConstPtr robot_model_;
+  const moveit::core::JointModelGroup* whole_body_group_{ nullptr };
+  const moveit::core::JointModelGroup* left_arm_group_{ nullptr };
+  planning_scene::PlanningScenePtr local_scene_;
+  std::unique_ptr<moveit::planning_interface::PlanningSceneInterface> scene_interface_;
+  std::unique_ptr<moveit::planning_interface::MoveGroupInterface> move_group_;
+  std::vector<moveit_msgs::msg::CollisionObject> scene_objects_;
+  rclcpp::Publisher<moveit_msgs::msg::DisplayTrajectory>::SharedPtr display_publisher_;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_state_publisher_;
+  double resolved_pregrasp_clearance_{ 0.0 };
+  double resolved_extraction_clearance_{ 0.0 };
+  Eigen::Isometry3d attached_target_in_tcp_{ Eigen::Isometry3d::Identity() };
+  ObjectPhase object_phase_{ ObjectPhase::WORLD_STRICT };
+  const std::string target_object_id_{ "target_object" };
+  const std::array<std::string, 2> left_finger_links_{ "openarm_left_left_finger",
+                                                       "openarm_left_right_finger" };
+};
+
+int main(int argc, char** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::NodeOptions options;
+  options.automatically_declare_parameters_from_overrides(true);
+  auto node = std::make_shared<rclcpp::Node>("single_case_extraction", options);
+  rclcpp::executors::MultiThreadedExecutor executor;
+  executor.add_node(node);
+  std::thread spin_thread([&executor]() { executor.spin(); });
+  int exit_code = 1;
+  try
+  {
+    auto experiment = std::make_shared<SingleCaseExtraction>(node);
+    const bool desired_case = experiment->run();
+    if (experiment->holdForRviz() && desired_case)
+    {
+      RCLCPP_INFO(node->get_logger(), "RViz hold active. No trajectory execution is available. Stop with Ctrl-C.");
+      while (rclcpp::ok())
+        rclcpp::sleep_for(std::chrono::seconds(1));
+    }
+    exit_code = desired_case ? 0 : 2;
+  }
+  catch (const std::exception& error)
+  {
+    std::cerr << "single_case_extraction fatal: " << error.what() << std::endl;
+  }
+  rclcpp::shutdown();
+  executor.cancel();
+  if (spin_thread.joinable())
+    spin_thread.join();
+  return exit_code;
+}

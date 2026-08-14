@@ -1,0 +1,41 @@
+# PROVISIONAL_VISUALIZATION_ONLY
+# Primitive dimensions, joint origins, and arm-mount poses below are unmeasured.
+# DO NOT use them for papers, final simulation, collision conclusions, or hardware.
+
+amr_base:
+  size: "0.8 0.6 0.2"          # PROVISIONAL_VISUALIZATION_ONLY — temporary box size in m.
+  geometry_xyz: "0 0 0.1"      # PROVISIONAL_VISUALIZATION_ONLY — centres the temporary box above z=0.
+  geometry_rpy: "0 0 0"        # PROVISIONAL_VISUALIZATION_ONLY — temporary box orientation in rad.
+
+lift:
+  reference_frame: "CS_LIFT_TOP_ZERO"  # Confirmed name for the q=0 top-position coordinate system.
+  joint_xyz: "0 0 0.2"         # PROVISIONAL_VISUALIZATION_ONLY — unmeasured Lift-axis origin in amr_base_link.
+  joint_rpy: "0 0 0"           # PROVISIONAL_VISUALIZATION_ONLY — unmeasured Lift-axis orientation.
+  axis: "0 0 -1"               # Confirmed rule — increasing q moves downward from the top q=0 position.
+  radius: 0.06                   # PROVISIONAL_VISUALIZATION_ONLY — temporary cylinder radius in m.
+  length: 0.50                   # PROVISIONAL_VISUALIZATION_ONLY — temporary cylinder length in m.
+  geometry_xyz: "0 0 0.25"     # PROVISIONAL_VISUALIZATION_ONLY — temporary cylinder centre in lift_link.
+  geometry_rpy: "0 0 0"        # PROVISIONAL_VISUALIZATION_ONLY — temporary cylinder orientation.
+  yaw_joint_xyz: "0 0 0.50"    # PROVISIONAL_VISUALIZATION_ONLY — unmeasured Yaw-axis origin in lift_link.
+  yaw_joint_rpy: "0 0 0"       # PROVISIONAL_VISUALIZATION_ONLY — unmeasured Yaw-axis orientation.
+
+waist_yaw:
+  axis: "0 0 1"                # MEASURED_KINEMATIC_AXIS — vertical Yaw axis; negative CW and positive CCW from above.
+  radius: 0.12                   # PROVISIONAL_VISUALIZATION_ONLY — temporary cylinder radius in m.
+  length: 0.12                   # PROVISIONAL_VISUALIZATION_ONLY — temporary cylinder length in m.
+  geometry_xyz: "0 0 0.06"     # PROVISIONAL_VISUALIZATION_ONLY — temporary cylinder centre in waist_yaw_link.
+  geometry_rpy: "0 0 0"        # PROVISIONAL_VISUALIZATION_ONLY — temporary cylinder orientation.
+  pitch_joint_xyz: "0 0 0.12"  # PROVISIONAL_VISUALIZATION_ONLY — unmeasured Pitch-axis origin in waist_yaw_link.
+  pitch_joint_rpy: "0 0 0"     # PROVISIONAL_VISUALIZATION_ONLY — unmeasured Pitch-axis orientation.
+
+waist_pitch:
+  axis: "0 1 0"                # PROVISIONAL_VISUALIZATION_ONLY — horizontal-axis candidate; sign is NOT verified.
+  size: "0.18 0.50 0.18"       # PROVISIONAL_VISUALIZATION_ONLY — temporary box size in m.
+  geometry_xyz: "0 0 0.09"     # PROVISIONAL_VISUALIZATION_ONLY — temporary box centre in waist_pitch_link.
+  geometry_rpy: "0 0 0"        # PROVISIONAL_VISUALIZATION_ONLY — temporary box orientation.
+
+arm_mounts:
+  left_xyz: "0 0.30 0.09"      # PROVISIONAL_VISUALIZATION_ONLY — unmeasured left mount pose in waist_pitch_link, m.
+  left_rpy: "-1.570796 0 0"    # PROVISIONAL_VISUALIZATION_ONLY — orientation candidate derived from prior v1.0 display, rad.
+  right_xyz: "0 -0.30 0.09"    # PROVISIONAL_VISUALIZATION_ONLY — unmeasured right mount pose in waist_pitch_link, m.
+  right_rpy: "1.570796 0 0"    # PROVISIONAL_VISUALIZATION_ONLY — orientation candidate derived from prior v1.0 display, rad.

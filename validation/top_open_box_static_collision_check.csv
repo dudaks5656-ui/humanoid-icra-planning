@@ -1,0 +1,2 @@
+timestamp,scene_id,state_description,robot_box_collision,robot_link,box_object,contact_count,maximum_penetration_depth_m
+2026-08-12T08:59:37+0900,TOP_OPEN_BOX_600X400X150_GEOMETRY_VALIDATION,lift=0;yaw=0;pitch=0;fingers=0.044,false,NONE,NONE,0,0

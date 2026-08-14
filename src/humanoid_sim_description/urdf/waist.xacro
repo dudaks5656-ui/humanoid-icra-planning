@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="humanoid_sim_waist" params="cad dynamics">
+    <joint name="waist_yaw_joint" type="revolute">
+      <parent link="lift_moving_link"/>
+      <child link="waist_yaw_link"/>
+      <origin
+        xyz="${cad['joint_origins_m']['lift_top_zero_to_yaw']['xyz'][0]} ${cad['joint_origins_m']['lift_top_zero_to_yaw']['xyz'][1]} ${cad['joint_origins_m']['lift_top_zero_to_yaw']['xyz'][2]}"
+        rpy="${cad['joint_origins_m']['lift_top_zero_to_yaw']['rpy'][0]} ${cad['joint_origins_m']['lift_top_zero_to_yaw']['rpy'][1]} ${cad['joint_origins_m']['lift_top_zero_to_yaw']['rpy'][2]}"/>
+      <axis xyz="${cad['joint_limits']['waist_yaw_joint']['axis'][0]} ${cad['joint_limits']['waist_yaw_joint']['axis'][1]} ${cad['joint_limits']['waist_yaw_joint']['axis'][2]}"/>
+      <limit
+        lower="${cad['joint_limits']['waist_yaw_joint']['lower_rad']}"
+        upper="${cad['joint_limits']['waist_yaw_joint']['upper_rad']}"
+        effort="${dynamics['waist_yaw_joint']['effort']}"
+        velocity="${dynamics['waist_yaw_joint']['velocity']}"/>
+    </joint>
+
+    <link name="waist_yaw_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/waist_yaw.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="humanoid_sim_waist_yaw_aluminum">
+          <color rgba="0.78 0.80 0.84 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/waist_yaw.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="waist_pitch_joint" type="revolute">
+      <parent link="waist_yaw_link"/>
+      <child link="waist_pitch_link"/>
+      <origin
+        xyz="${cad['joint_origins_m']['yaw_to_pitch']['xyz'][0]} ${cad['joint_origins_m']['yaw_to_pitch']['xyz'][1]} ${cad['joint_origins_m']['yaw_to_pitch']['xyz'][2]}"
+        rpy="${cad['joint_origins_m']['yaw_to_pitch']['rpy'][0]} ${cad['joint_origins_m']['yaw_to_pitch']['rpy'][1]} ${cad['joint_origins_m']['yaw_to_pitch']['rpy'][2]}"/>
+      <axis xyz="${cad['joint_limits']['waist_pitch_joint']['axis'][0]} ${cad['joint_limits']['waist_pitch_joint']['axis'][1]} ${cad['joint_limits']['waist_pitch_joint']['axis'][2]}"/>
+      <limit
+        lower="${cad['joint_limits']['waist_pitch_joint']['lower_rad']}"
+        upper="${cad['joint_limits']['waist_pitch_joint']['upper_rad']}"
+        effort="${dynamics['waist_pitch_joint']['effort']}"
+        velocity="${dynamics['waist_pitch_joint']['velocity']}"/>
+    </joint>
+
+    <link name="waist_pitch_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/waist_pitch.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="humanoid_sim_waist_pitch_aluminum">
+          <color rgba="0.78 0.80 0.84 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://humanoid_sim_description/meshes/waist_pitch.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+</robot>

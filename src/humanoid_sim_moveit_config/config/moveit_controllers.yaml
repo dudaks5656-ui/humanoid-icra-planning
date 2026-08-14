@@ -1,0 +1,4 @@
+# Planning-only configuration: deliberately no controllers are available.
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+moveit_simple_controller_manager:
+  controller_names: []

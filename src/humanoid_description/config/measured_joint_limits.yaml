@@ -1,0 +1,37 @@
+# MEASURED_KINEMATIC_LIMITS
+# User-reported mechanical ranges, 2026-08-11.
+# Position limits may be used to replace provisional RViz ranges after axis-direction validation.
+# Effort and velocity limits are intentionally omitted because they were not measured/provided.
+
+lift_joint:
+  type: prismatic
+  zero_definition: topmost_position
+  axis: [0.0, 0.0, -1.0]
+  lower: 0.0
+  upper: 0.700
+  unit: m
+  positive_direction: downward
+  source_measurement: 700_mm_stroke
+
+waist_yaw_joint:
+  type: revolute
+  zero_definition: torso_facing_forward
+  axis: [0.0, 0.0, 1.0]
+  lower: -0.17453292519943295
+  upper: 0.17453292519943295
+  unit: rad
+  positive_direction: counterclockwise_when_viewed_from_above
+  negative_limit_description: clockwise_10_deg
+  positive_limit_description: counterclockwise_10_deg
+
+waist_pitch_joint:
+  type: revolute
+  zero_definition: torso_vertical
+  axis: [0.0, 1.0, 0.0]
+  lower: -0.17453292519943295
+  upper: 0.7853981633974483
+  unit: rad
+  positive_direction: forward_tilt
+  negative_limit_description: backward_10_deg
+  positive_limit_description: forward_45_deg
+

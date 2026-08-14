@@ -1,0 +1,128 @@
+robot=humanoid_sim_provisional_v10
+link_count=30 joint_count=29 joint_types={'fixed': 8, 'prismatic': 5, 'revolute': 16}
+duplicate_links=[]
+duplicate_joints=[]
+root_links=['world']
+missing_parent_child_refs=[]
+disconnected_links=[]
+
+[MOVABLE_JOINTS]
+lift_joint|type=prismatic|parent=lift_fixed_link|child=lift_moving_link|origin_xyz=0.2549756914527 0.0002288135233 1.198|origin_rpy=0.0 0.0 0.0|axis=0.0 0.0 -1.0|lower=0.0|upper=0.7|effort=1.0|velocity=0.1
+waist_yaw_joint|type=revolute|parent=lift_moving_link|child=waist_yaw_link|origin_xyz=0.0 0.0 0.0|origin_rpy=0.0 0.0 0.0|axis=0.0 0.0 1.0|lower=-0.174533|upper=0.174533|effort=1.0|velocity=0.5
+waist_pitch_joint|type=revolute|parent=waist_yaw_link|child=waist_pitch_link|origin_xyz=-0.043519236672 0.0349688054576 0.1538233064808|origin_rpy=0.0 0.0 0.0|axis=0.0 1.0 0.0|lower=-0.174533|upper=0.785398|effort=1.0|velocity=0.5
+openarm_left_joint1|type=revolute|parent=openarm_left_link0|child=openarm_left_link1|origin_xyz=0.0 0.0 0.0625|origin_rpy=0 0 0|axis=0 0 1|lower=-3.490659|upper=1.3962629999999998|effort=40|velocity=16.754666
+openarm_left_joint2|type=revolute|parent=openarm_left_link1|child=openarm_left_link2|origin_xyz=-0.0301 0.0 0.06|origin_rpy=-1.57079632679 0 0|axis=-1 0 0|lower=-3.3161253267948965|upper=0.17453267320510335|effort=40|velocity=16.754666
+openarm_left_joint3|type=revolute|parent=openarm_left_link2|child=openarm_left_link3|origin_xyz=0.0301 0.0 0.06625|origin_rpy=0 0 0|axis=0 0 1|lower=-1.570796|upper=1.570796|effort=27|velocity=5.445426
+openarm_left_joint4|type=revolute|parent=openarm_left_link3|child=openarm_left_link4|origin_xyz=-0.0 0.0315 0.15375|origin_rpy=0 0 0|axis=0 1 0|lower=0.0|upper=2.443461|effort=27|velocity=5.445426
+openarm_left_joint5|type=revolute|parent=openarm_left_link4|child=openarm_left_link5|origin_xyz=0.0 -0.0315 0.0955|origin_rpy=0 0 0|axis=0 0 1|lower=-1.570796|upper=1.570796|effort=7|velocity=20.943946
+openarm_left_joint6|type=revolute|parent=openarm_left_link5|child=openarm_left_link6|origin_xyz=0.0375 0.0 0.1205|origin_rpy=0 0 0|axis=1 0 0|lower=-0.785398|upper=0.785398|effort=7|velocity=20.943946
+openarm_left_joint7|type=revolute|parent=openarm_left_link6|child=openarm_left_link7|origin_xyz=-0.0375 0.0 0.0|origin_rpy=0 0 0|axis=0 -1 0|lower=-1.570796|upper=1.570796|effort=7|velocity=20.943946
+openarm_right_joint1|type=revolute|parent=openarm_right_link0|child=openarm_right_link1|origin_xyz=0.0 0.0 0.0625|origin_rpy=0 0 0|axis=0 0 1|lower=-1.396263|upper=3.490659|effort=40|velocity=16.754666
+openarm_right_joint2|type=revolute|parent=openarm_right_link1|child=openarm_right_link2|origin_xyz=-0.0301 0.0 0.06|origin_rpy=1.57079632679 0 0|axis=-1 0 0|lower=-0.17453267320510335|upper=3.3161253267948965|effort=40|velocity=16.754666
+openarm_right_joint3|type=revolute|parent=openarm_right_link2|child=openarm_right_link3|origin_xyz=0.0301 0.0 0.06625|origin_rpy=0 0 0|axis=0 0 1|lower=-1.570796|upper=1.570796|effort=27|velocity=5.445426
+openarm_right_joint4|type=revolute|parent=openarm_right_link3|child=openarm_right_link4|origin_xyz=-0.0 0.0315 0.15375|origin_rpy=0 0 0|axis=0 1 0|lower=0.0|upper=2.443461|effort=27|velocity=5.445426
+openarm_right_joint5|type=revolute|parent=openarm_right_link4|child=openarm_right_link5|origin_xyz=0.0 -0.0315 0.0955|origin_rpy=0 0 0|axis=0 0 1|lower=-1.570796|upper=1.570796|effort=7|velocity=20.943946
+openarm_right_joint6|type=revolute|parent=openarm_right_link5|child=openarm_right_link6|origin_xyz=0.0375 0.0 0.1205|origin_rpy=0 0 0|axis=1 0 0|lower=-0.785398|upper=0.785398|effort=7|velocity=20.943946
+openarm_right_joint7|type=revolute|parent=openarm_right_link6|child=openarm_right_link7|origin_xyz=-0.0375 0.0 0.0|origin_rpy=0 0 0|axis=0 1 0|lower=-1.570796|upper=1.570796|effort=7|velocity=20.943946
+openarm_left_finger_joint1|type=prismatic|parent=openarm_left_link7|child=openarm_left_right_finger|origin_xyz=0.0 0.0 0.1025|origin_rpy=0 0 0|axis=0 -1 0|lower=0.0|upper=0.044|effort=333|velocity=10.0
+openarm_left_finger_joint2|type=prismatic|parent=openarm_left_link7|child=openarm_left_left_finger|origin_xyz=0.0 -0.0 0.1025|origin_rpy=0 0 0|axis=0 1 0|lower=0.0|upper=0.044|effort=333|velocity=10.0
+openarm_right_finger_joint1|type=prismatic|parent=openarm_right_link7|child=openarm_right_right_finger|origin_xyz=0.0 0.0 0.1025|origin_rpy=0 0 0|axis=0 -1 0|lower=0.0|upper=0.044|effort=333|velocity=10.0
+openarm_right_finger_joint2|type=prismatic|parent=openarm_right_link7|child=openarm_right_left_finger|origin_xyz=0.0 -0.0 0.1025|origin_rpy=0 0 0|axis=0 1 0|lower=0.0|upper=0.044|effort=333|velocity=10.0
+movable_joint_count=21
+missing_movable_joint_limits=[]
+
+[LINK_GEOMETRY]
+world|visual_count=0|collision_count=0
+base_link|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://humanoid_sim_description/meshes/amr_base.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+  collision|geometry=mesh|resource=package://humanoid_sim_description/meshes/amr_base.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+lift_fixed_link|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://humanoid_sim_description/meshes/lift_fixed_structure.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+  collision|geometry=mesh|resource=package://humanoid_sim_description/meshes/lift_fixed_structure.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+lift_moving_link|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://humanoid_sim_description/meshes/lift_moving_structure.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+  collision|geometry=mesh|resource=package://humanoid_sim_description/meshes/lift_moving_structure.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+waist_yaw_link|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://humanoid_sim_description/meshes/waist_yaw.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+  collision|geometry=mesh|resource=package://humanoid_sim_description/meshes/waist_yaw.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+waist_pitch_link|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://humanoid_sim_description/meshes/waist_pitch.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+  collision|geometry=mesh|resource=package://humanoid_sim_description/meshes/waist_pitch.stl|scale=0.001 0.001 0.001|origin_xyz=0 0 0|origin_rpy=0 0 0
+left_arm_mount_link|visual_count=0|collision_count=0
+right_arm_mount_link|visual_count=0|collision_count=0
+openarm_left_link0|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link0.dae|scale=0.001 -0.001 0.001|origin_xyz=0.0 0.0 0.0|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link0_symp.stl|scale=0.001 -0.001 0.001|origin_xyz=0.0 0.0 0.0|origin_rpy=0.0 0.0 0.0
+openarm_left_link1|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link1.dae|scale=0.001 -0.001 0.001|origin_xyz=-0.0 0.0 -0.0625|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link1_symp.stl|scale=0.001 -0.001 0.001|origin_xyz=-0.0 0.0 -0.0625|origin_rpy=0.0 0.0 0.0
+openarm_left_link2|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link2.dae|scale=0.001 -0.001 0.001|origin_xyz=0.0301 0.0 -0.1225|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link2_symp.stl|scale=0.001 -0.001 0.001|origin_xyz=0.0301 0.0 -0.1225|origin_rpy=0.0 0.0 0.0
+openarm_left_link3|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link3.dae|scale=0.001 0.001 0.001|origin_xyz=-0.0 -0.0 -0.18875|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link3_symp.stl|scale=0.001 0.001 0.001|origin_xyz=-0.0 -0.0 -0.18875|origin_rpy=0.0 0.0 0.0
+openarm_left_link4|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link4.dae|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.0315 -0.3425|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link4_symp.stl|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.0315 -0.3425|origin_rpy=0.0 0.0 0.0
+openarm_left_link5|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link5.dae|scale=0.001 -0.001 0.001|origin_xyz=-0.0 -0.0 -0.438|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link5_symp.stl|scale=0.001 -0.001 0.001|origin_xyz=-0.0 -0.0 -0.438|origin_rpy=0.0 0.0 0.0
+openarm_left_link6|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link6.dae|scale=0.001 -0.001 0.001|origin_xyz=-0.0375 -0.0 -0.5585|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link6_symp.stl|scale=0.001 -0.001 0.001|origin_xyz=-0.0375 -0.0 -0.5585|origin_rpy=0.0 0.0 0.0
+openarm_left_link7|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link7.dae|scale=0.001 -0.001 0.001|origin_xyz=0.0 -0.0 -0.5585|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link7_symp.stl|scale=0.001 -0.001 0.001|origin_xyz=0.0 -0.0 -0.5585|origin_rpy=0.0 0.0 0.0
+openarm_right_link0|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link0.dae|scale=0.001 0.001 0.001|origin_xyz=0.0 0.0 0.0|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link0_symp.stl|scale=0.001 0.001 0.001|origin_xyz=0.0 0.0 0.0|origin_rpy=0.0 0.0 0.0
+openarm_right_link1|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link1.dae|scale=0.001 0.001 0.001|origin_xyz=-0.0 0.0 -0.0625|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link1_symp.stl|scale=0.001 0.001 0.001|origin_xyz=-0.0 0.0 -0.0625|origin_rpy=0.0 0.0 0.0
+openarm_right_link2|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link2.dae|scale=0.001 0.001 0.001|origin_xyz=0.0301 0.0 -0.1225|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link2_symp.stl|scale=0.001 0.001 0.001|origin_xyz=0.0301 0.0 -0.1225|origin_rpy=0.0 0.0 0.0
+openarm_right_link3|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link3.dae|scale=0.001 0.001 0.001|origin_xyz=-0.0 -0.0 -0.18875|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link3_symp.stl|scale=0.001 0.001 0.001|origin_xyz=-0.0 -0.0 -0.18875|origin_rpy=0.0 0.0 0.0
+openarm_right_link4|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link4.dae|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.0315 -0.3425|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link4_symp.stl|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.0315 -0.3425|origin_rpy=0.0 0.0 0.0
+openarm_right_link5|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link5.dae|scale=0.001 0.001 0.001|origin_xyz=-0.0 -0.0 -0.438|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link5_symp.stl|scale=0.001 0.001 0.001|origin_xyz=-0.0 -0.0 -0.438|origin_rpy=0.0 0.0 0.0
+openarm_right_link6|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link6.dae|scale=0.001 0.001 0.001|origin_xyz=-0.0375 -0.0 -0.5585|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link6_symp.stl|scale=0.001 0.001 0.001|origin_xyz=-0.0375 -0.0 -0.5585|origin_rpy=0.0 0.0 0.0
+openarm_right_link7|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/visual/link7.dae|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.0 -0.5585|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link7_symp.stl|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.0 -0.5585|origin_rpy=0.0 0.0 0.0
+openarm_left_hand_tcp|visual_count=0|collision_count=0
+openarm_left_left_finger|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/end_effector/parallel_link/meshes/visual/finger.dae|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.05 -0.673001|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/end_effector/parallel_link/meshes/collision/finger.stl|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.05 -0.673001|origin_rpy=0.0 0.0 0.0
+openarm_left_right_finger|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/end_effector/parallel_link/meshes/visual/finger.dae|scale=0.001 -0.001 0.001|origin_xyz=0.0 0.05 -0.673001|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/end_effector/parallel_link/meshes/collision/finger.stl|scale=0.001 -0.001 0.001|origin_xyz=0.0 0.05 -0.673001|origin_rpy=0.0 0.0 0.0
+openarm_right_hand_tcp|visual_count=0|collision_count=0
+openarm_right_left_finger|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/end_effector/parallel_link/meshes/visual/finger.dae|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.05 -0.673001|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/end_effector/parallel_link/meshes/collision/finger.stl|scale=0.001 0.001 0.001|origin_xyz=0.0 -0.05 -0.673001|origin_rpy=0.0 0.0 0.0
+openarm_right_right_finger|visual_count=1|collision_count=1
+  visual|geometry=mesh|resource=package://openarm_description/assets/end_effector/parallel_link/meshes/visual/finger.dae|scale=0.001 -0.001 0.001|origin_xyz=0.0 0.05 -0.673001|origin_rpy=0.0 0.0 0.0
+  collision|geometry=mesh|resource=package://openarm_description/assets/end_effector/parallel_link/meshes/collision/finger.stl|scale=0.001 -0.001 0.001|origin_xyz=0.0 0.05 -0.673001|origin_rpy=0.0 0.0 0.0
+allowed_empty_frames=['left_arm_mount_link', 'openarm_left_hand_tcp', 'openarm_right_hand_tcp', 'right_arm_mount_link', 'world']
+physical_links_missing_visual_or_collision=[]
+mesh_missing=[]
+new_cad_mesh_bad_scale=[]
+any_mesh_scale_magnitude_not_0.001=[]
+visual_collision_origin_mismatch=[]
+mesh_scale_histogram={'0.001 -0.001 0.001': 16, '0.001 0.001 0.001': 34}
+
+[EXPECTED_JOINT_CHECK]
+lift_joint|actual=('prismatic', '0.0 0.0 -1.0', 0.0, 0.7)|expected=('prismatic', '0.0 0.0 -1.0', 0.0, 0.7)|match=True
+waist_yaw_joint|actual=('revolute', '0.0 0.0 1.0', -0.174533, 0.174533)|expected=('revolute', '0.0 0.0 1.0', -0.174533, 0.174533)|match=True
+waist_pitch_joint|actual=('revolute', '0.0 1.0 0.0', -0.174533, 0.785398)|expected=('revolute', '0.0 1.0 0.0', -0.174533, 0.785398)|match=True
+forbidden_hardware_tags=[]
+AUDIT_STATIC_RESULT=PASS

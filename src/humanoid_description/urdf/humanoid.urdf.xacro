@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="humanoid">
+
+  <xacro:include filename="$(find humanoid_description)/urdf/openarm_v10_arms_adapter.xacro"/>
+
+  <xacro:property
+    name="provisional_geometry"
+    value="${xacro.load_yaml('$(find humanoid_description)/config/provisional_geometry.yaml')}"/>
+  <xacro:property
+    name="provisional_limits"
+    value="${xacro.load_yaml('$(find humanoid_description)/config/provisional_limits.yaml')}"/>
+
+  <!--
+    Project coordinate convention:
+      +x: forward
+      +y: left
+      +z: up
+      length: metres (m)
+      rotation: radians (rad), positive by the right-hand rule
+  -->
+
+  <!-- The fixed reference frame for this robot description. -->
+  <link name="world"/>
+
+  <!-- PROVISIONAL_VISUALIZATION_ONLY: world placement is not a measured transform. -->
+  <joint name="world_to_amr_base_joint" type="fixed">
+    <parent link="world"/>
+    <child link="amr_base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name="amr_base_link">
+    <!-- PROVISIONAL_VISUALIZATION_ONLY: primitive is not valid for paper or final collision results. -->
+    <visual>
+      <origin xyz="${provisional_geometry['amr_base']['geometry_xyz']}" rpy="${provisional_geometry['amr_base']['geometry_rpy']}"/>
+      <geometry>
+        <box size="${provisional_geometry['amr_base']['size']}"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="${provisional_geometry['amr_base']['geometry_xyz']}" rpy="${provisional_geometry['amr_base']['geometry_rpy']}"/>
+      <geometry>
+        <box size="${provisional_geometry['amr_base']['size']}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!--
+    CS_LIFT_TOP_ZERO: q=0 is the highest Lift position.
+    Increasing q moves lift_link downward along the confirmed 0 0 -1 axis.
+  -->
+  <joint name="lift_joint" type="prismatic">
+    <parent link="amr_base_link"/>
+    <child link="lift_link"/>
+    <origin xyz="${provisional_geometry['lift']['joint_xyz']}" rpy="${provisional_geometry['lift']['joint_rpy']}"/>
+    <axis xyz="${provisional_geometry['lift']['axis']}"/>
+    <limit
+      lower="${provisional_limits['lift_joint']['lower']}"
+      upper="${provisional_limits['lift_joint']['upper']}"
+      effort="${provisional_limits['lift_joint']['effort']}"
+      velocity="${provisional_limits['lift_joint']['velocity']}"/>
+  </joint>
+
+  <link name="lift_link">
+    <!-- PROVISIONAL_VISUALIZATION_ONLY: unmeasured primitive. -->
+    <visual>
+      <origin xyz="${provisional_geometry['lift']['geometry_xyz']}" rpy="${provisional_geometry['lift']['geometry_rpy']}"/>
+      <geometry>
+        <cylinder radius="${provisional_geometry['lift']['radius']}" length="${provisional_geometry['lift']['length']}"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="${provisional_geometry['lift']['geometry_xyz']}" rpy="${provisional_geometry['lift']['geometry_rpy']}"/>
+      <geometry>
+        <cylinder radius="${provisional_geometry['lift']['radius']}" length="${provisional_geometry['lift']['length']}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="waist_yaw_joint" type="revolute">
+    <parent link="lift_link"/>
+    <child link="waist_yaw_link"/>
+    <origin xyz="${provisional_geometry['lift']['yaw_joint_xyz']}" rpy="${provisional_geometry['lift']['yaw_joint_rpy']}"/>
+    <axis xyz="${provisional_geometry['waist_yaw']['axis']}"/>
+    <limit
+      lower="${provisional_limits['waist_yaw_joint']['lower']}"
+      upper="${provisional_limits['waist_yaw_joint']['upper']}"
+      effort="${provisional_limits['waist_yaw_joint']['effort']}"
+      velocity="${provisional_limits['waist_yaw_joint']['velocity']}"/>
+  </joint>
+
+  <link name="waist_yaw_link">
+    <!-- PROVISIONAL_VISUALIZATION_ONLY: unmeasured primitive. -->
+    <visual>
+      <origin xyz="${provisional_geometry['waist_yaw']['geometry_xyz']}" rpy="${provisional_geometry['waist_yaw']['geometry_rpy']}"/>
+      <geometry>
+        <cylinder radius="${provisional_geometry['waist_yaw']['radius']}" length="${provisional_geometry['waist_yaw']['length']}"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="${provisional_geometry['waist_yaw']['geometry_xyz']}" rpy="${provisional_geometry['waist_yaw']['geometry_rpy']}"/>
+      <geometry>
+        <cylinder radius="${provisional_geometry['waist_yaw']['radius']}" length="${provisional_geometry['waist_yaw']['length']}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="waist_pitch_joint" type="revolute">
+    <parent link="waist_yaw_link"/>
+    <child link="waist_pitch_link"/>
+    <origin xyz="${provisional_geometry['waist_yaw']['pitch_joint_xyz']}" rpy="${provisional_geometry['waist_yaw']['pitch_joint_rpy']}"/>
+    <!-- PROVISIONAL_VISUALIZATION_ONLY: horizontal axis candidate; sign remains unverified. -->
+    <axis xyz="${provisional_geometry['waist_pitch']['axis']}"/>
+    <limit
+      lower="${provisional_limits['waist_pitch_joint']['lower']}"
+      upper="${provisional_limits['waist_pitch_joint']['upper']}"
+      effort="${provisional_limits['waist_pitch_joint']['effort']}"
+      velocity="${provisional_limits['waist_pitch_joint']['velocity']}"/>
+  </joint>
+
+  <link name="waist_pitch_link">
+    <!-- PROVISIONAL_VISUALIZATION_ONLY: unmeasured primitive. -->
+    <visual>
+      <origin xyz="${provisional_geometry['waist_pitch']['geometry_xyz']}" rpy="${provisional_geometry['waist_pitch']['geometry_rpy']}"/>
+      <geometry>
+        <box size="${provisional_geometry['waist_pitch']['size']}"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="${provisional_geometry['waist_pitch']['geometry_xyz']}" rpy="${provisional_geometry['waist_pitch']['geometry_rpy']}"/>
+      <geometry>
+        <box size="${provisional_geometry['waist_pitch']['size']}"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Empty mount frames; poses are provisional and must be replaced from CAD. -->
+  <link name="left_arm_mount_link"/>
+  <joint name="waist_pitch_to_left_arm_mount_joint" type="fixed">
+    <parent link="waist_pitch_link"/>
+    <child link="left_arm_mount_link"/>
+    <origin xyz="${provisional_geometry['arm_mounts']['left_xyz']}" rpy="${provisional_geometry['arm_mounts']['left_rpy']}"/>
+  </joint>
+
+  <link name="right_arm_mount_link"/>
+  <joint name="waist_pitch_to_right_arm_mount_joint" type="fixed">
+    <parent link="waist_pitch_link"/>
+    <child link="right_arm_mount_link"/>
+    <origin xyz="${provisional_geometry['arm_mounts']['right_xyz']}" rpy="${provisional_geometry['arm_mounts']['right_rpy']}"/>
+  </joint>
+
+  <!-- Reuse only the two v1.0 seven-axis arms and parallel-link grippers. -->
+  <xacro:humanoid_openarm_v10_arms
+    left_mount_link="left_arm_mount_link"
+    right_mount_link="right_arm_mount_link"/>
+
+</robot>

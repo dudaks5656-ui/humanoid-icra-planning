@@ -1,0 +1,283 @@
+#!/usr/bin/env python3
+"""Publish the preserved boundary-search slice as RViz markers.
+
+This node is visualization-only.  It reads existing CSV/YAML artifacts and never
+runs IK, OMPL, trajectory execution, controllers, or hardware interfaces.
+"""
+
+import csv
+import math
+from pathlib import Path
+
+import rclpy
+import yaml
+from geometry_msgs.msg import Point
+from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+from std_msgs.msg import ColorRGBA
+from visualization_msgs.msg import Marker, MarkerArray
+
+
+def color(red, green, blue, alpha=1.0):
+    value = ColorRGBA()
+    value.r = float(red)
+    value.g = float(green)
+    value.b = float(blue)
+    value.a = float(alpha)
+    return value
+
+
+def point(x, y, z):
+    value = Point()
+    value.x = float(x)
+    value.y = float(y)
+    value.z = float(z)
+    return value
+
+
+def enabled(value):
+    return str(value).strip() == "1"
+
+
+def minimum_step(values, fallback):
+    ordered = sorted(set(values))
+    differences = [
+        right - left
+        for left, right in zip(ordered, ordered[1:])
+        if right - left > 1e-9
+    ]
+    return min(differences) if differences else fallback
+
+
+class WorkspaceBoundaryVisualizer(Node):
+    def __init__(self):
+        super().__init__("workspace_boundary_visualizer")
+        self.declare_parameter(
+            "boundary_csv",
+            "/home/openarm/humanoid_sim_ws/validation/target_boundary_search.csv",
+        )
+        self.declare_parameter(
+            "scene_config",
+            "/home/openarm/humanoid_sim_ws/src/humanoid_extraction_experiments/config/confined_scene.yaml",
+        )
+        self.declare_parameter("marker_topic", "/workspace_boundary_markers")
+
+        boundary_path = Path(self.get_parameter("boundary_csv").value)
+        scene_path = Path(self.get_parameter("scene_config").value)
+        if not boundary_path.is_file():
+            raise RuntimeError(f"Boundary CSV not found: {boundary_path}")
+        if not scene_path.is_file():
+            raise RuntimeError(f"Scene config not found: {scene_path}")
+
+        with boundary_path.open(newline="", encoding="utf-8") as stream:
+            rows = list(csv.DictReader(stream))
+        if not rows:
+            raise RuntimeError(f"Boundary CSV has no samples: {boundary_path}")
+        required = {
+            "target_x",
+            "target_y",
+            "target_z",
+            "geometric_feasible",
+            "lift_only_success",
+            "proposed_success",
+        }
+        missing = required.difference(rows[0])
+        if missing:
+            raise RuntimeError(f"Boundary CSV is missing columns: {sorted(missing)}")
+
+        with scene_path.open(encoding="utf-8") as stream:
+            scene = yaml.safe_load(stream)
+
+        topic = self.get_parameter("marker_topic").value
+        qos = QoSProfile(depth=1)
+        qos.reliability = ReliabilityPolicy.RELIABLE
+        qos.durability = DurabilityPolicy.TRANSIENT_LOCAL
+        self.publisher = self.create_publisher(MarkerArray, topic, qos)
+        self.markers, counts = self._make_markers(rows, scene)
+        self.timer = self.create_timer(0.5, self._publish_once)
+        self.get_logger().info(
+            "Loaded sampled task-space slice: "
+            f"lift_only={counts['lift_only']}, torso_candidate={counts['torso_candidate']}, "
+            f"infeasible={counts['infeasible']}, unresolved={counts['unresolved']}"
+        )
+        self.get_logger().warning(
+            "This is the preserved sampled XY slice, not a complete 3D workspace or safety-certified boundary."
+        )
+
+    def _base_marker(self, marker_id, marker_type, namespace):
+        marker = Marker()
+        marker.header.frame_id = self.frame_id
+        marker.ns = namespace
+        marker.id = marker_id
+        marker.type = marker_type
+        marker.action = Marker.ADD
+        marker.pose.orientation.w = 1.0
+        return marker
+
+    def _cube(self, marker_id, name, center, size, rgba):
+        marker = self._base_marker(marker_id, Marker.CUBE, "workspace_scene")
+        marker.pose.position = point(*center)
+        marker.scale.x, marker.scale.y, marker.scale.z = map(float, size)
+        marker.color = rgba
+        marker.text = name
+        return marker
+
+    def _text(self, marker_id, text, position, rgba, height=0.022):
+        marker = self._base_marker(marker_id, Marker.TEXT_VIEW_FACING, "workspace_legend")
+        marker.pose.position = point(*position)
+        marker.scale.z = float(height)
+        marker.color = rgba
+        marker.text = text
+        return marker
+
+    def _make_markers(self, rows, scene):
+        self.frame_id = scene.get("frame_id", "world")
+        samples = []
+        categories = {
+            "lift_only": [],
+            "torso_candidate": [],
+            "infeasible": [],
+            "unresolved": [],
+        }
+        for row in rows:
+            x = float(row["target_x"])
+            y = float(row["target_y"])
+            z = float(row["target_z"])
+            if not enabled(row["geometric_feasible"]):
+                category = "infeasible"
+            elif enabled(row["lift_only_success"]):
+                category = "lift_only"
+            elif enabled(row["proposed_success"]):
+                category = "torso_candidate"
+            else:
+                category = "unresolved"
+            sample = {"x": x, "y": y, "z": z, "category": category}
+            samples.append(sample)
+            categories[category].append(sample)
+
+        xs = [sample["x"] for sample in samples]
+        ys = [sample["y"] for sample in samples]
+        zs = [sample["z"] for sample in samples]
+        x_step = minimum_step(xs, 0.025)
+        y_step = minimum_step(ys, 0.005)
+        slice_z = sum(zs) / len(zs)
+
+        palette = {
+            "lift_only": color(0.15, 0.85, 0.25, 0.78),
+            "torso_candidate": color(0.05, 0.80, 0.95, 0.88),
+            "infeasible": color(0.95, 0.10, 0.10, 0.88),
+            "unresolved": color(1.00, 0.75, 0.05, 0.88),
+        }
+        markers = []
+        for marker_id, category in enumerate(
+            ("lift_only", "torso_candidate", "infeasible", "unresolved")
+        ):
+            marker = self._base_marker(marker_id, Marker.CUBE_LIST, "workspace_samples")
+            marker.scale.x = max(0.004, x_step * 0.82)
+            marker.scale.y = max(0.003, y_step * 0.82)
+            marker.scale.z = 0.008
+            marker.color = palette[category]
+            marker.points = [
+                point(sample["x"], sample["y"], sample["z"] + 0.006)
+                for sample in categories[category]
+            ]
+            markers.append(marker)
+
+        # Draw measured feasibility transitions only where two adjacent samples exist.
+        transition = self._base_marker(10, Marker.LINE_LIST, "workspace_boundary")
+        transition.scale.x = 0.003
+        transition.color = color(1.0, 0.45, 0.0, 1.0)
+        by_xy = {(sample["x"], sample["y"]): sample for sample in samples}
+        for sample in samples:
+            for dx, dy in ((x_step, 0.0), (0.0, y_step)):
+                neighbor = by_xy.get((round(sample["x"] + dx, 9), round(sample["y"] + dy, 9)))
+                if neighbor is None:
+                    # CSV decimal spellings do not always share identical binary floats.
+                    neighbor = next(
+                        (
+                            candidate
+                            for candidate in samples
+                            if math.isclose(candidate["x"], sample["x"] + dx, abs_tol=1e-8)
+                            and math.isclose(candidate["y"], sample["y"] + dy, abs_tol=1e-8)
+                        ),
+                        None,
+                    )
+                if neighbor is None:
+                    continue
+                sample_feasible = sample["category"] != "infeasible"
+                neighbor_feasible = neighbor["category"] != "infeasible"
+                if sample_feasible == neighbor_feasible:
+                    continue
+                z = (sample["z"] + neighbor["z"]) / 2.0 + 0.013
+                if dx:
+                    x = (sample["x"] + neighbor["x"]) / 2.0
+                    transition.points.extend(
+                        [point(x, sample["y"] - y_step * 0.45, z), point(x, sample["y"] + y_step * 0.45, z)]
+                    )
+                else:
+                    y = (sample["y"] + neighbor["y"]) / 2.0
+                    transition.points.extend(
+                        [point(sample["x"] - x_step * 0.45, y, z), point(sample["x"] + x_step * 0.45, y, z)]
+                    )
+        markers.append(transition)
+
+        box = scene["box"]
+        center = [float(value) for value in box["center_xyz"]]
+        width = float(box["interior_width"])
+        depth = float(box["interior_depth"])
+        height = float(box["interior_height"])
+        wall = float(box["wall_thickness"])
+        floor = float(box["floor_thickness"])
+        gray = color(0.45, 0.48, 0.52, 0.30)
+        markers.extend(
+            [
+                self._cube(20, "box_floor", (center[0], center[1], center[2] - height / 2.0 - floor / 2.0), (depth + wall, width + 2.0 * wall, floor), gray),
+                self._cube(21, "box_left_wall", (center[0], center[1] + width / 2.0 + wall / 2.0, center[2]), (depth, wall, height), gray),
+                self._cube(22, "box_right_wall", (center[0], center[1] - width / 2.0 - wall / 2.0, center[2]), (depth, wall, height), gray),
+                self._cube(23, "box_back_wall", (center[0] + depth / 2.0 + wall / 2.0, center[1], center[2]), (wall, width + 2.0 * wall, height), gray),
+            ]
+        )
+        target = scene["target"]
+        markers.append(
+            self._cube(
+                24,
+                "target_object",
+                tuple(float(value) for value in target["position_xyz"]),
+                tuple(float(value) for value in target["size_xyz"]),
+                color(0.95, 0.45, 0.05, 0.75),
+            )
+        )
+
+        legend_x = min(xs)
+        legend_y = max(ys) + 0.055
+        markers.extend(
+            [
+                self._text(30, f"SAMPLED TASK-SPACE SLICE  z={slice_z:.3f} m", (legend_x, legend_y, slice_z + 0.08), color(1.0, 1.0, 1.0, 1.0), 0.026),
+                self._text(31, "GREEN: LIFT_ONLY full-task success", (legend_x, legend_y, slice_z + 0.05), palette["lift_only"]),
+                self._text(32, "CYAN: torso-candidate success (not structural recovery proof)", (legend_x, legend_y, slice_z + 0.025), palette["torso_candidate"]),
+                self._text(33, "RED: direct geometric collision / infeasible", (legend_x, legend_y, slice_z), palette["infeasible"]),
+                self._text(34, "ORANGE LINE: measured feasible/infeasible transition", (legend_x, legend_y, slice_z - 0.025), color(1.0, 0.45, 0.0, 1.0)),
+            ]
+        )
+        return MarkerArray(markers=markers), {key: len(value) for key, value in categories.items()}
+
+    def _publish_once(self):
+        now = self.get_clock().now().to_msg()
+        for marker in self.markers.markers:
+            marker.header.stamp = now
+        self.publisher.publish(self.markers)
+        self.timer.cancel()
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = WorkspaceBoundaryVisualizer()
+    try:
+        rclpy.spin(node)
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()

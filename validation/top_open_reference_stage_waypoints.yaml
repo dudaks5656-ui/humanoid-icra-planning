@@ -1,0 +1,11 @@
+# No reference stage waypoints were selected. This is an explicit status artifact,
+# not a trajectory and not a substitute for the required five-candidate selection.
+status: NOT_SELECTED
+reason: FAILED_TO_OBTAIN_FIVE_DENSE_VALID_CANDIDATES
+dense_valid_candidates: 2
+required_dense_valid_candidates: 5
+trajectory_execution_performed: false
+reference_grasp:
+  name: KINEMATIC_REFERENCE_GRASP_50MM
+  status: SELECTED_FOR_KINEMATIC_PATH_PLANNING
+  reuse_policy: FIXED_FOR_ALL_TARGETS_AND_ABLATIONS

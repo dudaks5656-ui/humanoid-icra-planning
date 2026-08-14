@@ -1,0 +1,55 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Grid
+      Plane: XY
+      Reference Frame: world
+    - Class: moveit_rviz_plugin/MotionPlanning
+      Enabled: true
+      Move Group Namespace: ""
+      Name: Planning-only extraction
+      Planning Scene Topic: /monitored_planning_scene
+      Robot Description: robot_description
+      Planning Request:
+        Planning Group: left_arm
+      Planned Path:
+        Loop Animation: true
+        State Display Time: 0.10 s
+        Trajectory Topic: /display_planned_path
+      Scene Robot:
+        Robot Alpha: 1
+      Scene Geometry:
+        Scene Alpha: 1
+    - Class: rviz_default_plugins/TF
+      Enabled: false
+      Frame Timeout: 15
+      Marker Scale: 0.12
+      Name: TF frames
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Marker Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /reference_markers
+      Name: Offline reference stages and attached-object path
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+Window Geometry:
+  Height: 900
+  Width: 1400

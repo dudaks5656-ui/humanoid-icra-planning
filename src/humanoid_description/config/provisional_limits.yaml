@@ -1,0 +1,22 @@
+# MEASURED_POSITION_LIMITS_WITH_PROVISIONAL_DYNAMICS
+# Position lower/upper values come from config/measured_joint_limits.yaml.
+# Effort and velocity were not measured and remain forbidden for papers,
+# final simulation, control, or hardware.
+
+lift_joint:
+  lower: 0.0       # MEASURED_KINEMATIC_LIMIT — q=0 at the topmost position.
+  upper: 0.700     # MEASURED_KINEMATIC_LIMIT — measured 700 mm maximum downward stroke.
+  effort: 1.0      # PROVISIONAL_NOT_MEASURED — placeholder required by URDF; not an actuator specification.
+  velocity: 0.10   # PROVISIONAL_NOT_MEASURED — placeholder m/s; not a measured or permitted hardware speed.
+
+waist_yaw_joint:
+  lower: -0.17453292519943295  # MEASURED_KINEMATIC_LIMIT — clockwise 10 degrees.
+  upper: 0.17453292519943295   # MEASURED_KINEMATIC_LIMIT — counterclockwise 10 degrees.
+  effort: 1.0                  # PROVISIONAL_NOT_MEASURED — placeholder required by URDF; not an actuator specification.
+  velocity: 0.50               # PROVISIONAL_NOT_MEASURED — placeholder rad/s; not a measured or permitted hardware speed.
+
+waist_pitch_joint:
+  lower: -0.17453292519943295  # MEASURED_KINEMATIC_LIMIT — backward 10 degrees.
+  upper: 0.7853981633974483    # MEASURED_KINEMATIC_LIMIT — forward 45 degrees.
+  effort: 1.0                  # PROVISIONAL_NOT_MEASURED — placeholder required by URDF; not an actuator specification.
+  velocity: 0.50               # PROVISIONAL_NOT_MEASURED — placeholder rad/s; not a measured or permitted hardware speed.

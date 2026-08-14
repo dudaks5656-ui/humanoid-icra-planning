@@ -1,0 +1,16 @@
+# PROVISIONAL_NOT_MEASURED
+# These effort and velocity entries are placeholders required for a valid URDF.
+# They were carried forward unchanged from the previously validated simulation-only package.
+# They are forbidden for hardware control, controller tuning, final simulation, and paper data.
+
+lift_joint:
+  effort: 1.0      # PROVISIONAL_NOT_MEASURED; not an actuator specification.
+  velocity: 0.10  # PROVISIONAL_NOT_MEASURED; m/s placeholder only.
+
+waist_yaw_joint:
+  effort: 1.0      # PROVISIONAL_NOT_MEASURED; not an actuator specification.
+  velocity: 0.50  # PROVISIONAL_NOT_MEASURED; rad/s placeholder only.
+
+waist_pitch_joint:
+  effort: 1.0      # PROVISIONAL_NOT_MEASURED; not an actuator specification.
+  velocity: 0.50  # PROVISIONAL_NOT_MEASURED; rad/s placeholder only.

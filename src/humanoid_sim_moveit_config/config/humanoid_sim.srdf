@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="humanoid_sim_provisional_v10">
+  <!-- Fixed-base planning model. The URDF root remains world; no SRDF virtual joint is used. -->
+  <group name="torso">
+    <joint name="lift_joint"/>
+    <joint name="waist_yaw_joint"/>
+    <joint name="waist_pitch_joint"/>
+  </group>
+
+  <group name="left_arm">
+    <joint name="openarm_left_joint1"/>
+    <joint name="openarm_left_joint2"/>
+    <joint name="openarm_left_joint3"/>
+    <joint name="openarm_left_joint4"/>
+    <joint name="openarm_left_joint5"/>
+    <joint name="openarm_left_joint6"/>
+    <joint name="openarm_left_joint7"/>
+  </group>
+
+  <group name="right_arm">
+    <joint name="openarm_right_joint1"/>
+    <joint name="openarm_right_joint2"/>
+    <joint name="openarm_right_joint3"/>
+    <joint name="openarm_right_joint4"/>
+    <joint name="openarm_right_joint5"/>
+    <joint name="openarm_right_joint6"/>
+    <joint name="openarm_right_joint7"/>
+  </group>
+
+  <!-- Only the independently commanded finger joint belongs to each planning group. -->
+  <group name="left_gripper">
+    <joint name="openarm_left_finger_joint1"/>
+  </group>
+  <group name="right_gripper">
+    <joint name="openarm_right_finger_joint1"/>
+  </group>
+
+  <group name="left_arm_with_torso">
+    <group name="torso"/>
+    <group name="left_arm"/>
+  </group>
+  <group name="right_arm_with_torso">
+    <group name="torso"/>
+    <group name="right_arm"/>
+  </group>
+  <group name="dual_arm">
+    <group name="left_arm"/>
+    <group name="right_arm"/>
+  </group>
+  <group name="dual_arm_with_torso">
+    <group name="torso"/>
+    <group name="dual_arm"/>
+  </group>
+  <group name="whole_body">
+    <group name="dual_arm_with_torso"/>
+    <group name="left_gripper"/>
+    <group name="right_gripper"/>
+  </group>
+
+  <!-- Both gripper branches attach directly to link7. TCP is a separate fixed child of link7. -->
+  <end_effector name="left_gripper_eef" parent_link="openarm_left_link7" group="left_gripper" parent_group="left_arm"/>
+  <end_effector name="right_gripper_eef" parent_link="openarm_right_link7" group="right_gripper" parent_group="right_arm"/>
+
+  <passive_joint name="openarm_left_finger_joint2"/>
+  <passive_joint name="openarm_right_finger_joint2"/>
+
+  <!-- Conservative ACM: only collision-bearing links joined directly by one joint are disabled. -->
+  <disable_collisions link1="base_link" link2="lift_fixed_link" reason="Adjacent"/>
+  <disable_collisions link1="lift_fixed_link" link2="lift_moving_link" reason="Adjacent"/>
+  <disable_collisions link1="lift_moving_link" link2="waist_yaw_link" reason="Adjacent"/>
+  <disable_collisions link1="waist_yaw_link" link2="waist_pitch_link" reason="Adjacent"/>
+  <!-- User-validated fixed shoulder mount contact; no relative motion across the two-fixed-joint mount chain. -->
+  <disable_collisions link1="waist_pitch_link" link2="openarm_left_link0" reason="Adjacent"/>
+
+  <disable_collisions link1="openarm_left_link0" link2="openarm_left_link1" reason="Adjacent"/>
+  <disable_collisions link1="openarm_left_link1" link2="openarm_left_link2" reason="Adjacent"/>
+  <disable_collisions link1="openarm_left_link2" link2="openarm_left_link3" reason="Adjacent"/>
+  <disable_collisions link1="openarm_left_link3" link2="openarm_left_link4" reason="Adjacent"/>
+  <disable_collisions link1="openarm_left_link4" link2="openarm_left_link5" reason="Adjacent"/>
+  <disable_collisions link1="openarm_left_link5" link2="openarm_left_link6" reason="Adjacent"/>
+  <disable_collisions link1="openarm_left_link6" link2="openarm_left_link7" reason="Adjacent"/>
+  <disable_collisions link1="openarm_left_link7" link2="openarm_left_left_finger" reason="Adjacent"/>
+  <disable_collisions link1="openarm_left_link7" link2="openarm_left_right_finger" reason="Adjacent"/>
+
+  <disable_collisions link1="openarm_right_link0" link2="openarm_right_link1" reason="Adjacent"/>
+  <disable_collisions link1="openarm_right_link1" link2="openarm_right_link2" reason="Adjacent"/>
+  <disable_collisions link1="openarm_right_link2" link2="openarm_right_link3" reason="Adjacent"/>
+  <disable_collisions link1="openarm_right_link3" link2="openarm_right_link4" reason="Adjacent"/>
+  <disable_collisions link1="openarm_right_link4" link2="openarm_right_link5" reason="Adjacent"/>
+  <disable_collisions link1="openarm_right_link5" link2="openarm_right_link6" reason="Adjacent"/>
+  <disable_collisions link1="openarm_right_link6" link2="openarm_right_link7" reason="Adjacent"/>
+  <disable_collisions link1="openarm_right_link7" link2="openarm_right_left_finger" reason="Adjacent"/>
+  <disable_collisions link1="openarm_right_link7" link2="openarm_right_right_finger" reason="Adjacent"/>
+</robot>

@@ -1,0 +1,29 @@
+ARM_MOUNT_COLLISION_COMPARISON
+reference_state=all_19_independent_variables_zero
+aabb_units=m
+
+[left]
+mount_joint=waist_pitch_to_left_arm_mount_joint xyz=0.043519236672 -0.0049688054576 0.2020497164153 rpy=-0 0 -0
+adapter_joint=left_arm_mount_to_openarm_joint xyz=0 0 0 rpy=1.57079265358979 3.14159265358979 -3.14159265358979
+pitch_frame_link0_pose=xyz=0.043519236672 -0.0049688054576 0.2020497164153 rpy=1.57079265358979 3.14159265358979 3.14159265358979
+link0_collision_origin=xyz=0 0 0 rpy=-0 0 -0
+collision_mesh=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link0_symp.stl
+collision_mesh_scale=0.001 -0.001 0.001
+collision_aabb_world=min=0.206039202347475 0.0302283424855647 1.49287297881896 max=0.3039756914527 0.0927287454949284 1.6148730228966
+collision_aabb_pitch=min=-0.00541725243322461 -0.0049692764953353 0.141049672338158 max=0.092519236672 0.0575311265140284 0.263049716415796
+
+[right]
+mount_joint=waist_pitch_to_right_arm_mount_joint xyz=0.043519236672 -0.0649688054576 0.2020497164153 rpy=-0 0 -0
+adapter_joint=right_arm_mount_to_openarm_joint xyz=0 0 0 rpy=1.5708 0 -0
+pitch_frame_link0_pose=xyz=0.043519236672 -0.0649688054576 0.2020497164153 rpy=1.5708 0 -0
+link0_collision_origin=xyz=0 0 0 rpy=-0 0 -0
+collision_mesh=package://openarm_description/assets/robot/openarm_v1.0/mesh/arm/collision/link0_symp.stl
+collision_mesh_scale=0.001 0.001 0.001
+collision_aabb_world=min=0.206039202347475 -0.0922711184483284 1.49287297881896 max=0.3039756914527 -0.0297707154389647 1.6148730228966
+collision_aabb_pitch=min=-0.00541725243322461 -0.127468737429228 0.141049672338158 max=0.092519236672 -0.0649683344198647 0.263049716415796
+
+waist_pitch_aabb_world=min=0.22297566559613 -0.0412711844248617 1.25887300435678 max=0.28297566559613 0.0368885425524866 1.61487301961557
+waist_pitch_aabb_pitch=min=0.0115192108154297 -0.0764688034057617 -0.0929503021240234 max=0.0715192108154297 0.00169092357158661 0.263049713134766
+STRUCTURAL_CHAIN_LEFT=fixed_via_left_arm_mount_link
+STRUCTURAL_CHAIN_RIGHT=fixed_via_right_arm_mount_link
+MOVABLE_JOINT_BETWEEN_PITCH_AND_LINK0=false_for_both_sides

@@ -1,0 +1,4 @@
+candidate,robot_fixed_front_x_m,front_inner_plane_x_m,back_inner_plane_x_m,nominal_inner_plane_clearance_m,actual_outer_surface_clearance_m,fixed_body_min_aabb_distance_m,target_x_m,target_y_m,target_z_m,left_link0_to_target_distance_m,left_max_kinematic_reach_m,left_approx_reachable,right_link0_to_target_distance_m,right_max_kinematic_reach_m,right_approx_reachable,amr_aabb_overlap,waist_aabb_overlap
+A,0.365457855225,0.465457855225,0.865457855225,0.1,0.075,0.075,0.665457855225,0.2,0.965,0.737624091003,0.623598893884,false,0.75369877405,0.623598893884,false,false,false
+B,0.365457855225,0.565457855225,0.965457855225,0.2,0.175,0.175,0.765457855225,0.2,0.965,0.797612520201,0.623598893884,false,0.812501246005,0.623598893884,false,false,false
+C,0.365457855225,0.665457855225,1.06545785522,0.3,0.275,0.275,0.865457855225,0.2,0.965,0.8650330428,0.623598893884,false,0.878780238463,0.623598893884,false,false,false

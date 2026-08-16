@@ -1,0 +1,70 @@
+protocol: STAGE_CONSTRAINED_TORSO_RECOVERY_V1
+scope: VERIFIED_JOINT_LIMIT_BOUNDARIES_ONLY
+planning_only: true
+trajectory_execution_performed: false
+fixed_inputs:
+  tcp_position_path: UNCHANGED_FROM_V3_BOUNDARY_AUDIT
+  tcp_orientation: UNCHANGED_FIXED_REFERENCE_ORIENTATION
+  lift_optimized: false
+  edge_threshold_changed: false
+search:
+  yaw_min_deg: -10.0
+  yaw_max_deg: 10.0
+  pitch_min_deg: -10.0
+  pitch_max_deg: 45.0
+  coarse_step_deg: 5.0
+  fine_step_deg: 1.0
+  refine_radius_deg: 4.0
+  static_ik_seeds: 24
+  max_refine_centers: 6
+graph:
+  cartesian_spacing_m: 0.0001
+  max_static_schedules: 16
+  max_nodes_per_schedule_per_layer: 12
+  max_revolute_step_rad: 0.12
+  max_prismatic_step_m: 0.005
+  dense_revolute_resolution_rad: 0.01
+  dense_prismatic_resolution_m: 0.005
+  duplicate_joint_distance: 0.0001
+  positive_margin_epsilon_rad: 1.0e-8
+  tcp_position_tolerance_m: 0.0001
+  tcp_orientation_tolerance_rad: 0.001
+boundaries:
+  - lift_m: 0.35
+    previous_waypoint: 78
+    failed_waypoint: 79
+    previous_z_m: 1.20320934240723
+    failed_z_m: 1.20420613043213
+    refined_lower_z_m: 1.2038074152
+    refined_upper_z_m: 1.2039070940
+    arm_start_rad:
+      - -1.5692187560954
+      - -0.357613530639943
+      - 1.570796
+      - 0.495726060227296
+      - 1.570796
+      - -0.138112535380601
+      - -1.56921721816436
+  - lift_m: 0.40
+    previous_waypoint: 28
+    failed_waypoint: 29
+    previous_z_m: 1.15336994116211
+    failed_z_m: 1.15436672918701
+    refined_lower_z_m: 1.1538683352
+    refined_upper_z_m: 1.1539680140
+    arm_start_rad:
+      - -1.56960111122256
+      - -0.357615638828476
+      - 1.570796
+      - 0.495730201894246
+      - 1.570796
+      - -0.138114567454525
+      - -1.56959957328061
+result_labels:
+  - LOCKED_JOINT_LIMIT_FAILURE
+  - YAW_ONLY_RECOVERY_SUCCESS
+  - PITCH_ONLY_RECOVERY_SUCCESS
+  - YAW_PITCH_RECOVERY_SUCCESS
+  - TORSO_RECOVERY_IK_FAILURE
+  - TORSO_RECOVERY_COLLISION_FAILURE
+  - TORSO_RECOVERY_CONNECTIVITY_FAILURE

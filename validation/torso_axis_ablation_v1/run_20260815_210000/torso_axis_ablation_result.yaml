@@ -1,0 +1,10 @@
+protocol: TORSO_AXIS_ABLATION_V1
+planning_only: true
+input_dir: /home/openarm/humanoid_sim_ws/validation/adaptive_target_boundary_search_v1/run_20260815_201241
+targets: 30
+results: 120
+mode_success: {LOCKED: 0, YAW_ONLY: 30, PITCH_ONLY: 30, YAW_PITCH: 30}
+move_group_started: false
+ompl_started: false
+trajectory_execution_performed: false
+rviz_started: false

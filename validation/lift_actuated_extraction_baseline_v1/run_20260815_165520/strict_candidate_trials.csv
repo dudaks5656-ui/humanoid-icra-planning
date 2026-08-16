@@ -1,0 +1,3 @@
+lift,candidate_rank,seed_id,success,failure_label,failure_stage,failure_waypoint,descent_distance,ascent_distance,max_arm_delta,min_joint3_margin,min_joint5_margin,min_active_margin,min_environment_clearance,min_self_clearance,final_object_clearance,max_expected_z_error,max_xy_error,max_orientation_error,collision_pairs
+0.35,0,1,1,LIFT_ACTUATED_EXTRACTION_SUCCESS,,-1,0.17,0.17,0,1.20034571193806e-06,1.80167321506275e-06,1.20034571193806e-06,0.00253967539994204,0.000659260018009227,0.02,4.44089209850063e-16,0,0,""
+0.4,0,2,1,LIFT_ACTUATED_EXTRACTION_SUCCESS,,-1,0.17,0.17,0,1.30623354865911e-06,1.62136641690402e-06,1.30623354865911e-06,0.00253979832051265,0.000659260018009227,0.0200000000000005,2.22044604925031e-16,0,0,""

@@ -1,0 +1,56 @@
+protocol: BOX_TARGET_YAW_PITCH_FEASIBILITY_PILOT_V1
+planning_only: true
+
+positions:
+  # Applied in addition to the 25 mm half-size of the 50 mm target.
+  minimum_target_to_inner_wall_clearance_m: 0.025
+  labels:
+    - CENTER
+    - NEAR_CENTER
+    - FAR_CENTER
+    - LEFT_CENTER
+    - RIGHT_CENTER
+    - NEAR_LEFT_CORNER
+    - NEAR_RIGHT_CORNER
+    - FAR_LEFT_CORNER
+    - FAR_RIGHT_CORNER
+
+lift_candidates_m: [0.35, 0.40]
+
+locked_baseline:
+  yaw_deg: 0.0
+  pitch_deg: 0.0
+  arm_ik_multistart: 100
+
+yaw_pitch_posture_selection:
+  yaw_min_deg: -10.0
+  yaw_max_deg: 10.0
+  pitch_min_deg: -10.0
+  pitch_max_deg: 45.0
+  coarse_step_deg: 5.0
+  refinement_step_deg: 1.0
+  refinement_half_width_deg: 4.0
+  arm_ik_multistart_per_posture: 12
+
+lift_motion:
+  required_urdf_bounds_m: [0.0, 0.7]
+  maximum_sample_spacing_m: 0.001
+  object_bottom_clearance_above_box_top_m: 0.020
+
+strict_posture_lock:
+  arm_tolerance_rad: 1.0e-12
+  torso_tolerance_rad: 1.0e-12
+  tcp_xy_tolerance_m: 1.0e-8
+  tcp_z_translation_tolerance_m: 1.0e-8
+  tcp_orientation_tolerance_rad: 1.0e-8
+
+immutable_inputs:
+  scene_source: top_open_reference_scene.yaml
+  box_internal_dimensions_m: [0.600, 0.400, 0.150]
+  target_dimensions_m: [0.050, 0.050, 0.050]
+  target_z_m: 0.965
+  grasp_orientation: KINEMATIC_REFERENCE_GRASP_50MM_FIXED_TOP_ORIENTATION
+  q_contact_source: top_open_reference_scene.yaml
+  arm_vertical_ik_allowed: false
+  ompl_allowed: false
+  trajectory_execution_allowed: false

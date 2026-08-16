@@ -1,0 +1,17 @@
+phase,lift,mode,area_m2,completed_rays,expected_rays,interpretation
+PHASE1,0.35,LOCKED,0.05997663496256724,16,16,ray-polygon sample estimate; not exact continuous workspace
+PHASE1,0.35,YAW_ONLY,0.0744556539678166,16,16,ray-polygon sample estimate; not exact continuous workspace
+PHASE1,0.35,PITCH_ONLY,0.09482053550455724,16,16,ray-polygon sample estimate; not exact continuous workspace
+PHASE1,0.35,YAW_PITCH,0.1008531571323605,16,16,ray-polygon sample estimate; not exact continuous workspace
+PHASE1,0.4,LOCKED,0.06339055386269621,16,16,ray-polygon sample estimate; not exact continuous workspace
+PHASE1,0.4,YAW_ONLY,0.07772836268140282,16,16,ray-polygon sample estimate; not exact continuous workspace
+PHASE1,0.4,PITCH_ONLY,0.09641556005065491,16,16,ray-polygon sample estimate; not exact continuous workspace
+PHASE1,0.4,YAW_PITCH,0.10259838492566148,16,16,ray-polygon sample estimate; not exact continuous workspace
+PHASE2,0.3,LOCKED,0.0,8,8,ray-polygon sample estimate; not exact continuous workspace
+PHASE2,0.3,YAW_ONLY,0.05479476513431735,8,8,ray-polygon sample estimate; not exact continuous workspace
+PHASE2,0.3,PITCH_ONLY,0.08101004194002741,8,8,ray-polygon sample estimate; not exact continuous workspace
+PHASE2,0.3,YAW_PITCH,0.08644733953396137,8,8,ray-polygon sample estimate; not exact continuous workspace
+PHASE2,0.45,LOCKED,0.04647282542653286,8,8,ray-polygon sample estimate; not exact continuous workspace
+PHASE2,0.45,YAW_ONLY,0.06632343409478281,8,8,ray-polygon sample estimate; not exact continuous workspace
+PHASE2,0.45,PITCH_ONLY,0.08096584776620326,8,8,ray-polygon sample estimate; not exact continuous workspace
+PHASE2,0.45,YAW_PITCH,0.08514697016335929,8,8,ray-polygon sample estimate; not exact continuous workspace

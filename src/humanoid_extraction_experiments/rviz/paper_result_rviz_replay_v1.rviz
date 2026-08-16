@@ -1,0 +1,83 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.35
+      Cell Size: 0.1
+      Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: World grid
+      Plane: XY
+      Reference Frame: world
+    - Class: moveit_rviz_plugin/MotionPlanning
+      Enabled: true
+      Move Group Namespace: ""
+      Name: Stored planning scene and robot state
+      Planning Scene Topic: /paper_result_replay/planning_scene
+      Robot Description: robot_description
+      Planning Request:
+        Planning Group: left_arm
+      Planned Path:
+        Loop Animation: false
+        State Display Time: 0.20 s
+        Trajectory Topic: /display_planned_path
+      Scene Robot:
+        Robot Alpha: 1
+      Scene Geometry:
+        Scene Alpha: 0.45
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Marker Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /paper_result_replay/markers
+      Name: Box, target, envelope, and case text
+    - Class: rviz_default_plugins/TF
+      Enabled: false
+      Frame Timeout: 15
+      Marker Scale: 0.08
+      Name: TF verification
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+  Enabled: true
+  Global Options:
+    Background Color: 35; 35; 42
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 1.45
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.06
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Field of View: 0.785398
+      Focal Point:
+        X: 0.67
+        Y: 0.20
+        Z: 1.02
+      Invert Z Axis: false
+      Name: Box overview
+      Near Clip Distance: 0.01
+      Pitch: 0.48
+      Target Frame: world
+      Yaw: 2.35
+Window Geometry:
+  Height: 900
+  Width: 1450
+  X: 70
+  Y: 40

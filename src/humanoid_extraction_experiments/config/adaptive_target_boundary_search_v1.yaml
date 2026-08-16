@@ -1,0 +1,54 @@
+protocol: ADAPTIVE_TARGET_BOUNDARY_SEARCH_V1
+planning_only: true
+
+lift_candidates_m: [0.35, 0.40]
+
+boundary_search:
+  coarse_step_m: 0.020
+  medium_step_m: 0.005
+  fine_step_m: 0.001
+  post_failure_points: 2
+
+locked:
+  yaw_deg: 0.0
+  pitch_deg: 0.0
+  arm_ik_multistart: 100
+
+yaw_pitch:
+  yaw_min_deg: -10.0
+  yaw_max_deg: 10.0
+  pitch_min_deg: -10.0
+  # Runtime clamps this requested endpoint to the actual URDF upper bound.
+  pitch_max_deg: 45.0
+  coarse_step_deg: 5.0
+  fine_step_deg: 1.0
+  refinement_half_width_deg: 4.0
+  arm_ik_multistart_per_posture: 8
+
+gripper_envelope:
+  # Actual collision geometry is sampled from finger-open through q_contact_50mm.
+  finger_motion_samples: 21
+  links:
+    - openarm_left_link7
+    - openarm_left_left_finger
+    - openarm_left_right_finger
+
+lift_motion:
+  required_urdf_bounds_m: [0.0, 0.7]
+  maximum_sample_spacing_m: 0.001
+  object_bottom_clearance_above_box_top_m: 0.020
+  arm_vertical_ik_allowed: false
+
+classification:
+  locked_low_margin_rad: 0.020
+  margin_improvement_rad: 0.005
+
+immutable_inputs:
+  scene_source: top_open_reference_scene.yaml
+  box_internal_dimensions_m: [0.600, 0.400, 0.150]
+  target_dimensions_m: [0.050, 0.050, 0.050]
+  target_z_m: 0.965
+  grasp_orientation: KINEMATIC_REFERENCE_GRASP_50MM_FIXED_TOP_ORIENTATION
+  q_contact_source: top_open_reference_scene.yaml
+  ompl_allowed: false
+  trajectory_execution_allowed: false

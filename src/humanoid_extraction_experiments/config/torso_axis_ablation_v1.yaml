@@ -1,0 +1,12 @@
+protocol: TORSO_AXIS_ABLATION_V1
+planning_only: true
+deterministic_multistart_per_posture: 8
+yaw_range_deg: [-10.0, 10.0]
+pitch_range_deg: [-10.0, 45.0]
+coarse_step_deg: 5.0
+refinement_step_deg: 1.0
+refinement_half_width_deg: 4.0
+lift_vertical_distance_m: 0.17
+maximum_lift_sample_spacing_m: 0.001
+arm_vertical_ik_allowed: false
+immutable_input_run: validation/adaptive_target_boundary_search_v1/run_20260815_201241

@@ -1,0 +1,27 @@
+protocol: PAPER_MAIN_SIMULATION_DATASET_V1
+planning_only: true
+deadline_kst: "2026-08-16 10:30:00+09:00"
+ros_domain_id: 42
+ros_localhost_only: true
+deterministic_multistart_per_posture: 8
+phase1:
+  rays: 16
+  angle_step_deg: 22.5
+  lifts_m: [0.35, 0.40]
+  coarse_step_m: 0.010
+  refinement_step_m: 0.002
+  final_step_m: 0.001
+phase2:
+  enabled_if_time: true
+  rays: 8
+  angle_step_deg: 45.0
+  lifts_m: [0.30, 0.45]
+lift_motion:
+  vertical_distance_m: 0.17
+  maximum_sample_spacing_m: 0.001
+  object_box_top_clearance_m: 0.020
+dominance:
+  inject_yaw_only_optimum: true
+  inject_pitch_only_optimum: true
+  lexicographic_order: [extraction_success, arm_min_margin, joint3_joint5_margin, environment_clearance, self_clearance, posture_magnitude]
+forbidden: [hardware, controller, ros2_control, trajectory_execution, ompl, rviz]

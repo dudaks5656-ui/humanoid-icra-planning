@@ -1,0 +1,106 @@
+protocol: ADAPTIVE_TARGET_BOUNDARY_SEARCH_V1
+planning_only: true
+move_group_started: false
+ompl_started: false
+trajectory_execution_performed: false
+rviz_started: false
+gripper_envelope_world_aabb:
+  minimum: [0.644499, 0.128939, 0.94254]
+  maximum: [0.705465, 0.271061, 1.14296]
+boundaries:
+  - ray: Near
+    lift: 0.35
+    last_locked_success_m: 0.169
+    first_locked_failure_m: 0.17
+    yaw_pitch_recovery: false
+    first_gripper_infeasible_m: 0.17
+  - ray: Near
+    lift: 0.4
+    last_locked_success_m: 0.169
+    first_locked_failure_m: 0.17
+    yaw_pitch_recovery: false
+    first_gripper_infeasible_m: 0.17
+  - ray: Far
+    lift: 0.35
+    last_locked_success_m: 0.006
+    first_locked_failure_m: 0.007
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Far
+    lift: 0.4
+    last_locked_success_m: 0.012
+    first_locked_failure_m: 0.013
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Left
+    lift: 0.35
+    last_locked_success_m: 0.039
+    first_locked_failure_m: 0.04
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Left
+    lift: 0.4
+    last_locked_success_m: 0.066
+    first_locked_failure_m: 0.067
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Right
+    lift: 0.35
+    last_locked_success_m: 0.133
+    first_locked_failure_m: 0.134
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Right
+    lift: 0.4
+    last_locked_success_m: 0.155
+    first_locked_failure_m: 0.156
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Near-Left
+    lift: 0.35
+    last_locked_success_m: 0.239
+    first_locked_failure_m: 0.24
+    yaw_pitch_recovery: false
+    first_gripper_infeasible_m: 0.24
+  - ray: Near-Left
+    lift: 0.4
+    last_locked_success_m: 0.239
+    first_locked_failure_m: 0.24
+    yaw_pitch_recovery: false
+    first_gripper_infeasible_m: 0.24
+  - ray: Near-Right
+    lift: 0.35
+    last_locked_success_m: 0.239
+    first_locked_failure_m: 0.24
+    yaw_pitch_recovery: false
+    first_gripper_infeasible_m: 0.24
+  - ray: Near-Right
+    lift: 0.4
+    last_locked_success_m: 0.239
+    first_locked_failure_m: 0.24
+    yaw_pitch_recovery: false
+    first_gripper_infeasible_m: 0.24
+  - ray: Far-Left
+    lift: 0.35
+    last_locked_success_m: 0.007
+    first_locked_failure_m: 0.008
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Far-Left
+    lift: 0.4
+    last_locked_success_m: 0.015
+    first_locked_failure_m: 0.016
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Far-Right
+    lift: 0.35
+    last_locked_success_m: 0.009
+    first_locked_failure_m: 0.01
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan
+  - ray: Far-Right
+    lift: 0.4
+    last_locked_success_m: 0.019
+    first_locked_failure_m: 0.02
+    yaw_pitch_recovery: true
+    first_gripper_infeasible_m: nan

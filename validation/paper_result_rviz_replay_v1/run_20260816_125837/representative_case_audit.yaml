@@ -1,0 +1,99 @@
+protocol: PAPER_RESULT_RVIZ_REPLAY_V1
+created_kst: "2026-08-16T12:58:37+09:00"
+source_run_root: /home/openarm/humanoid_sim_ws/validation/paper_main_simulation_dataset_v1/run_20260815_223216
+source_all_case_results_sha256: f95048fe3e48ebffd3d1f255242a22ea03f8505dd59aa19ae3658aef8b696cf8
+planning_cases_reexecuted: false
+selection_scope: PHASE1_BOUNDARY_AND_NEAR_CENTER_SAMPLES
+selection_rules:
+  LOCKED_COMMON_SUCCESS: "LOCKED success within 20 mm of CENTER; lexicographic maximum Arm margin, minimum collision clearance, then proximity"
+  YAW_ONLY_RECOVERY: "YAW_ONLY success with the exact same target/Lift LOCKED row failed; exclude gripper-envelope physical rejection; maximize Arm margin then clearance"
+  YAW_ONLY_RECOVERY_LOCKED_FAILURE: "exact LOCKED counterpart of the selected YAW_ONLY_RECOVERY target/Lift; static failure display only"
+  PITCH_ONLY_RECOVERY: "PITCH_ONLY success with the exact same target/Lift LOCKED row failed; exclude gripper-envelope physical rejection; maximize Arm margin then clearance"
+  PITCH_ONLY_RECOVERY_LOCKED_FAILURE: "exact LOCKED counterpart of the selected PITCH_ONLY_RECOVERY target/Lift; static failure display only"
+  YAW_PITCH_MAX_BOUNDARY: "maximum Phase-1 YAW_PITCH last-success ray distance; maximize Arm margin and clearance among tied boundary rows; not a synergy label"
+  YAW_PITCH_MIN_SELF_CLEARANCE: "minimum finite self-collision clearance among successful Phase-1 YAW_PITCH rows"
+  GRIPPER_ENVELOPE_INFEASIBLE: "Phase-1 physical-envelope rejection with a single recorded wall pair and minimum distance"
+cases:
+  LOCKED_COMMON_SUCCESS:
+    unique_key: "PHASE1|R8_0.020|R8|0.020|0.400|LOCKED|0"
+    target_xyz: [0.655, 0.2, 0.965]
+    lift: 0.4
+    yaw: 0.0
+    pitch: 0.0
+    arm_min_margin: 0.137807425011307
+    environment_clearance: 0.00253961675696668
+    self_clearance: 0.000659260018009227
+    replay_class: SUCCESS
+  YAW_ONLY_RECOVERY:
+    unique_key: "PHASE1|R3_0.030|R3|0.030|0.400|YAW_ONLY|0"
+    target_xyz: [0.686480502970953, 0.227716385975339, 0.965]
+    lift: 0.4
+    yaw: -0.139626340159546
+    pitch: 0.0
+    arm_min_margin: 0.0528147407605115
+    environment_clearance: 0.00253961840485672
+    self_clearance: 0.000659260018009242
+    replay_class: RECOVERY_SUCCESS
+  YAW_ONLY_RECOVERY_LOCKED_FAILURE:
+    unique_key: "PHASE1|R3_0.030|R3|0.030|0.400|LOCKED|0"
+    target_xyz: [0.686480502970953, 0.227716385975339, 0.965]
+    lift: 0.4
+    yaw: null
+    pitch: null
+    arm_min_margin: null
+    environment_clearance: null
+    self_clearance: null
+    collision_pair: null
+    replay_class: PURE_IK_ABSENCE_NO_STORED_ROBOT_POSTURE
+  PITCH_ONLY_RECOVERY:
+    unique_key: "PHASE1|R3_0.020|R3|0.020|0.350|PITCH_ONLY|0"
+    target_xyz: [0.682653668647302, 0.218477590650226, 0.965]
+    lift: 0.35
+    yaw: 0.0
+    pitch: 0.314159265358979
+    arm_min_margin: 0.436902462077286
+    environment_clearance: 0.00253961181942475
+    self_clearance: 0.000659260018009227
+    replay_class: RECOVERY_SUCCESS
+  PITCH_ONLY_RECOVERY_LOCKED_FAILURE:
+    unique_key: "PHASE1|R3_0.020|R3|0.020|0.350|LOCKED|0"
+    target_xyz: [0.682653668647302, 0.218477590650226, 0.965]
+    lift: 0.35
+    yaw: null
+    pitch: null
+    arm_min_margin: null
+    environment_clearance: null
+    self_clearance: null
+    collision_pair: null
+    replay_class: PURE_IK_ABSENCE_NO_STORED_ROBOT_POSTURE
+  YAW_PITCH_MAX_BOUNDARY:
+    unique_key: "PHASE1|R5_0.247|R5|0.247|0.400|YAW_PITCH|0"
+    target_xyz: [0.580477192205823, 0.428198244530288, 0.965]
+    lift: 0.4
+    yaw: 0.0
+    pitch: 0.191986217719376
+    arm_min_margin: 0.359656232220379
+    environment_clearance: 0.000740795232218483
+    self_clearance: 0.000659260018009241
+    replay_class: MAX_BOUNDARY_NOT_SYNERGY
+  YAW_PITCH_MIN_SELF_CLEARANCE:
+    unique_key: "PHASE1|R0_0.088|R0|0.088|0.350|YAW_PITCH|0"
+    target_xyz: [0.763, 0.2, 0.965]
+    lift: 0.35
+    yaw: -0.0698131700797732
+    pitch: 0.418879020478639
+    arm_min_margin: 0.328883045559583
+    environment_clearance: 0.00253961360003196
+    self_clearance: 0.0000436871386226806
+    replay_class: SIMULATION_NOMINAL_LOW_CLEARANCE
+  GRIPPER_ENVELOPE_INFEASIBLE:
+    unique_key: "PHASE1|R8_0.170|R8|0.170|0.350|LOCKED|0"
+    target_xyz: [0.505, 0.2, 0.965]
+    lift: 0.35
+    yaw: null
+    pitch: null
+    arm_min_margin: null
+    environment_clearance: null
+    self_clearance: null
+    collision_pair: gripper_swept_envelope--box_front_wall
+    replay_class: PHYSICAL_ENVELOPE_FAILURE_NO_STORED_ROBOT_POSTURE

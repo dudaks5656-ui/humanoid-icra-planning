@@ -1,0 +1,25 @@
+target_id,ray,distance_m,lift,mode,seed_banks,success_banks,arm_margin_min,arm_margin_max,yaw_range_rad,pitch_range_rad,interpretation
+PHASE3_R0_D0,R0,0,0.35,LOCKED,5,5,1.35535158762856e-06,1.61715078306202e-06,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D0,R0,0,0.35,PITCH_ONLY,5,5,0.302248760148788,0.515364642011435,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D0,R0,0,0.35,YAW_ONLY,5,5,0.0170997134570883,0.0170997134570883,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D0,R0,0,0.35,YAW_PITCH,5,5,0.438027835098859,0.515364642011435,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D6,R0,0.006,0.35,LOCKED,5,5,7.70456017651355e-07,1.48743963146458e-06,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D6,R0,0.006,0.35,PITCH_ONLY,5,5,0.281566034508627,0.475293728434358,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D6,R0,0.006,0.35,YAW_ONLY,5,5,0.0165673898658196,0.0167122714296557,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D6,R0,0.006,0.35,YAW_PITCH,5,5,0.416661555022333,0.475293728434358,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D7,R0,0.007,0.35,LOCKED,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D7,R0,0.007,0.35,PITCH_ONLY,5,5,0.261998793002217,0.490028760742268,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D7,R0,0.007,0.35,YAW_ONLY,5,5,0.0163878611856501,0.0163878611856501,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D7,R0,0.007,0.35,YAW_PITCH,5,5,0.478211251025297,0.496467427981962,0.0,0.0,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D77,R0,0.077,0.35,LOCKED,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D77,R0,0.077,0.35,PITCH_ONLY,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D77,R0,0.077,0.35,YAW_ONLY,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D77,R0,0.077,0.35,YAW_PITCH,5,5,0.158049280836036,0.231840588943689,0.0,0.017453292519942987,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D90,R0,0.09,0.35,LOCKED,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D90,R0,0.09,0.35,PITCH_ONLY,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D90,R0,0.09,0.35,YAW_ONLY,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R0_D90,R0,0.09,0.35,YAW_PITCH,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R5_D0.248,R5,0.248,0.35,LOCKED,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R5_D0.248,R5,0.248,0.35,PITCH_ONLY,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R5_D0.248,R5,0.248,0.35,YAW_ONLY,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability
+PHASE3_R5_D0.248,R5,0.248,0.35,YAW_PITCH,5,0,nan,nan,nan,nan,deterministic IK seed sensitivity; not physical repeatability

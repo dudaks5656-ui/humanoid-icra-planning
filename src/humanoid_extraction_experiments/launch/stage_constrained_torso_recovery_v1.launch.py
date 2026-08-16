@@ -1,0 +1,123 @@
+import os
+
+import yaml
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, EmitEvent, OpaqueFunction, RegisterEventHandler, TimerAction
+from launch.event_handlers import OnProcessExit
+from launch.events import Shutdown
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration
+from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
+
+
+def _yaml(path):
+    with open(path, "r", encoding="utf-8") as stream:
+        return yaml.safe_load(stream)
+
+
+def _text(path):
+    with open(path, "r", encoding="utf-8") as stream:
+        return stream.read()
+
+
+def _launch(context):
+    validation = LaunchConfiguration("output_dir").perform(context)
+    # Refuse reuse: existing validation evidence is never overwritten.
+    os.makedirs(validation, exist_ok=False)
+    description = get_package_share_directory("humanoid_sim_description")
+    moveit = get_package_share_directory("humanoid_sim_moveit_config")
+    experiment = get_package_share_directory("humanoid_extraction_experiments")
+    xacro = os.path.join(description, "urdf", "humanoid_sim.urdf.xacro")
+    robot_description = {
+        "robot_description": ParameterValue(
+            Command([FindExecutable(name="xacro"), " ", xacro]), value_type=str
+        )
+    }
+    semantic = {"robot_description_semantic": _text(os.path.join(moveit, "config", "humanoid_sim.srdf"))}
+    kinematics = {"robot_description_kinematics": _yaml(os.path.join(moveit, "config", "kinematics.yaml"))}
+    limits = {"robot_description_planning": _yaml(os.path.join(moveit, "config", "joint_limits.yaml"))}
+    pipeline = {
+        "planning_pipelines": ["ompl"],
+        "default_planning_pipeline": "ompl",
+        "ompl": _yaml(os.path.join(moveit, "config", "ompl_planning.yaml")),
+    }
+    common = [robot_description, semantic, kinematics, limits, pipeline]
+    planning_only = {
+        "allow_trajectory_execution": False,
+        "moveit_manage_controllers": False,
+        "publish_robot_description_semantic": True,
+        "publish_planning_scene": True,
+        "publish_geometry_updates": True,
+        "publish_state_updates": True,
+        "publish_transforms_updates": True,
+        "disable_capabilities": "move_group/MoveGroupExecuteTrajectoryAction",
+    }
+    rsp = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        output="screen",
+        parameters=[robot_description],
+    )
+    move_group = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
+        parameters=common + [planning_only],
+    )
+    recovery = Node(
+        package="humanoid_extraction_experiments",
+        executable="stage_constrained_torso_recovery_v1",
+        output="screen",
+        parameters=common + [{
+            "scene_config": os.path.join(experiment, "config", "top_open_reference_scene.yaml"),
+            "candidate_config": os.path.join(experiment, "config", "torso_candidates.yaml"),
+            "torso_recovery_config": os.path.join(
+                experiment, "config", "stage_constrained_torso_recovery_v1.yaml"
+            ),
+            "output_csv": os.path.join(validation, "internal_stages_unused.csv"),
+            "summary_path": os.path.join(validation, "internal_summary_unused.md"),
+            "target_history_csv": os.path.join(validation, "internal_history_unused.csv"),
+            "extraction_clearance_csv": os.path.join(validation, "internal_clearance_unused.csv"),
+            "scene_translation_csv": os.path.join(validation, "internal_translation_unused.csv"),
+            "planning_attempt_id": "torso_recovery_v1_planning_only",
+            "boundary_csv": os.path.join(validation, "internal_boundary_unused.csv"),
+            "comparison_csv": os.path.join(validation, "internal_comparison_unused.csv"),
+            "ik_audit_csv": os.path.join(validation, "internal_ik_unused.csv"),
+            "geometric_csv": os.path.join(validation, "internal_geometric_unused.csv"),
+            "comparison_input_csv": os.path.join(validation, "internal_comparison_input_unused.csv"),
+            "repeat_trials_csv": os.path.join(validation, "internal_repeat_unused.csv"),
+            "budget_sensitivity_csv": os.path.join(validation, "internal_budget_unused.csv"),
+            "analysis_path": os.path.join(validation, "internal_analysis_unused.md"),
+            "reference_trials_csv": os.path.join(validation, "internal_trials_unused.csv"),
+            "reference_trajectory_csv": os.path.join(validation, "internal_trajectory_unused.csv"),
+            "reference_waypoints_yaml": os.path.join(validation, "internal_waypoints_unused.yaml"),
+            "reference_audit_md": os.path.join(validation, "internal_audit_unused.md"),
+            "torso_recovery_static_csv": os.path.join(validation, "torso_recovery_static_candidates.csv"),
+            "torso_recovery_nodes_csv": os.path.join(validation, "torso_recovery_graph_nodes.csv"),
+            "torso_recovery_edges_csv": os.path.join(validation, "torso_recovery_graph_edges.csv"),
+            "torso_recovery_paths_csv": os.path.join(validation, "torso_recovery_paths.csv"),
+            "torso_recovery_summary_csv": os.path.join(validation, "torso_recovery_summary.csv"),
+            "torso_recovery_result_yaml": os.path.join(validation, "torso_recovery_result.yaml"),
+            "torso_recovery_audit_md": os.path.join(validation, "torso_recovery_audit.md"),
+            "hold_for_rviz": False,
+        }],
+    )
+    return [
+        rsp,
+        move_group,
+        TimerAction(period=3.0, actions=[recovery]),
+        RegisterEventHandler(
+            OnProcessExit(
+                target_action=recovery,
+                on_exit=[EmitEvent(event=Shutdown(reason="torso recovery local audit completed"))],
+            )
+        ),
+    ]
+
+
+def generate_launch_description():
+    return LaunchDescription([
+        DeclareLaunchArgument("output_dir"),
+        OpaqueFunction(function=_launch),
+    ])

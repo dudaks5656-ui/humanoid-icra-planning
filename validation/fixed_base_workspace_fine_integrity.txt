@@ -1,0 +1,4 @@
+status=PASS
+physical_points=1440
+configuration_rows=2880
+coarse_manifest_postcheck=PASS

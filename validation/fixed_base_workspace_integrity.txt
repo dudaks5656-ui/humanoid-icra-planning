@@ -1,0 +1,5 @@
+status=PASS
+physical_points=343
+configuration_rows=686
+duplicate_points=0
+classification_consistent=true

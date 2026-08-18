@@ -1,0 +1,50 @@
+fixed_base_workspace_dof_ablation:
+  ros__parameters:
+    base_frame: base_link
+    tcp_frame: openarm_left_hand_tcp
+    arm_group: left_arm
+    full_group: left_arm_with_torso
+
+    # Must equal the immutable fine experiment contract.
+    target_x_min: 0.40
+    target_x_max: 0.75
+    target_y_min: 0.00
+    target_y_max: 0.42
+    target_z_min: 0.60
+    target_z_max: 1.75
+    grid_x: 12
+    grid_y: 10
+    grid_z: 12
+    max_ik_seeds: 150
+    special_validation_ik_seeds: 300
+    required_valid_solutions: 2
+    special_required_valid_solutions: 3
+    ik_timeout_s: 0.008
+    orientation_tolerance_rad: 0.03
+    exact_bound_epsilon: 1.0e-8
+    random_seed: 20260818
+    target_qx: 0.0
+    target_qy: 1.0
+    target_qz: 0.0
+    target_qw: 0.0
+    orientation_source: validation/reference_grasp_50mm.yaml
+    lift_candidate_count: 7
+    yaw_candidate_count: 3
+    pitch_candidate_count: 4
+
+    max_grid_points: 1440
+    max_ik_seeds_hard: 150
+    max_special_ik_seeds_hard: 300
+    max_torso_candidates: 100
+    max_configuration_evaluations: 6000
+    max_new_configuration_evaluations: 2880
+    max_special_revalidation_evaluations: 1500
+    max_total_ik_attempts: 900000
+    max_experiment_wall_time_s: 7200.0
+    progress_every: 25
+    high_z_min: 1.35
+
+    expected_urdf_xacro_sha256: e0bcfb64859d94203eeec45f823dec8d238d72bec6809d81c2c99091942be4e4
+    expected_srdf_sha256: 7892b122fe28e91650f8919a66c256ebc55d3b34472e006701a63cadab5484e8
+    expected_joint_limits_sha256: 1e851fa791dab1c95eeba4a698e620c0334afd12a0c9964b774f24868d03ccfb
+    expected_kinematics_sha256: 7a825c85e6d3bfa06b3ff6d195b3aced8c490d6132d8d94e2d0b01f52e73204e

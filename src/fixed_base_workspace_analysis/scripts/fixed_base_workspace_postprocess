@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+"""Visualize, integrity-check, and seal one fixed-base workspace batch."""
+
+import argparse
+import csv
+import hashlib
+import math
+import os
+import re
+import sys
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+
+PREFIX = "fixed_base_workspace_"
+MANIFEST = PREFIX + "manifest_sha256.txt"
+
+
+def read_csv(path):
+    with open(path, newline="", encoding="utf-8") as stream:
+        return list(csv.DictReader(stream))
+
+
+def triples(rows, predicate=lambda _: True):
+    values = []
+    for row in rows:
+        if predicate(row):
+            values.append((float(row["tcp_x"]), float(row["tcp_y"]), float(row["tcp_z"])))
+    return values
+
+
+def plot_3d(values, title, path, color):
+    figure = plt.figure(figsize=(8, 7), constrained_layout=True)
+    axis = figure.add_subplot(111, projection="3d")
+    if values:
+        x, y, z = zip(*values)
+        axis.scatter(x, y, z, s=17, alpha=0.82, color=color, depthshade=False)
+    axis.set_title(title)
+    axis.set_xlabel("X forward/backward [m]")
+    axis.set_ylabel("Y left/right [m]")
+    axis.set_zlabel("Z vertical [m]")
+    axis.view_init(elev=24, azim=-58)
+    figure.savefig(path, dpi=180)
+    plt.close(figure)
+
+
+def plot_projection(comparison, plane, path):
+    axes = {"xy": ("tcp_x", "tcp_y", "X [m]", "Y [m]"),
+            "xz": ("tcp_x", "tcp_z", "X [m]", "Z [m]"),
+            "yz": ("tcp_y", "tcp_z", "Y [m]", "Z [m]")}
+    key_a, key_b, label_a, label_b = axes[plane]
+    colors = {"COMMON_REACHABLE": "#2ca02c", "TORSO_EXPANDED": "#ff7f0e",
+              "LIFT_ONLY_ONLY": "#9467bd", "UNREACHABLE_BOTH": "#bdbdbd"}
+    figure, axis = plt.subplots(figsize=(8, 7), constrained_layout=True)
+    for classification in ("UNREACHABLE_BOTH", "COMMON_REACHABLE", "TORSO_EXPANDED", "LIFT_ONLY_ONLY"):
+        selected = [row for row in comparison if row["classification"] == classification]
+        if selected:
+            axis.scatter([float(row[key_a]) for row in selected],
+                         [float(row[key_b]) for row in selected], s=18,
+                         alpha=0.72, color=colors[classification], label=classification)
+    axis.set_xlabel(label_a)
+    axis.set_ylabel(label_b)
+    axis.set_title(f"Fixed-base workspace {plane.upper()} projection")
+    axis.grid(True, alpha=0.25)
+    axis.legend(loc="best", fontsize=8)
+    axis.set_aspect("equal", adjustable="box")
+    figure.savefig(path, dpi=180)
+    plt.close(figure)
+
+
+def validate(output_dir, points, comparison, summaries, expansion, metadata):
+    issues = []
+    metadata_map = {row["key"]: row["value"] for row in metadata}
+    expected = int(metadata_map["physical_points"])
+    if len(points) != 2 * expected:
+        issues.append(f"points rows {len(points)} != {2 * expected}")
+    if len(comparison) != expected:
+        issues.append(f"comparison rows {len(comparison)} != {expected}")
+    if len(summaries) != 2:
+        issues.append(f"summary rows {len(summaries)} != 2")
+    if len(expansion) != 1:
+        issues.append(f"expansion rows {len(expansion)} != 1")
+
+    keys = [(row["point_id"], row["configuration"]) for row in points]
+    if len(keys) != len(set(keys)):
+        issues.append("duplicate (point_id, configuration) rows")
+    point_ids = [row["point_id"] for row in comparison]
+    if len(point_ids) != len(set(point_ids)):
+        issues.append("duplicate physical point rows")
+    grouped = {}
+    for row in points:
+        grouped.setdefault(row["point_id"], set()).add(row["configuration"])
+    required_configs = {"LIFT_ONLY", "LIFT_YAW_PITCH"}
+    bad = [point_id for point_id, configs in grouped.items() if configs != required_configs]
+    if bad:
+        issues.append(f"points without exactly two configurations: {bad[:10]}")
+
+    valid_classes = {"COMMON_REACHABLE", "TORSO_EXPANDED", "LIFT_ONLY_ONLY", "UNREACHABLE_BOTH"}
+    for row in comparison:
+        a = row["lift_only_success"] == "1"
+        b = row["lift_yaw_pitch_success"] == "1"
+        expected_class = ("COMMON_REACHABLE" if a and b else "TORSO_EXPANDED" if b else
+                          "LIFT_ONLY_ONLY" if a else "UNREACHABLE_BOTH")
+        if row["classification"] not in valid_classes or row["classification"] != expected_class:
+            issues.append(f"classification inconsistency at point {row['point_id']}")
+            break
+
+    required_finite = ("tcp_x", "tcp_y", "tcp_z", "runtime_ms")
+    for row in points:
+        for field in required_finite:
+            try:
+                value = float(row[field])
+            except ValueError:
+                issues.append(f"non-numeric {field} at point {row['point_id']}")
+                continue
+            if not math.isfinite(value):
+                issues.append(f"non-finite {field} at point {row['point_id']}")
+    for name in os.listdir(output_dir):
+        if name.startswith(PREFIX) and name.endswith((".csv", ".md")):
+            with open(os.path.join(output_dir, name), encoding="utf-8") as stream:
+                content = stream.read()
+            if re.search(r"(?i)(?<![A-Za-z])(nan|[-+]?inf)(?![A-Za-z])", content):
+                issues.append(f"NaN/Inf token in {name}")
+
+    required_metadata = {"voxel_dx", "voxel_dy", "voxel_dz", "voxel_volume",
+                         "bbox_x_min", "bbox_x_max", "bbox_y_min", "bbox_y_max",
+                         "bbox_z_min", "bbox_z_max", "orientation_qx", "orientation_qy",
+                         "orientation_qz", "orientation_qw", "grid_x", "grid_y", "grid_z"}
+    missing = sorted(required_metadata - set(metadata_map))
+    if missing:
+        issues.append("missing metadata: " + ", ".join(missing))
+    return issues
+
+
+def write_manifest(output_dir):
+    manifest_path = os.path.join(output_dir, MANIFEST)
+    names = sorted(name for name in os.listdir(output_dir)
+                   if name.startswith(PREFIX) and name != MANIFEST and
+                   os.path.isfile(os.path.join(output_dir, name)))
+    entries = []
+    for name in names:
+        digest = hashlib.sha256()
+        with open(os.path.join(output_dir, name), "rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        entries.append((digest.hexdigest(), name))
+    with open(manifest_path, "w", encoding="utf-8") as stream:
+        for digest, name in entries:
+            stream.write(f"{digest}  {name}\n")
+    for expected, name in entries:
+        actual = hashlib.sha256(open(os.path.join(output_dir, name), "rb").read()).hexdigest()
+        if actual != expected:
+            raise RuntimeError(f"manifest verification failed for {name}")
+    return len(entries)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--config", required=True)
+    args = parser.parse_args()
+    output_dir = os.path.abspath(args.output_dir)
+
+    paths = {name: os.path.join(output_dir, PREFIX + name) for name in (
+        "points.csv", "comparison.csv", "summary.csv", "torso_expansion.csv", "metadata.csv", "audit.md")}
+    missing = [path for path in paths.values() if not os.path.isfile(path)]
+    if missing:
+        raise RuntimeError("workspace runner did not produce required outputs: " + ", ".join(missing))
+
+    points = read_csv(paths["points.csv"])
+    comparison = read_csv(paths["comparison.csv"])
+    summaries = read_csv(paths["summary.csv"])
+    expansion = read_csv(paths["torso_expansion.csv"])
+    metadata = read_csv(paths["metadata.csv"])
+
+    lift = triples(points, lambda row: row["configuration"] == "LIFT_ONLY" and row["success"] == "1")
+    torso = triples(points, lambda row: row["configuration"] == "LIFT_YAW_PITCH" and row["success"] == "1")
+    expanded = triples(comparison, lambda row: row["classification"] == "TORSO_EXPANDED")
+    plot_3d(lift, "Lift-only reachable workspace", os.path.join(output_dir, PREFIX + "lift_only_3d.png"), "#1f77b4")
+    plot_3d(torso, "Lift + yaw + pitch reachable workspace",
+            os.path.join(output_dir, PREFIX + "lift_yaw_pitch_3d.png"), "#2ca02c")
+    plot_3d(expanded, "Torso-expanded workspace", os.path.join(output_dir, PREFIX + "torso_expanded_3d.png"), "#ff7f0e")
+    for plane in ("xy", "xz", "yz"):
+        plot_projection(comparison, plane, os.path.join(output_dir, PREFIX + f"projection_{plane}.png"))
+
+    issues = validate(output_dir, points, comparison, summaries, expansion, metadata)
+    integrity_path = os.path.join(output_dir, PREFIX + "integrity.txt")
+    with open(integrity_path, "w", encoding="utf-8") as stream:
+        stream.write("status=" + ("PASS" if not issues else "FAIL") + "\n")
+        stream.write(f"physical_points={len(comparison)}\n")
+        stream.write(f"configuration_rows={len(points)}\n")
+        stream.write(f"duplicate_points=0\n" if not any("duplicate" in x for x in issues) else "duplicate_points=DETECTED\n")
+        stream.write(f"classification_consistent={'true' if not any('classification' in x for x in issues) else 'false'}\n")
+        for issue in issues:
+            stream.write("issue=" + issue + "\n")
+    if issues:
+        raise RuntimeError("integrity validation failed: " + "; ".join(issues))
+
+    with open(paths["audit.md"], "a", encoding="utf-8") as stream:
+        stream.write("\n## Visualization and integrity\n\n")
+        stream.write("- 3D views generated for lift-only, lift+yaw+pitch, and torso-expanded points.\n")
+        stream.write("- XY, XZ, and YZ classification projections generated.\n")
+        stream.write("- Integrity checks: PASS (row counts, two configurations per point, duplicates, finite tokens, classification consistency, metadata).\n")
+        stream.write("- SHA-256 manifest generated and verified after all outputs were finalized.\n")
+        stream.write(f"- Runtime configuration: `{os.path.abspath(args.config)}`\n")
+
+    count = write_manifest(output_dir)
+    print(f"FIXED_BASE_WORKSPACE postprocess PASS manifest_files={count}", flush=True)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as error:
+        print(f"FIXED_BASE_WORKSPACE postprocess FAIL: {error}", file=sys.stderr, flush=True)
+        sys.exit(1)

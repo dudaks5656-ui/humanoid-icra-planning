@@ -1,0 +1,2 @@
+common_reachable_count,torso_expanded_count,lift_only_only_count,unreachable_both_count,lift_only_volume,lift_yaw_pitch_volume,delta_volume,percentage_volume_increase,selected_yaw_distribution,selected_pitch_distribution,selected_lift_distribution
+28,7,1,307,0.28525605339479,0.344274547200608,0.0590184938058186,20.6896551724138,-0.116355333333333:2;-2.77555756156289e-17:2;0.116355333333333:3,0.185441125:4;0.425423875:3,0.05:1;0.15:2;0.45:2;0.55:2

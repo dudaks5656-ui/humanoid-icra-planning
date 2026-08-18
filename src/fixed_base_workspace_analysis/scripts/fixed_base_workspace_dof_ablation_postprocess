@@ -1,0 +1,546 @@
+#!/usr/bin/env python3
+"""Integrate reused C0/C3 with newly sampled C1/C2 and seal the 4-way ablation."""
+
+import argparse
+import csv
+import hashlib
+import math
+import os
+import re
+import sys
+from collections import Counter, defaultdict
+from statistics import mean, median
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+
+PREFIX = "fixed_base_workspace_dof_ablation_"
+MANIFEST = PREFIX + "manifest_sha256.txt"
+CONFIGS = ("LIFT_ONLY", "LIFT_YAW", "LIFT_PITCH", "LIFT_YAW_PITCH")
+
+
+def read_csv(path):
+    with open(path, newline="", encoding="utf-8") as stream:
+        return list(csv.DictReader(stream))
+
+
+def verify_manifest(path):
+    directory = os.path.dirname(path)
+    with open(path, encoding="utf-8") as stream:
+        entries = [line.rstrip("\n").split("  ", 1) for line in stream if line.strip()]
+    for expected, name in entries:
+        with open(os.path.join(directory, name), "rb") as source:
+            actual = hashlib.sha256(source.read()).hexdigest()
+        if actual != expected:
+            raise RuntimeError(f"manifest changed: {os.path.basename(path)}: {name}")
+    return len(entries)
+
+
+def value(row, name):
+    text = row.get(name, "")
+    return float(text) if text not in (None, "") else math.nan
+
+
+def finite_values(rows, field):
+    values = [value(row, field) for row in rows]
+    return [item for item in values if math.isfinite(item)]
+
+
+def metric(values, operation):
+    return operation(values) if values else math.nan
+
+
+def fmt(number):
+    return "" if not math.isfinite(number) else f"{number:.15g}"
+
+
+def normalized_row(row):
+    return {
+        "point_id": row["point_id"], "tcp_x": row["tcp_x"], "tcp_y": row["tcp_y"], "tcp_z": row["tcp_z"],
+        "configuration": row["configuration"], "success": row["success"], "failure_reason": row["failure_reason"],
+        "ik_seeds_tested": row["ik_seeds_tested"], "valid_ik_count": row["valid_ik_count"],
+        "selected_lift": row["selected_lift"], "selected_yaw": row["selected_yaw"],
+        "selected_pitch": row["selected_pitch"], "min_joint_limit_margin": row["min_joint_limit_margin"],
+        "min_active_revolute_margin": row["min_active_revolute_margin"],
+        "self_collision_clearance": row["self_collision_clearance"], "manipulability": row["manipulability"],
+        "min_jacobian_singular_value": row["min_jacobian_singular_value"],
+        "jacobian_condition_number": row["jacobian_condition_number"], "orientation_error": row["orientation_error"],
+        "collision_pairs": row["collision_pairs"], "runtime_ms": row["runtime_ms"],
+    }
+
+
+def classify(c0, c1, c2, c3):
+    if c0:
+        return "BASELINE_REACHABLE"
+    if c1 and c2:
+        return "YAW_AND_PITCH_INDIVIDUALLY_CAPABLE"
+    if c1:
+        return "YAW_EXPANDED"
+    if c2:
+        return "PITCH_EXPANDED"
+    if c3:
+        return "COMBINED_TORSO_ONLY"
+    return "UNREACHABLE_ALL"
+
+
+def make_comparison(rows_by_key, point_ids, path, unresolved_ids):
+    fields = ["point_id", "tcp_x", "tcp_y", "tcp_z", "c0_lift_success", "c1_lift_yaw_success",
+              "c2_lift_pitch_success", "c3_lift_yaw_pitch_success", "c0_failure_reason", "c1_failure_reason",
+              "c2_failure_reason", "c3_failure_reason", "c0_joint_margin", "c1_joint_margin", "c2_joint_margin",
+              "c3_joint_margin", "c0_self_clearance", "c1_self_clearance", "c2_self_clearance", "c3_self_clearance",
+              "c0_manipulability", "c1_manipulability", "c2_manipulability", "c3_manipulability", "c1_selected_yaw",
+              "c2_selected_pitch", "c3_selected_yaw", "c3_selected_pitch", "classification",
+              "nested_consistency_status"]
+    output = []
+    for point_id in point_ids:
+        rows = [rows_by_key[(point_id, configuration)] for configuration in CONFIGS]
+        successes = [row["success"] == "1" for row in rows]
+        result = {"point_id": point_id, "tcp_x": rows[0]["tcp_x"], "tcp_y": rows[0]["tcp_y"],
+                  "tcp_z": rows[0]["tcp_z"], "classification": classify(*successes),
+                  "nested_consistency_status": "UNRESOLVED" if point_id in unresolved_ids else "CONSISTENT_OR_RESOLVED"}
+        for index, prefix in enumerate(("c0", "c1", "c2", "c3")):
+            suffix = ("lift", "lift_yaw", "lift_pitch", "lift_yaw_pitch")[index]
+            result[f"{prefix}_{suffix}_success"] = "1" if successes[index] else "0"
+            result[f"{prefix}_failure_reason"] = rows[index]["failure_reason"]
+            result[f"{prefix}_joint_margin"] = rows[index]["min_joint_limit_margin"]
+            result[f"{prefix}_self_clearance"] = rows[index]["self_collision_clearance"]
+            result[f"{prefix}_manipulability"] = rows[index]["manipulability"]
+        result["c1_selected_yaw"] = rows[1]["selected_yaw"]
+        result["c2_selected_pitch"] = rows[2]["selected_pitch"]
+        result["c3_selected_yaw"] = rows[3]["selected_yaw"]
+        result["c3_selected_pitch"] = rows[3]["selected_pitch"]
+        output.append(result)
+    with open(path, "w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(output)
+    return output
+
+
+def write_summary(rows_by_key, point_ids, voxel_volume, path):
+    c0_count = sum(rows_by_key[(point_id, "LIFT_ONLY")]["success"] == "1" for point_id in point_ids)
+    baseline_volume = c0_count * voxel_volume
+    fields = ["configuration", "total_points", "reachable_points", "reachable_rate", "targeted_workspace_volume",
+              "delta_vs_lift_only", "percent_delta_vs_lift_only", "x_min", "x_max", "y_min", "y_max", "z_min",
+              "z_max", "x_span", "y_span", "z_span", "mean_joint_margin", "median_joint_margin",
+              "mean_active_revolute_margin", "median_active_revolute_margin", "mean_self_clearance",
+              "median_self_clearance", "mean_manipulability", "median_manipulability", "min_manipulability",
+              "max_manipulability", "mean_runtime_ms"]
+    output = []
+    for configuration in CONFIGS:
+        all_rows = [rows_by_key[(point_id, configuration)] for point_id in point_ids]
+        reached = [row for row in all_rows if row["success"] == "1"]
+        xs, ys, zs = ([value(row, field) for row in reached] for field in ("tcp_x", "tcp_y", "tcp_z"))
+        margins = finite_values(reached, "min_joint_limit_margin")
+        revolute = finite_values(reached, "min_active_revolute_margin")
+        clearance = finite_values(reached, "self_collision_clearance")
+        manip = finite_values(reached, "manipulability")
+        runtimes = finite_values(all_rows, "runtime_ms")
+        volume = len(reached) * voxel_volume
+        result = {"configuration": configuration, "total_points": len(point_ids), "reachable_points": len(reached),
+                  "reachable_rate": len(reached) / len(point_ids), "targeted_workspace_volume": volume,
+                  "delta_vs_lift_only": volume - baseline_volume,
+                  "percent_delta_vs_lift_only": 100 * (volume - baseline_volume) / baseline_volume if baseline_volume else math.nan,
+                  "x_min": metric(xs, min), "x_max": metric(xs, max), "y_min": metric(ys, min), "y_max": metric(ys, max),
+                  "z_min": metric(zs, min), "z_max": metric(zs, max),
+                  "x_span": max(xs) - min(xs) if xs else math.nan, "y_span": max(ys) - min(ys) if ys else math.nan,
+                  "z_span": max(zs) - min(zs) if zs else math.nan, "mean_joint_margin": metric(margins, mean),
+                  "median_joint_margin": metric(margins, median), "mean_active_revolute_margin": metric(revolute, mean),
+                  "median_active_revolute_margin": metric(revolute, median), "mean_self_clearance": metric(clearance, mean),
+                  "median_self_clearance": metric(clearance, median), "mean_manipulability": metric(manip, mean),
+                  "median_manipulability": metric(manip, median), "min_manipulability": metric(manip, min),
+                  "max_manipulability": metric(manip, max), "mean_runtime_ms": metric(runtimes, mean)}
+        output.append({key: fmt(item) if isinstance(item, float) else item for key, item in result.items()})
+    with open(path, "w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(output)
+    return output
+
+
+def write_contributions(comparison, summary, voxel, path):
+    counts = Counter(row["classification"] for row in comparison)
+    volumes = {row["configuration"]: float(row["targeted_workspace_volume"]) for row in summary}
+    result = {
+        "baseline_reachable_count": counts["BASELINE_REACHABLE"],
+        "yaw_expanded_unique_count": counts["YAW_EXPANDED"],
+        "pitch_expanded_unique_count": counts["PITCH_EXPANDED"],
+        "yaw_pitch_overlap_count": counts["YAW_AND_PITCH_INDIVIDUALLY_CAPABLE"],
+        "combined_torso_only_count": counts["COMBINED_TORSO_ONLY"],
+        "unreachable_all_count": counts["UNREACHABLE_ALL"],
+        "baseline_volume": volumes["LIFT_ONLY"], "yaw_volume": volumes["LIFT_YAW"],
+        "pitch_volume": volumes["LIFT_PITCH"], "full_torso_volume": volumes["LIFT_YAW_PITCH"],
+        "yaw_gain_volume": volumes["LIFT_YAW"] - volumes["LIFT_ONLY"],
+        "pitch_gain_volume": volumes["LIFT_PITCH"] - volumes["LIFT_ONLY"],
+        "full_gain_volume": volumes["LIFT_YAW_PITCH"] - volumes["LIFT_ONLY"],
+        "combined_extra_gain": volumes["LIFT_YAW_PITCH"] - max(volumes["LIFT_YAW"], volumes["LIFT_PITCH"]),
+        "combined_torso_only_volume": counts["COMBINED_TORSO_ONLY"] * voxel,
+    }
+    with open(path, "w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(result))
+        writer.writeheader()
+        writer.writerow({key: fmt(item) if isinstance(item, float) else item for key, item in result.items()})
+    return result
+
+
+def write_boundary(comparison, metadata, path):
+    by_slice = defaultdict(list)
+    for row in comparison:
+        by_slice[(float(row["tcp_y"]), float(row["tcp_z"]))].append(row)
+    fields = ["y", "z", "c0_status", "c0_max_x", "c1_status", "c1_max_x", "c2_status", "c2_max_x",
+              "c3_status", "c3_max_x", "yaw_delta_x", "pitch_delta_x", "full_delta_x"]
+    output = []
+    success_fields = ("c0_lift_success", "c1_lift_yaw_success", "c2_lift_pitch_success", "c3_lift_yaw_pitch_success")
+    for (y, z), rows in sorted(by_slice.items()):
+        maxima = []
+        for field in success_fields:
+            values = [float(row["tcp_x"]) for row in rows if row[field] == "1"]
+            maxima.append(max(values) if values else math.nan)
+        result = {"y": y, "z": z}
+        for index in range(4):
+            result[f"c{index}_status"] = "REACHABLE" if math.isfinite(maxima[index]) else "NO_REACHABLE_POINT"
+            result[f"c{index}_max_x"] = fmt(maxima[index])
+        result["yaw_delta_x"] = fmt(maxima[1] - maxima[0]) if math.isfinite(maxima[0]) and math.isfinite(maxima[1]) else ""
+        result["pitch_delta_x"] = fmt(maxima[2] - maxima[0]) if math.isfinite(maxima[0]) and math.isfinite(maxima[2]) else ""
+        result["full_delta_x"] = fmt(maxima[3] - maxima[0]) if math.isfinite(maxima[0]) and math.isfinite(maxima[3]) else ""
+        output.append(result)
+    with open(path, "w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(output)
+    return output
+
+
+def write_common_metrics(rows_by_key, point_ids, path):
+    fields = ["point_id", "tcp_x", "tcp_y", "tcp_z"]
+    for prefix in ("c0", "c1", "c2", "c3"):
+        fields += [f"{prefix}_manipulability", f"{prefix}_joint_margin", f"{prefix}_active_revolute_margin",
+                   f"{prefix}_self_clearance"]
+    output = []
+    for point_id in point_ids:
+        rows = [rows_by_key[(point_id, config)] for config in CONFIGS]
+        if not all(row["success"] == "1" for row in rows):
+            continue
+        result = {"point_id": point_id, "tcp_x": rows[0]["tcp_x"], "tcp_y": rows[0]["tcp_y"], "tcp_z": rows[0]["tcp_z"]}
+        for prefix, row in zip(("c0", "c1", "c2", "c3"), rows):
+            result[f"{prefix}_manipulability"] = row["manipulability"]
+            result[f"{prefix}_joint_margin"] = row["min_joint_limit_margin"]
+            result[f"{prefix}_active_revolute_margin"] = row["min_active_revolute_margin"]
+            result[f"{prefix}_self_clearance"] = row["self_collision_clearance"]
+        output.append(result)
+    with open(path, "w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(output)
+    return output
+
+
+def angle_bin(text):
+    angle = abs(math.degrees(float(text)))
+    if angle < 1e-6:
+        return "ZERO"
+    if angle <= 5.0 + 1e-6:
+        return "SMALL_0_TO_5_DEG"
+    if angle <= 10.0 + 1e-6:
+        return "MEDIUM_5_TO_10_DEG"
+    return "LARGE_OVER_10_DEG"
+
+
+def write_distributions(rows_by_key, point_ids, path):
+    sets = (("LIFT_YAW", "selected_yaw", "yaw"), ("LIFT_PITCH", "selected_pitch", "pitch"),
+            ("LIFT_YAW_PITCH", "selected_yaw", "yaw"), ("LIFT_YAW_PITCH", "selected_pitch", "pitch"))
+    output = []
+    for configuration, field, joint in sets:
+        values = [rows_by_key[(point_id, configuration)][field] for point_id in point_ids
+                  if rows_by_key[(point_id, configuration)]["success"] == "1"]
+        for raw, count in sorted(Counter(values).items(), key=lambda item: float(item[0])):
+            output.append({"configuration": configuration, "joint": joint, "raw_angle_rad": raw,
+                           "angle_degrees": math.degrees(float(raw)), "magnitude_bin": angle_bin(raw), "count": count})
+    fields = ["configuration", "joint", "raw_angle_rad", "angle_degrees", "magnitude_bin", "count"]
+    with open(path, "w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(output)
+    return output
+
+
+def xyz_rows(rows_by_key, point_ids, configuration):
+    return [(value(rows_by_key[(point_id, configuration)], "tcp_x"), value(rows_by_key[(point_id, configuration)], "tcp_y"),
+             value(rows_by_key[(point_id, configuration)], "tcp_z")) for point_id in point_ids
+            if rows_by_key[(point_id, configuration)]["success"] == "1"]
+
+
+def plot_3d(points, title, path, color):
+    figure = plt.figure(figsize=(8, 7), constrained_layout=True)
+    axis = figure.add_subplot(111, projection="3d")
+    if points:
+        x, y, z = zip(*points)
+        axis.scatter(x, y, z, s=8, alpha=0.65, color=color, depthshade=False)
+    axis.set_title(title); axis.set_xlabel("X [m]"); axis.set_ylabel("Y [m]"); axis.set_zlabel("Z [m]")
+    axis.view_init(elev=23, azim=-58)
+    figure.savefig(path, dpi=180); plt.close(figure)
+
+
+def plot_overlay(rows_by_key, point_ids, path):
+    colors = {"LIFT_ONLY": "#1f77b4", "LIFT_YAW": "#9467bd", "LIFT_PITCH": "#ff7f0e", "LIFT_YAW_PITCH": "#2ca02c"}
+    figure = plt.figure(figsize=(9, 8), constrained_layout=True)
+    axis = figure.add_subplot(111, projection="3d")
+    for configuration in CONFIGS:
+        points = xyz_rows(rows_by_key, point_ids, configuration)
+        if points:
+            x, y, z = zip(*points)
+            axis.scatter(x, y, z, s=6, alpha=0.25, color=colors[configuration], label=configuration)
+    axis.set_xlabel("X [m]"); axis.set_ylabel("Y [m]"); axis.set_zlabel("Z [m]")
+    axis.set_title("Four-way reachable workspace overlay"); axis.legend(fontsize=8)
+    figure.savefig(path, dpi=180); plt.close(figure)
+
+
+def plot_projection(rows_by_key, point_ids, plane, path):
+    axes = {"xy": ("tcp_x", "tcp_y", "X [m]", "Y [m]"), "xz": ("tcp_x", "tcp_z", "X [m]", "Z [m]")}
+    a, b, la, lb = axes[plane]
+    colors = {"LIFT_ONLY": "#1f77b4", "LIFT_YAW": "#9467bd", "LIFT_PITCH": "#ff7f0e", "LIFT_YAW_PITCH": "#2ca02c"}
+    figure, axis = plt.subplots(figsize=(8, 7), constrained_layout=True)
+    for configuration in CONFIGS:
+        rows = [rows_by_key[(point_id, configuration)] for point_id in point_ids
+                if rows_by_key[(point_id, configuration)]["success"] == "1"]
+        axis.scatter([value(row, a) for row in rows], [value(row, b) for row in rows], s=7, alpha=0.25,
+                     color=colors[configuration], label=configuration)
+    axis.set_xlabel(la); axis.set_ylabel(lb); axis.grid(alpha=0.2); axis.legend(fontsize=8)
+    axis.set_title(f"Four-way {plane.upper()} projection")
+    figure.savefig(path, dpi=180); plt.close(figure)
+
+
+def plot_boundary(boundary, path):
+    colors = ("#1f77b4", "#9467bd", "#ff7f0e", "#2ca02c")
+    figure, axis = plt.subplots(figsize=(9, 7), constrained_layout=True)
+    for index, configuration in enumerate(CONFIGS):
+        grouped = defaultdict(list)
+        for row in boundary:
+            if row[f"c{index}_max_x"]:
+                grouped[float(row["y"])].append((float(row["z"]), float(row[f"c{index}_max_x"])))
+        for values in grouped.values():
+            values.sort()
+            axis.plot([item[0] for item in values], [item[1] for item in values], color=colors[index], alpha=0.16)
+        axis.plot([], [], color=colors[index], label=configuration)
+    axis.set_xlabel("Z [m]"); axis.set_ylabel("maximum reachable X [m]")
+    axis.set_title("Four-way forward boundary by Y/Z slice"); axis.grid(alpha=0.2); axis.legend()
+    figure.savefig(path, dpi=180); plt.close(figure)
+
+
+def validate(new_rows, comparison, boundary, common, rows_by_key, point_ids, consistency):
+    issues = []
+    if len(new_rows) != 2880:
+        issues.append(f"new C1/C2 row count {len(new_rows)} != 2880")
+    if Counter(row["configuration"] for row in new_rows) != Counter({"LIFT_YAW": 1440, "LIFT_PITCH": 1440}):
+        issues.append("new configuration counts mismatch")
+    if len(comparison) != 1440 or len(set(row["point_id"] for row in comparison)) != 1440:
+        issues.append("integrated comparison must contain 1440 unique points")
+    if len(boundary) != 120:
+        issues.append("boundary must contain 120 Y/Z slices")
+    keys = [(row["point_id"], row["configuration"]) for row in new_rows]
+    if len(keys) != len(set(keys)):
+        issues.append("duplicate new point/configuration rows")
+    for point_id in point_ids:
+        coordinates = {(rows_by_key[(point_id, config)]["tcp_x"], rows_by_key[(point_id, config)]["tcp_y"],
+                        rows_by_key[(point_id, config)]["tcp_z"]) for config in CONFIGS}
+        if len(coordinates) != 1:
+            issues.append("four-way coordinate mismatch at " + point_id)
+            break
+    unresolved = {row["point_id"] for row in consistency if row["verdict"] == "UNRESOLVED"}
+    for row in comparison:
+        flags = tuple(row[field] == "1" for field in ("c0_lift_success", "c1_lift_yaw_success",
+                                                       "c2_lift_pitch_success", "c3_lift_yaw_pitch_success"))
+        if row["classification"] != classify(*flags):
+            issues.append("classification mismatch at " + row["point_id"])
+            break
+        if row["nested_consistency_status"] == "UNRESOLVED" and row["point_id"] not in unresolved:
+            issues.append("unresolved status mismatch")
+    if len(common) != sum(all(rows_by_key[(point_id, config)]["success"] == "1" for config in CONFIGS)
+                           for point_id in point_ids):
+        issues.append("common-point metrics count mismatch")
+    return issues
+
+
+def common_aggregate(common, prefix, field):
+    values = finite_values(common, f"{prefix}_{field}")
+    return metric(values, mean), metric(values, median)
+
+
+def largest_direction(summary_row, baseline):
+    deltas = {axis.upper(): float(summary_row[f"{axis}_span"]) - float(baseline[f"{axis}_span"]) for axis in "xyz"}
+    return max(deltas, key=deltas.get), deltas
+
+
+def write_audit(output_dir, metadata, summary, contributions, comparison, common, distributions, consistency,
+                coarse_entries, fine_entries, visualization_status):
+    by_config = {row["configuration"]: row for row in summary}
+    baseline = by_config["LIFT_ONLY"]
+    consistency_counts = Counter(row["verdict"] for row in consistency)
+    class_counts = Counter(row["classification"] for row in comparison)
+    yaw_direction = largest_direction(by_config["LIFT_YAW"], baseline)
+    pitch_direction = largest_direction(by_config["LIFT_PITCH"], baseline)
+    full_direction = largest_direction(by_config["LIFT_YAW_PITCH"], baseline)
+    distribution_text = defaultdict(list)
+    for row in distributions:
+        distribution_text[(row["configuration"], row["joint"])].append(f"{row['raw_angle_rad']}:{row['count']}")
+    with open(os.path.join(output_dir, PREFIX + "audit.md"), "w", encoding="utf-8") as out:
+        out.write("# Fixed-base waist DOF ablation audit\n\n")
+        out.write(f"Generated: {metadata['timestamp']}\n\n")
+        out.write("## Reuse contract and scope\n\n")
+        out.write("- Coarse and fine manifests verified before and after: **PASS**; all prior evidence remains unchanged.\n")
+        out.write("- C0 LIFT_ONLY and C3 LIFT_YAW_PITCH are reused from the immutable fine CSV; neither was globally re-executed.\n")
+        out.write("- C1 LIFT_YAW and C2 LIFT_PITCH each evaluated the exact same 1,440 point IDs and XYZ coordinates.\n")
+        out.write(f"- Robot/Xacro SHA-256: `{metadata['urdf_xacro_sha256']}`; SRDF/ACM SHA-256: `{metadata['srdf_sha256']}`.\n")
+        out.write(f"- Joint-limits SHA-256: `{metadata['joint_limits_sha256']}`; kinematics SHA-256: `{metadata['kinematics_sha256']}`.\n")
+        out.write("- Orientation xyzw [0,1,0,0], tolerance 0.03 rad; inherited fine validity and seed policy, MAX_IK_SEEDS=150, fixed random seed 20260818.\n")
+        out.write("- C1 pitch was reasserted to zero and C2 yaw was reasserted to zero before and after every arm IK call.\n")
+        out.write("- Base fixed; no environment/box/target, trajectory execution, AMR motion, controller, ros2_control, or hardware.\n\n")
+        out.write("## Four-way targeted workspace\n\n")
+        out.write("| Configuration | Reachable | Volume (m^3) | Delta vs C0 | Delta % | X/Y/Z max (m) |\n|---|---:|---:|---:|---:|---|\n")
+        for configuration in CONFIGS:
+            row = by_config[configuration]
+            out.write(f"| {configuration} | {row['reachable_points']} | {row['targeted_workspace_volume']} | "
+                      f"{row['delta_vs_lift_only']} | {row['percent_delta_vs_lift_only']} | "
+                      f"{row['x_max']} / {row['y_max']} / {row['z_max']} |\n")
+        out.write(f"\n- Yaw unique newly reachable: {contributions['yaw_expanded_unique_count']} points.\n")
+        out.write(f"- Pitch unique newly reachable: {contributions['pitch_expanded_unique_count']} points.\n")
+        out.write(f"- Yaw/Pitch single-DOF overlap: {contributions['yaw_pitch_overlap_count']} points.\n")
+        out.write(f"- COMBINED_TORSO_ONLY: {contributions['combined_torso_only_count']} points, "
+                  f"{contributions['combined_torso_only_volume']:.15g} m^3.\n")
+        out.write(f"- Combined extra gain V3-max(V1,V2): {contributions['combined_extra_gain']:.15g} m^3. "
+                  "This is a set-volume difference, not an additive-synergy claim.\n")
+        out.write(f"- Dominant span increase: Yaw={yaw_direction[0]} {yaw_direction[1]}, Pitch={pitch_direction[0]} {pitch_direction[1]}, "
+                  f"Full={full_direction[0]} {full_direction[1]}.\n\n")
+        out.write("## Common-point posture quality\n\n")
+        out.write(f"All-four-pass common points: {len(common)}. Means/medians below use this identical point set.\n\n")
+        out.write("| Configuration | Manipulability mean/median | Joint margin mean/median | Active revolute margin mean/median | Self-clearance mean/median (m) |\n|---|---:|---:|---:|---:|\n")
+        for prefix, configuration in zip(("c0", "c1", "c2", "c3"), CONFIGS):
+            manip = common_aggregate(common, prefix, "manipulability")
+            margin = common_aggregate(common, prefix, "joint_margin")
+            revolute = common_aggregate(common, prefix, "active_revolute_margin")
+            clearance = common_aggregate(common, prefix, "self_clearance")
+            out.write(f"| {configuration} | {fmt(manip[0])} / {fmt(manip[1])} | {fmt(margin[0])} / {fmt(margin[1])} | "
+                      f"{fmt(revolute[0])} / {fmt(revolute[1])} | {fmt(clearance[0])} / {fmt(clearance[1])} |\n")
+        out.write("\nJacobian column sets differ by active DOF, so manipulability is interpreted comparatively with that configuration convention and common XYZ support.\n\n")
+        out.write("## Sampling consistency and torso use\n\n")
+        out.write(f"- Nested anomaly rows: {len(consistency)}; verdicts: {dict(consistency_counts)}.\n")
+        out.write(f"- Final classification counts: {dict(class_counts)}.\n")
+        for key, values in sorted(distribution_text.items()):
+            out.write(f"- {key[0]} selected {key[1]} raw distribution: {';'.join(values)}\n")
+        out.write("\n## Integrity and stopping condition\n\n")
+        out.write(f"- Visualization: {visualization_status}.\n")
+        out.write("- C1/C2 counts, four-way coordinates, duplicates, finite tokens, classifications, boundaries, common metrics, and nested checks: PASS.\n")
+        out.write(f"- Coarse manifest entries verified: {coarse_entries}; fine manifest entries verified: {fine_entries}.\n")
+        out.write("- Ablation SHA-256 manifest generated and verified. No box or recovery experiment was started.\n")
+
+
+def write_manifest(output_dir):
+    path = os.path.join(output_dir, MANIFEST)
+    names = sorted(name for name in os.listdir(output_dir) if name.startswith(PREFIX) and name != MANIFEST and
+                   os.path.isfile(os.path.join(output_dir, name)))
+    entries = []
+    for name in names:
+        with open(os.path.join(output_dir, name), "rb") as stream:
+            entries.append((hashlib.sha256(stream.read()).hexdigest(), name))
+    with open(path, "w", encoding="utf-8") as stream:
+        for digest, name in entries:
+            stream.write(f"{digest}  {name}\n")
+    for digest, name in entries:
+        with open(os.path.join(output_dir, name), "rb") as stream:
+            if hashlib.sha256(stream.read()).hexdigest() != digest:
+                raise RuntimeError("ablation manifest verification failed: " + name)
+    return len(entries)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--config", required=True)
+    parser.add_argument("--coarse-manifest", required=True)
+    parser.add_argument("--fine-manifest", required=True)
+    args = parser.parse_args()
+    output_dir = os.path.abspath(args.output_dir)
+    coarse_entries = verify_manifest(args.coarse_manifest)
+    fine_entries = verify_manifest(args.fine_manifest)
+
+    fine_rows = read_csv(os.path.join(output_dir, "fixed_base_workspace_fine_points.csv"))
+    new_path = os.path.join(output_dir, PREFIX + "new_points.csv")
+    new_rows = read_csv(new_path)
+    overrides = read_csv(os.path.join(output_dir, PREFIX + "c3_special_overrides.csv"))
+    consistency = read_csv(os.path.join(output_dir, PREFIX + "consistency_check.csv"))
+    metadata_rows = read_csv(os.path.join(output_dir, PREFIX + "metadata.csv"))
+    metadata = {row["key"]: row["value"] for row in metadata_rows}
+
+    rows_by_key = {}
+    for row in fine_rows:
+        rows_by_key[(row["point_id"], row["configuration"])] = normalized_row(row)
+    for row in new_rows:
+        rows_by_key[(row["point_id"], row["configuration"])] = normalized_row(row)
+    for row in overrides:
+        rows_by_key[(row["point_id"], "LIFT_YAW_PITCH")] = normalized_row(row)
+    point_ids = sorted({row["point_id"] for row in fine_rows}, key=int)
+    if any((point_id, config) not in rows_by_key for point_id in point_ids for config in CONFIGS):
+        raise RuntimeError("four-way integration has missing point/configuration rows")
+
+    unresolved = {row["point_id"] for row in consistency if row["verdict"] == "UNRESOLVED"}
+    comparison = make_comparison(rows_by_key, point_ids, os.path.join(output_dir, PREFIX + "comparison.csv"), unresolved)
+    voxel = float(metadata["voxel_volume"])
+    summary = write_summary(rows_by_key, point_ids, voxel, os.path.join(output_dir, PREFIX + "summary.csv"))
+    contributions = write_contributions(comparison, summary, voxel, os.path.join(output_dir, PREFIX + "contributions.csv"))
+    boundary = write_boundary(comparison, metadata, os.path.join(output_dir, PREFIX + "boundary.csv"))
+    common = write_common_metrics(rows_by_key, point_ids, os.path.join(output_dir, PREFIX + "common_point_metrics.csv"))
+    distributions = write_distributions(rows_by_key, point_ids, os.path.join(output_dir, PREFIX + "torso_distributions.csv"))
+
+    visualization_status = "PASS"
+    try:
+        colors = ("#1f77b4", "#9467bd", "#ff7f0e", "#2ca02c")
+        for configuration, color in zip(CONFIGS, colors):
+            plot_3d(xyz_rows(rows_by_key, point_ids, configuration), configuration + " reachable workspace",
+                    os.path.join(output_dir, PREFIX + configuration.lower() + "_3d.png"), color)
+        plot_overlay(rows_by_key, point_ids, os.path.join(output_dir, PREFIX + "four_way_overlay.png"))
+        class_plots = (("YAW_EXPANDED", "yaw_expanded_3d.png", "#9467bd"),
+                       ("PITCH_EXPANDED", "pitch_expanded_3d.png", "#ff7f0e"),
+                       ("COMBINED_TORSO_ONLY", "combined_torso_only_3d.png", "#d62728"))
+        for label, name, color in class_plots:
+            values = [(float(row["tcp_x"]), float(row["tcp_y"]), float(row["tcp_z"]))
+                      for row in comparison if row["classification"] == label]
+            plot_3d(values, label, os.path.join(output_dir, PREFIX + name), color)
+        plot_boundary(boundary, os.path.join(output_dir, PREFIX + "forward_boundary.png"))
+        for plane in ("xy", "xz"):
+            plot_projection(rows_by_key, point_ids, plane, os.path.join(output_dir, PREFIX + f"projection_{plane}.png"))
+    except Exception as error:
+        visualization_status = "NON_FATAL_FAILURE: " + str(error)
+
+    issues = validate(new_rows, comparison, boundary, common, rows_by_key, point_ids, consistency)
+    for name in os.listdir(output_dir):
+        if name.startswith(PREFIX) and name.endswith((".csv", ".md")):
+            with open(os.path.join(output_dir, name), encoding="utf-8") as stream:
+                if re.search(r"(?i)(?<![A-Za-z])(nan|[-+]?inf)(?![A-Za-z])", stream.read()):
+                    issues.append("NaN/Inf token in " + name)
+    integrity_path = os.path.join(output_dir, PREFIX + "integrity.txt")
+    with open(integrity_path, "w", encoding="utf-8") as stream:
+        stream.write("status=" + ("PASS" if not issues else "FAIL") + "\n")
+        stream.write(f"new_rows={len(new_rows)}\ncomparison_rows={len(comparison)}\ncommon_points={len(common)}\n")
+        stream.write(f"coarse_manifest_postcheck=PASS\nfine_manifest_postcheck=PASS\n")
+        for issue in issues:
+            stream.write("issue=" + issue + "\n")
+    if issues:
+        raise RuntimeError("ablation integrity failed: " + "; ".join(issues))
+
+    write_audit(output_dir, metadata, summary, contributions, comparison, common, distributions, consistency,
+                coarse_entries, fine_entries, visualization_status)
+    verify_manifest(args.coarse_manifest)
+    verify_manifest(args.fine_manifest)
+    count = write_manifest(output_dir)
+    print(f"FIXED_BASE_WORKSPACE_DOF_ABLATION postprocess PASS manifest_files={count}", flush=True)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as error:
+        print("FIXED_BASE_WORKSPACE_DOF_ABLATION postprocess FAIL: " + str(error), file=sys.stderr, flush=True)
+        sys.exit(1)

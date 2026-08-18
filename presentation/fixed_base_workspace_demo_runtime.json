@@ -1,0 +1,22 @@
+{
+  "state": "RUNNING_OR_READY",
+  "scene": "PREFLIGHT_PASS",
+  "elapsed_s": 0,
+  "representative_point_id": 1360,
+  "representative_xyz": [0.735416666666667, 0.147, 1.03125],
+  "representative_classification": "COMBINED_TORSO_ONLY",
+  "representative_confidence": "HIGH",
+  "c0_success": false,
+  "c1_success": false,
+  "c2_success": false,
+  "c3_success": true,
+  "animation_collision_free": true,
+  "animation_samples": 101,
+  "animation_failure_index": -1,
+  "animation_failure_pairs": "",
+  "trajectory_execution": false,
+  "controller": false,
+  "ros2_control": false,
+  "hardware": false,
+  "amr_motion": false
+}

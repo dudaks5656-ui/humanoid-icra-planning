@@ -1,0 +1,2 @@
+common_reachable_count,torso_expanded_count,lift_only_only_count,unreachable_both_count,voxel_volume,targeted_lift_only_volume,targeted_torso_volume,targeted_delta_volume,torso_expanded_volume,lift_only_max_forward_x,torso_max_forward_x,delta_forward_x,coarse_anomaly_verdict
+833,259,0,348,0.000117395833333333,0.0977907291666666,0.12819625,0.0304055208333333,0.0304055208333333,0.677083333333333,0.735416666666667,0.0583333333333333,SAMPLING_ARTIFACT

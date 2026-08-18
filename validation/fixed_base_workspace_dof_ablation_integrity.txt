@@ -1,0 +1,6 @@
+status=PASS
+new_rows=2880
+comparison_rows=1440
+common_points=833
+coarse_manifest_postcheck=PASS
+fine_manifest_postcheck=PASS

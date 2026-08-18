@@ -1,0 +1,78 @@
+Panels: []
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.22
+      Cell Size: 0.1
+      Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Fixed-base ground grid
+      Plane: XY
+      Reference Frame: world
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Name: Fixed-base humanoid
+      Update Interval: 0
+      Visual Enabled: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /radial_workspace_validation/markers
+      Name: Radial workspace validation
+    - Class: rviz_default_plugins/TF
+      Enabled: false
+      Frame Timeout: 15
+      Marker Scale: 0.08
+      Name: TF verification
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+  Enabled: true
+  Global Options:
+    Background Color: 18; 22; 30
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 2.30
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.06
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Field of View: 0.72
+      Focal Point:
+        X: 0.43
+        Y: 0.16
+        Z: 1.10
+      Invert Z Axis: false
+      Name: Radial perspective
+      Near Clip Distance: 0.01
+      Pitch: 0.30
+      Target Frame: world
+      Yaw: 2.72
+Window Geometry:
+  Height: 1080
+  Width: 1920
+  X: 0
+  Y: 0

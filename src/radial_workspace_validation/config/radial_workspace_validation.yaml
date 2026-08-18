@@ -1,0 +1,49 @@
+radial_workspace_validation:
+  ros__parameters:
+    base_frame: base_link
+    tcp_frame: openarm_left_hand_tcp
+    arm_group: left_arm
+    full_group: left_arm_with_torso
+
+    # Parameters retained by the shared validated RobotModel/IK implementation.
+    grid_x: 1
+    grid_y: 1
+    grid_z: 1
+    max_ik_seeds: 50
+    max_special_ik_seeds: 100
+    max_special_points: 10
+    ik_timeout_s: 0.008
+    orientation_tolerance_rad: 0.03
+    exact_bound_epsilon: 1.0e-8
+    target_qx: 0.0
+    target_qy: 1.0
+    target_qz: 0.0
+    target_qw: 0.0
+    orientation_source: validation/reference_grasp_50mm.yaml
+    lift_candidate_count: 7
+    yaw_candidate_count: 3
+    pitch_candidate_count: 4
+    max_grid_points: 40
+    max_ik_seeds_hard: 50
+    max_torso_candidates: 100
+    max_configuration_evaluations: 400
+    max_total_ik_attempts: 21000
+    max_experiment_wall_time_s: 1800.0
+    progress_every: 1
+
+    radial_min: 0.15
+    radial_max: 0.80
+    radial_step: 0.02
+    max_points_per_ray: 40
+    ray_count_hard: 5
+    config_count_hard: 2
+    origin_x_offset_from_grid_min: 0.20
+    front_left_ratio: 0.45
+    front_up_ratio: 0.65
+    random_seed: 20260818
+
+    trajectory_execution: false
+    controller_enabled: false
+    ros2_control_enabled: false
+    hardware_enabled: false
+    amr_motion_enabled: false

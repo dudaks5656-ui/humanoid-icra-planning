@@ -1,0 +1,2 @@
+configuration,ray_name,hole_index,start_distance,end_distance,hole_length
+LIFT_ONLY,FRONT_DOWN,1,0.51,0.51,0.02

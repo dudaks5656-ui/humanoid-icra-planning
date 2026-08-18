@@ -1,0 +1,13 @@
+{
+  "codec": "H.264",
+  "codec_name": "h264",
+  "decoded_frames": 1350,
+  "duration_seconds": 45.0,
+  "file_size_bytes": 8775220,
+  "fps": 30,
+  "gst_discover_h264": true,
+  "path": "presentation/lift_slice_fk_workspace_demo.mp4",
+  "recording_backend": "GStreamer x264enc/mp4mux",
+  "resolution": "1920x1080",
+  "slide_count": 15
+}

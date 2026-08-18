@@ -1,0 +1,16 @@
+scene,path
+front_c0,presentation/lift_slice_front_c0.png
+right_c0,presentation/lift_slice_right_c0.png
+3d_c0,presentation/lift_slice_3d_c0.png
+front_c1,presentation/lift_slice_front_c1.png
+right_c1,presentation/lift_slice_right_c1.png
+3d_c1,presentation/lift_slice_3d_c1.png
+front_c2,presentation/lift_slice_front_c2.png
+right_c2,presentation/lift_slice_right_c2.png
+3d_c2,presentation/lift_slice_3d_c2.png
+front_c3,presentation/lift_slice_front_c3.png
+right_c3,presentation/lift_slice_right_c3.png
+3d_c3,presentation/lift_slice_3d_c3.png
+front_compare,presentation/lift_slice_front_compare.png
+right_compare,presentation/lift_slice_right_compare.png
+3d_all,presentation/lift_slice_3d_all.png

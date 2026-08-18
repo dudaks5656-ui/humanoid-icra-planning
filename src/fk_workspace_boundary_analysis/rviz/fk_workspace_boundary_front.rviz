@@ -1,0 +1,54 @@
+Panels: []
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.18
+      Cell Size: 0.1
+      Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Ground
+      Plane: XY
+      Reference Frame: world
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Name: Fixed-base humanoid
+      Visual Enabled: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Valid FK endpoints
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /fk_workspace_boundary_rviz/markers
+  Enabled: true
+  Global Options:
+    Background Color: 18; 22; 30
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 2.8
+      Field of View: 0.65
+      Focal Point: {X: 0.1, Y: 0.05, Z: 1.0}
+      Name: Front Y-Z
+      Near Clip Distance: 0.01
+      Pitch: 0.02
+      Target Frame: world
+      Yaw: 3.14159
+Window Geometry: {Height: 1080, Width: 1920, X: 0, Y: 0}

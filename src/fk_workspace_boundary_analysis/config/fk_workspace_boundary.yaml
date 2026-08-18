@@ -1,0 +1,18 @@
+fk_workspace_boundary:
+  ros__parameters:
+    output_dir: /home/openarm/humanoid_sim_ws/validation
+    base_frame: base_link
+    tcp_frame: openarm_left_hand_tcp
+    arm_group: left_arm
+    full_group: left_arm_with_torso
+    samples_per_configuration: 10000
+    max_states_per_configuration: 10000
+    max_total_states: 40000
+    random_seed: 20260819
+    exact_bound_epsilon: 1.0e-9
+    max_wall_time_s: 1800.0
+    progress_every: 1000
+    angle_bin_deg: 2.0
+    observed_gap_threshold_m: 0.05
+    minimum_gap_bin_samples: 3
+    convergence_milestones: [2500, 5000, 7500, 10000]

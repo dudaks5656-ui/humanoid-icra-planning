@@ -1,0 +1,11 @@
+view,scene,path
+FRONT,C0,presentation/fk_workspace_front_c0.png
+FRONT,C1,presentation/fk_workspace_front_c1.png
+FRONT,C2,presentation/fk_workspace_front_c2.png
+FRONT,C3,presentation/fk_workspace_front_c3.png
+FRONT,ALL,presentation/fk_workspace_front_all.png
+RIGHT,C0,presentation/fk_workspace_right_c0.png
+RIGHT,C1,presentation/fk_workspace_right_c1.png
+RIGHT,C2,presentation/fk_workspace_right_c2.png
+RIGHT,C3,presentation/fk_workspace_right_c3.png
+RIGHT,ALL,presentation/fk_workspace_right_all.png

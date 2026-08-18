@@ -1,0 +1,24 @@
+{
+  "codec": "H.264",
+  "container": "MP4/QuickTime",
+  "decoded_frames": 1050,
+  "duration_seconds": 35.0,
+  "file_size_bytes": 3910172,
+  "fps": 30.0,
+  "ik_used": false,
+  "path": "/home/openarm/humanoid_sim_ws/presentation/fk_workspace_boundary_demo.mp4",
+  "resolution": "1920x1080",
+  "slides": [
+    "fk_workspace_front_c0.png",
+    "fk_workspace_front_c1.png",
+    "fk_workspace_front_c2.png",
+    "fk_workspace_front_c3.png",
+    "fk_workspace_front_all.png",
+    "fk_workspace_right_c0.png",
+    "fk_workspace_right_c1.png",
+    "fk_workspace_right_c2.png",
+    "fk_workspace_right_c3.png",
+    "fk_workspace_right_all.png"
+  ],
+  "trajectory_execution": false
+}

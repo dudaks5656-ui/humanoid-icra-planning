@@ -1,0 +1,13 @@
+{
+  "codec": "H.264",
+  "codec_name": "h264",
+  "decoded_frames": 990,
+  "duration_seconds": 33.0,
+  "file_size_bytes": 4002261,
+  "fps": 30,
+  "gst_discover_h264": true,
+  "path": "presentation/boundary_sweep_workspace_demo.mp4",
+  "recording_backend": "GStreamer x264enc/mp4mux",
+  "resolution": "1920x1080",
+  "slide_count": 11
+}

@@ -1,0 +1,10 @@
+Panels:
+  - Class: rviz_common/Displays
+Visualization Manager:
+  Global Options: {Fixed Frame: base_link, Background Color: 28; 32; 38}
+  Displays:
+    - {Class: rviz_default_plugins/RobotModel, Name: Fixed-base humanoid, Description Topic: /robot_description}
+    - {Class: rviz_default_plugins/MarkerArray, Name: Directed boundaries, Topic: /boundary_sweep_workspace/markers}
+  Views:
+    Current: {Class: rviz_default_plugins/Orbit, Distance: 3.1, Pitch: 0.38, Yaw: 2.35, Focal Point: {X: 0.25, Y: 0.1, Z: 1.05}}
+Window Geometry: {Width: 1600, Height: 900}

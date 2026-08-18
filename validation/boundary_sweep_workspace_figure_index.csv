@@ -1,0 +1,16 @@
+scene,path
+front_c0,presentation/boundary_front_c0.png
+right_c0,presentation/boundary_right_c0.png
+3d_c0,presentation/boundary_3d_c0.png
+front_c1,presentation/boundary_front_c1.png
+right_c1,presentation/boundary_right_c1.png
+3d_c1,presentation/boundary_3d_c1.png
+front_c2,presentation/boundary_front_c2.png
+right_c2,presentation/boundary_right_c2.png
+3d_c2,presentation/boundary_3d_c2.png
+front_c3,presentation/boundary_front_c3.png
+right_c3,presentation/boundary_right_c3.png
+3d_c3,presentation/boundary_3d_c3.png
+front_compare,presentation/boundary_front_compare.png
+right_compare,presentation/boundary_right_compare.png
+3d_compare,presentation/boundary_3d_compare.png

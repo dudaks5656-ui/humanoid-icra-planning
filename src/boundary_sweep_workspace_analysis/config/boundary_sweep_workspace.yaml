@@ -1,0 +1,24 @@
+boundary_sweep_workspace:
+  ros__parameters:
+    output_dir: /home/openarm/humanoid_sim_ws/validation
+    base_frame: base_link
+    tcp_frame: openarm_left_hand_tcp
+    reference_link: openarm_left_link0
+    arm_group: left_arm
+    full_group: left_arm_with_torso
+    usable_lift_step_m: 0.02
+    usable_representative_states: 8
+    seed_pool_attempts: 24
+    optimizer_seed_count: 1
+    support_angle_step_deg: 15.0
+    coarse_line_fractions: [0.1, 0.3, 0.5, 0.7, 0.9]
+    coarse_passes: 1
+    refine_step_deg: 5.0
+    final_refine_step_deg: 1.0
+    exact_bound_epsilon: 1.0e-9
+    inner_angle_penalty_m_per_rad: 0.75
+    max_total_collision_checks: 180000
+    max_wall_time_s: 1800.0
+    progress_every_directions: 8
+    scene: boundary_compare
+    pose_type: MAX_REACH_POSE

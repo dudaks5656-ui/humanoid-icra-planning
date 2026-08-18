@@ -1,0 +1,6 @@
+category,endpoint_count,patch_count,approximate_surface_area,description
+BASELINE_C0,87,53,0.3006937234622144,C3 support patch has no improvement over C0
+YAW_UNIQUE,114,149,0.5961291044288897,C1 improves C0 while C2 does not
+PITCH_UNIQUE,57,65,0.44581389438601865,C2 improves C0 while C1 does not
+SINGLE_DOF_SHARED,54,72,0.2719938946177329,Both C1 and C2 independently improve C0
+COMBINED_ONLY,168,429,3.528609320809992,C3 improves beyond both C1 and C2

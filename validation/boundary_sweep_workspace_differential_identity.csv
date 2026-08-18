@@ -1,0 +1,6 @@
+check,expected,actual,status
+immutable_nested_rows,1920,1920,PASS
+correspondence_endpoint_union,480,480,PASS
+c3_surface_patch_union,768,768,PASS
+unique_patch_assignment,768,768,PASS
+nonempty_five_way_categories,5,5,PASS

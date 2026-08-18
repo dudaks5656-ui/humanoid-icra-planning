@@ -1,0 +1,23 @@
+{
+  "state": "RUNNING_OR_READY",
+  "scene": "PREFLIGHT_PASS",
+  "elapsed_s": 0,
+  "visualization_mode": "surface",
+  "grid_dimensions": [12,10,12],
+  "spacing": [0.029166666666667,0.042,0.095833333333333],
+  "voxel_volume": 0.000117395833333334,
+  "occupied_voxels": [833,1030,976,1119],
+  "exposed_faces": [636,674,694,730],
+  "combined_only_voxels": 65,
+  "combined_only_faces": 266,
+  "point_1360": [0.735416666666667,0.147,1.03125],
+  "animated_point_ids": [1096,1218,1215,1360],
+  "animation_collision_free": [true,true,true,true],
+  "convex_hull_used": false,
+  "holes_preserved": true,
+  "trajectory_execution": false,
+  "controller": false,
+  "ros2_control": false,
+  "hardware": false,
+  "amr_motion": false
+}

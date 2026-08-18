@@ -1,0 +1,131 @@
+{
+  "mode": "full",
+  "video_path": "/home/openarm/humanoid_sim_ws/presentation/fixed_base_workspace_envelope_demo.mp4",
+  "launch_command": [
+    "ros2",
+    "launch",
+    "fixed_base_workspace_envelope_demo",
+    "fixed_base_workspace_envelope_demo.launch.py",
+    "demo_scene:=auto",
+    "visualization_mode:=surface",
+    "duration_scale:=1.0",
+    "use_rviz:=true",
+    "use_overlay:=true"
+  ],
+  "recording_command": [
+    "gst-launch-1.0",
+    "-e",
+    "ximagesrc",
+    "startx=140",
+    "starty=128",
+    "endx=2059",
+    "endy=1207",
+    "use-damage=false",
+    "show-pointer=false",
+    "!",
+    "videorate",
+    "drop-only=true",
+    "max-rate=30",
+    "!",
+    "video/x-raw,framerate=30/1",
+    "!",
+    "identity",
+    "sync=true",
+    "eos-after=1980",
+    "!",
+    "videoconvert",
+    "!",
+    "videoscale",
+    "add-borders=true",
+    "!",
+    "video/x-raw,width=1920,height=1080,format=I420,pixel-aspect-ratio=1/1",
+    "!",
+    "x264enc",
+    "bitrate=8000",
+    "speed-preset=medium",
+    "key-int-max=60",
+    "threads=0",
+    "!",
+    "video/x-h264,stream-format=avc,alignment=au",
+    "!",
+    "mp4mux",
+    "faststart=true",
+    "!",
+    "filesink",
+    "location=/home/openarm/humanoid_sim_ws/presentation/fixed_base_workspace_envelope_demo.mp4"
+  ],
+  "rviz_window": {
+    "xid": 56623366,
+    "source_width": 1920,
+    "source_height": 1080,
+    "screen_x": 140,
+    "screen_y": 128,
+    "description": "0x3600106 \"/home/openarm/humanoid_sim_ws/install/fixed_base_workspace_envelope_demo/share/fixed_base_workspace_envelope_demo/rviz/fixed_base_workspace_envelope_demo.rviz - RViz\": (\"rviz2\" \"rviz2\")  1920x1080+20+90  +140+128"
+  },
+  "scene_first_seen_s": {
+    "INITIALIZING": 2.97251670499827,
+    "WAITING_FOR_RVIZ": 3.0737566629977664,
+    "ROBOT": 8.99329606700121,
+    "C0": 12.986317619997862,
+    "C1": 20.975806352998916,
+    "C2": 28.977805349997652,
+    "C3": 36.970333541998116,
+    "C0_VS_C3": 45.96976034299951,
+    "COMBINED_ONLY": 54.98772033500063,
+    "FINAL": 64.95536255800107
+  },
+  "video": {
+    "fps": 30.01486334819668,
+    "frame_count": 1979,
+    "declared_frame_count": 1979,
+    "duration_s": 65.934,
+    "width": 1920,
+    "height": 1080,
+    "file_size_bytes": 10034990,
+    "all_frames_decoded": true
+  },
+  "gst_discoverer": "Analyzing file:///home/openarm/humanoid_sim_ws/presentation/fixed_base_workspace_envelope_demo.mp4\nDone discovering file:///home/openarm/humanoid_sim_ws/presentation/fixed_base_workspace_envelope_demo.mp4\n\nProperties:\n  Duration: 0:01:05.934000000\n  Seekable: yes\n  Live: no\n  container #0: Quicktime\n    video #1: H.264 (High Profile)\n      Stream ID: ed9c2357781cdaaa97fdbe6561507d0a2ba2d990b045957bca97fc120a4a95d6/001\n      Width: 1920\n      Height: 1080\n      Depth: 24\n      Frame rate: 30/1\n      Pixel aspect ratio: 1/1\n      Interlaced: false\n      Bitrate: 1214594\n      Max bitrate: 8192000\n\n",
+  "representative_frames": {
+    "envelope_c0.png": {
+      "path": "/home/openarm/humanoid_sim_ws/presentation/envelope_c0.png",
+      "time_s": 15.986317619997862,
+      "width": 1920,
+      "height": 1080
+    },
+    "envelope_c1.png": {
+      "path": "/home/openarm/humanoid_sim_ws/presentation/envelope_c1.png",
+      "time_s": 23.975806352998916,
+      "width": 1920,
+      "height": 1080
+    },
+    "envelope_c2.png": {
+      "path": "/home/openarm/humanoid_sim_ws/presentation/envelope_c2.png",
+      "time_s": 31.977805349997652,
+      "width": 1920,
+      "height": 1080
+    },
+    "envelope_c3.png": {
+      "path": "/home/openarm/humanoid_sim_ws/presentation/envelope_c3.png",
+      "time_s": 40.470333541998116,
+      "width": 1920,
+      "height": 1080
+    },
+    "envelope_c0_vs_c3.png": {
+      "path": "/home/openarm/humanoid_sim_ws/presentation/envelope_c0_vs_c3.png",
+      "time_s": 49.46976034299951,
+      "width": 1920,
+      "height": 1080
+    },
+    "envelope_combined_only.png": {
+      "path": "/home/openarm/humanoid_sim_ws/presentation/envelope_combined_only.png",
+      "time_s": 58.98772033500063,
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "trajectory_execution": false,
+  "controller": false,
+  "ros2_control": false,
+  "hardware": false,
+  "amr_motion": false
+}

@@ -1,0 +1,23 @@
+workspace_projection:
+  workspace: /home/openarm/humanoid_sim_ws
+  source_csv: validation/fixed_base_workspace_dof_ablation_comparison.csv
+  source_summary_csv: validation/fixed_base_workspace_dof_ablation_summary.csv
+  validation_dir: validation
+  presentation_dir: presentation
+  base_frame: base_link
+  coordinate_convention: "+X forward, +Y left, +Z up"
+  projection_method: UNION_OR_OVER_COLLAPSED_DEPTH
+  expected_points: 1440
+  expected_grid: [12, 10, 12]
+  expected_reachable: [833, 1030, 976, 1119]
+  expected_max_x: [0.677083333333333, 0.70625, 0.70625, 0.735416666666667]
+  figure_width_px: 1920
+  figure_height_px: 1080
+  figure_dpi: 120
+  colors:
+    C0: "#2792ff"
+    C1: "#ff9f1c"
+    C2: "#e052d1"
+    C3: "#20d6c7"
+    added: "#52e675"
+    combined_only: "#b84cff"

@@ -1,0 +1,26 @@
+{
+  "codec": "H.264",
+  "container": "MP4/QuickTime",
+  "decoded_frames": 1080,
+  "duration_seconds": 36.0,
+  "file_size_bytes": 3212288,
+  "fps": 30.0,
+  "new_ik_sampling": false,
+  "path": "/home/openarm/humanoid_sim_ws/presentation/workspace_front_right_projection_demo.mp4",
+  "resolution": "1920x1080",
+  "slides": [
+    "workspace_front_reference.png",
+    "workspace_front_c0.png",
+    "workspace_front_c1.png",
+    "workspace_front_c2.png",
+    "workspace_front_c3.png",
+    "workspace_front_c0_vs_c3.png",
+    "workspace_right_reference.png",
+    "workspace_right_c0.png",
+    "workspace_right_c1.png",
+    "workspace_right_c2.png",
+    "workspace_right_c3.png",
+    "workspace_right_c0_vs_c3.png"
+  ],
+  "trajectory_execution": false
+}

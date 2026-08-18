@@ -1,0 +1,19 @@
+key,value
+source_csv,/home/openarm/humanoid_sim_ws/validation/fixed_base_workspace_dof_ablation_comparison.csv
+source_sha256,5d7f1ea256b99ee0a36b1e8eab9250b34d89bcf9dce3c9fc61671eccd10f96b2
+source_points,1440
+base_frame,base_link
+coordinate_convention,"+X forward, +Y left, +Z up"
+projection_method,UNION_OR_OVER_COLLAPSED_DEPTH
+grid_x,12
+grid_y,10
+grid_z,12
+dx,0.02916666666666695
+dy,0.041999999999999996
+dz,0.09583333333333299
+front_cell_area,0.004024999999999985
+right_cell_area,0.0027951388888889065
+new_ik_sampling,False
+convex_hull,False
+smoothing,False
+hole_filling,False

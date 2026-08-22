@@ -72,6 +72,7 @@
       ee_kinematics_link="${openarm_ee_kinematics_link}"
       ee_inertials="${openarm_ee_inertials}"
       ee_joints_limits="${openarm_ee_joint_limits}"
+      tcp_xyz="0 0 0.0345"
       description_pkg="openarm_description"/>
 
     <xacro:openarm_ee
@@ -83,6 +84,7 @@
       ee_kinematics_link="${openarm_ee_kinematics_link}"
       ee_inertials="${openarm_ee_inertials}"
       ee_joints_limits="${openarm_ee_joint_limits}"
+      tcp_xyz="0 0 0.0345"
       description_pkg="openarm_description"/>
   </xacro:macro>
 

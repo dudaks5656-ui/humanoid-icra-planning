@@ -26,6 +26,8 @@ limitations under the License.
         ee_kinematics_link="${ee_kinematics_link}"
         ee_inertials="${ee_inertials}"
         ee_joints_limits="${ee_joints_limits}"
+        tcp_xyz="${tcp_xyz}"
+        tcp_rpy="${tcp_rpy}"
       />
     </xacro:if>
     <xacro:unless value="${ee_type == 'parallel_link'}">

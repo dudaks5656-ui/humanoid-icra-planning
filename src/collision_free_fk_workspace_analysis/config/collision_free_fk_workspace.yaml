@@ -1,0 +1,23 @@
+collision_free_fk_workspace:
+  ros__parameters:
+    base_frame: base_link
+    tcp_frame: openarm_left_hand_tcp
+    right_tcp_frame: openarm_right_hand_tcp
+    arm_group: left_arm
+    full_group: left_arm_with_torso
+    base_samples: 12000
+    yaw_enrichment_samples: 7000
+    pitch_enrichment_samples: 7000
+    combined_enrichment_samples: 10000
+    max_base_samples: 20000
+    max_total_collision_checks: 40000
+    random_seed: 20260819
+    exact_bound_epsilon: 1.0e-9
+    max_wall_time_s: 1800.0
+    progress_every: 2000
+    primary_voxel_size_m: 0.01
+    voxel_sensitivity_m: [0.005, 0.01, 0.015]
+    convergence_fractions: [0.25, 0.50, 0.75, 1.00]
+    convergence_extent_tolerance_m: 0.02
+    convergence_occupancy_change_tolerance: 0.05
+    representative_validation_max_points: 20

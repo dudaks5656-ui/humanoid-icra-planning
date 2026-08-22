@@ -76,6 +76,7 @@
       arm_type="v10" arm_prefix="left_"
       ee_kinematics="${ee_kinematics}" ee_kinematics_link="${ee_kinematics_link}"
       ee_inertials="${ee_inertials}" ee_joints_limits="${ee_joint_limits}"
+      tcp_xyz="0 0 0.0345"
       description_pkg="openarm_description"/>
 
     <xacro:openarm_ee
@@ -83,6 +84,7 @@
       arm_type="v10" arm_prefix="right_"
       ee_kinematics="${ee_kinematics}" ee_kinematics_link="${ee_kinematics_link}"
       ee_inertials="${ee_inertials}" ee_joints_limits="${ee_joint_limits}"
+      tcp_xyz="0 0 0.0345"
       description_pkg="openarm_description"/>
   </xacro:macro>
 </robot>
